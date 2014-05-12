@@ -30,6 +30,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ct8356.mysecondapp.MainActivity" />
         </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.TimeAccumulatorActivity"
+            android:label="@string/title_activity_time_accumulator"
+            android:parentActivityName="com.ct8356.mysecondapp.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ct8356.mysecondapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

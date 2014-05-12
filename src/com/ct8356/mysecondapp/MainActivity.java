@@ -34,7 +34,13 @@ public class MainActivity extends ActionBarActivity {
 		String message = editText.getText().toString();
 		intent.putExtra(EXTRA_MESSAGE, message);
 	    startActivity(intent);
-
+	}
+	
+	/** Called when the user clicks the Time Acc button */
+	public void goTimeAccumulator(View view) {
+	    // Do something in response to button
+		Intent intent = new Intent(this, TimeAccumulatorActivity.class);
+	    startActivity(intent);
 	}
 
 	@Override
