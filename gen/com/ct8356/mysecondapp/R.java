@@ -1257,6 +1257,7 @@ containing a value of this type.
         public static final int button_time_accumulator=0x7f0a0015;
         public static final int edit_message=0x7f0a000f;
         public static final int hello_world=0x7f0a0012;
+        public static final int label_total_count=0x7f0a0016;
         public static final int title_activity_display_message=0x7f0a0011;
         public static final int title_activity_time_accumulator=0x7f0a0014;
     }
