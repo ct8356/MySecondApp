@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class DisplayMessageActivity extends ActionBarActivity {
@@ -18,12 +20,16 @@ public class DisplayMessageActivity extends ActionBarActivity {
 	    // Get the message from the intent
 	    Intent intent = getIntent();
 	    String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-	    // Create the text view
-	    TextView textView = new TextView(this);
-	    textView.setTextSize(40);
-	    textView.setText(message);
+	    // Create the text view  
+	    ViewGroup layout = new LinearLayout(this);
+	    TextView textView1 = new TextView(this);
+	    TextView textView2 = new TextView(this);
+	    textView1.setText("message1");
+	    textView2.setText("message2");
+	    layout.addView(textView1);
+	    layout.addView(textView2);
 	    // Set the text view as the activity layout
-	    setContentView(textView);
+	    setContentView(layout);
 	}
 
 	@Override
@@ -40,10 +46,8 @@ public class DisplayMessageActivity extends ActionBarActivity {
 
 	//A placeholder fragment containing a simple view.
 	public static class PlaceholderFragment extends Fragment {
-
 		public PlaceholderFragment() {
 		}
-
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {

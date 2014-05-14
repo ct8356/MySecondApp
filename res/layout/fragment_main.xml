@@ -24,7 +24,7 @@
         android:text="@string/button_send" 
         android:onClick="sendMessage" />    
         
-    <Button
+   <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_time_accumulator" 
