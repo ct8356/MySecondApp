@@ -67,7 +67,6 @@ public class MainActivity extends ActionBarActivity { //extends FragmentActivity
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
-
 	}
 
 	
