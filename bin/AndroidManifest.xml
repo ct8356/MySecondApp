@@ -29,13 +29,23 @@
             android:name="com.ct8356.mysecondapp.TimeAccumulatorActivity"
             android:label="@string/title_activity_time_accumulator"
             android:parentActivityName="com.ct8356.mysecondapp.MainActivity" >
-           	<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ct8356.mysecondapp.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.ChooseTagActivity"
+            android:label="@string/title_activity_choose_tag"
+            android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
         </activity>
     </application>
 

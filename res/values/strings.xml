@@ -9,6 +9,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_search">Search</string>
     <string name="title_activity_time_accumulator">Time Accumulator</string>
-	<string name="button_time_accumulator">Time accumulator</string>
-	<string name="label_total_count">Total count:</string>
+    <string name="button_time_accumulator">Time accumulator</string>
+    <string name="label_total_count">Total count:</string>
+    <string name="title_activity_choose_tag">ChooseTagActivity</string>
+    <string name="no_tags">No tags</string>
 </resources>
