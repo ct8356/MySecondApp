@@ -31,7 +31,7 @@ import android.widget.TextView;
 import android.os.Build;
 
 public class TimeAccumulatorActivity extends ActionBarActivity {
-	private Chronometer mChrono;
+
 	private DbHelper mDbHelper;
 	public String mSelectedTagString = "Android";
 	public TextView mSelectedTag;
@@ -140,9 +140,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			//TextView chosenTag = new TextView(this);
 			TextView textViewSumMinutes = new TextView(context);
 			Button add10 = new Button(context);
-			mChrono = new Chronometer(context);
-			Button start = new Button(context);
-			Button stop = new Button(context);
 			mTag = new EditText(context);
 			Button addTag = new Button(context);
 			LinearLayout layout = new LinearLayout(context);
@@ -154,10 +151,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        chooseTag.setOnClickListener(new ChooseTagListener());
 			add10.setText("Add 10 minutes");
 	        add10.setOnClickListener(new add10Listener());
-	        start.setText("Start");
-	        start.setOnClickListener(new startListener());
-	        stop.setText("Stop");
-	        stop.setOnClickListener(new stopListener());
 	        mTag.setText(mTagString);
 			addTag.setText("Add tag");
 	        addTag.setOnClickListener(new addTagListener());
@@ -166,9 +159,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        layout.addView(mSelectedTag);
 			layout.addView(textViewSumMinutes);
 			layout.addView(add10);
-			layout.addView(mChrono);
-			layout.addView(start);
-			layout.addView(stop);
 			//layout.addView(mTag);
 			//layout.addView(addTag);
 			this.addView(layout);
@@ -185,20 +175,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		public void onClick(View view) {
 			add10Minutes(mSelectedTagString);
 			updateContent();
-		}
-	}
-	
-	public class startListener implements View.OnClickListener {
-		public void onClick(View view) {
-			mChrono.setBase(SystemClock.elapsedRealtime());
-			//elapsedRealtime is time from device boot up.
-			mChrono.start(); 
-		}
-	}
-	
-	public class stopListener implements View.OnClickListener {
-		public void onClick(View view) {
-			mChrono.stop();
 		}
 	}
 	
