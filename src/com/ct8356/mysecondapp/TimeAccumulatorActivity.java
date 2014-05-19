@@ -151,60 +151,16 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			mSelectedTag.setText("Chosen tag: " + mSelectedTagString);
 			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
 			chooseTag.setText("Choose tag");
-	        chooseTag.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				goChooseTag();
-	        			}
-	        		}
-	        		);
-	        //could use lambda expression above, if OnClickListener had only one method.
-	        //(Does it need to be an abstract method?).
-	        //but I believe it has more methods, so its not obvious from LE which method 
-	        //you want to override.
-	        //ACTUALLY, ONLY ONE ABSTRACT METHOD!
-	        //The alternative to anonymous classes like above, is to 
-	        //define an OnClickListener class and onclick method down below (as an inner class)
+	        chooseTag.setOnClickListener(new ChooseTagListener());
 			add10.setText("Add 10 minutes");
-	        add10.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				//Action:
-	        				//mSelectedTagString = mSelectedTag.getText().toString();
-	        				add10Minutes(mSelectedTagString);
-	        				updateContent();
-	        			}
-	        		}
-	        		);
+	        add10.setOnClickListener(new add10Listener());
 	        start.setText("Start");
-	        start.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				mChrono.setBase(SystemClock.elapsedRealtime());
-	        				//elapsedRealtime is time from device boot up.
-	        				mChrono.start(); 
-	        			}
-	        		}
-	        		);
+	        start.setOnClickListener(new startListener());
 	        stop.setText("Stop");
-	        stop.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				mChrono.stop();
-	        			}
-	        		}
-	        		);
+	        stop.setOnClickListener(new stopListener());
 	        mTag.setText(mTagString);
 			addTag.setText("Add tag");
-	        addTag.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				mTagString = mTag.getText().toString();
-	        				addTag(mTagString);
-	        				updateContent();
-	        			}
-	        		}
-	        		);
+	        addTag.setOnClickListener(new addTagListener());
 			//ADD VIEWS
 	        layout.addView(chooseTag);
 	        layout.addView(mSelectedTag);
@@ -218,5 +174,39 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			this.addView(layout);
 		}
 	}
+	
+	public class ChooseTagListener implements View.OnClickListener {
+		public void onClick(View view) {
+			goChooseTag();
+		}
+	}
 
+	public class add10Listener implements View.OnClickListener {
+		public void onClick(View view) {
+			add10Minutes(mSelectedTagString);
+			updateContent();
+		}
+	}
+	
+	public class startListener implements View.OnClickListener {
+		public void onClick(View view) {
+			mChrono.setBase(SystemClock.elapsedRealtime());
+			//elapsedRealtime is time from device boot up.
+			mChrono.start(); 
+		}
+	}
+	
+	public class stopListener implements View.OnClickListener {
+		public void onClick(View view) {
+			mChrono.stop();
+		}
+	}
+	
+	public class addTagListener implements View.OnClickListener {
+		public void onClick(View view) {
+			mTagString = mTag.getText().toString();
+			addTag(mTagString);
+			updateContent();
+		}
+	}
 }
