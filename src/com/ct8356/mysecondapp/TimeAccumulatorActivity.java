@@ -91,8 +91,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public void goChooseTag(){
 		Intent intent = new Intent(this, ChooseTagActivity.class);
-		startActivity(intent);
-	    //startActivityForResult(intent, CHOOSE_TAG);
+		//startActivity(intent);
+	    startActivityForResult(intent, CHOOSE_TAG);
 	}
 	
 	@Override
@@ -117,6 +117,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        setIntent(intent);
         updateContent();
     }
 

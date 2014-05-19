@@ -82,9 +82,11 @@ public class ChooseTagActivity extends ActionBarActivity {
 	}
 	
 	public void goTimeAccumulator(long id) {
-		Intent intent = new Intent(this, TimeAccumulatorActivity.class);
+		Intent intent = new Intent();
 		intent.putExtra("tag", id);
-	    startActivity(intent);
+	    //startActivity(intent);
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 	
 	@Override
