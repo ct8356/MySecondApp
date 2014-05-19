@@ -45,113 +45,16 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		//Gets the data repository in write mode
 		mDbHelper = new DbHelper(this);
-		updateContent2();
+		updateContent();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();	
-		updateContent2();
+		updateContent();
 	}
 	
-	public void updateContent(){ //This works!
-		try{
-	        //OTHER
-			mRowId = 1;
-	        Bundle extras = getIntent().getExtras();
-            //mRowId = extras != null ? extras.getLong("tag") : null; //null pointer exception
-            if (extras != null) {
-            	mRowId = extras.getLong("tag");
-            }
-			//DO DATABASE STUFF
-			mDbHelper.openDatabase();
-			mSelectedTagString = mDbHelper.getTag(mRowId);
-			int sumMinutes = mDbHelper.sumMinutes(mSelectedTagString);
-			mDbHelper.close();
-			//CREATE THE VIEWS
-			Button chooseTag = new Button(this);
-			mSelectedTag = new TextView(this);
-			//TextView chosenTag = new TextView(this);
-			TextView textViewSumMinutes = new TextView(this);
-			Button add10 = new Button(this);
-			mChrono = new Chronometer(this);
-			Button start = new Button(this);
-			Button stop = new Button(this);
-			mTag = new EditText(this);
-			Button addTag = new Button(this);
-			ScrollView scrollLayout = new ScrollView(this);
-			LinearLayout layout = new LinearLayout(this);
-			layout.setOrientation(1);
-			//SET THE TEXT AND ACTIONS;
-			mSelectedTag.setText("Chosen tag: " + mSelectedTagString);
-			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
-			chooseTag.setText("Choose tag");
-	        chooseTag.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				goChooseTag();
-	        			}
-	        		}
-	        		);
-			add10.setText("Add 10 minutes");
-	        add10.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				//Action:
-	        				//mSelectedTagString = mSelectedTag.getText().toString();
-	        				add10Minutes(mSelectedTagString);
-	        				updateContent();
-	        			}
-	        		}
-	        		);
-	        start.setText("Start");
-	        start.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				mChrono.setBase(SystemClock.elapsedRealtime());
-	        				//elapsedRealtime is time from device boot up.
-	        				mChrono.start(); 
-	        			}
-	        		}
-	        		);
-	        stop.setText("Stop");
-	        stop.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				mChrono.stop();
-	        			}
-	        		}
-	        		);
-	        mTag.setText(mTagString);
-			addTag.setText("Add tag");
-	        addTag.setOnClickListener(
-	        		new View.OnClickListener() {
-	        			public void onClick(View view) {
-	        				mTagString = mTag.getText().toString();
-	        				addTag(mTagString);
-	        				updateContent();
-	        			}
-	        		}
-	        		);
-			//ADD VIEWS
-	        layout.addView(chooseTag);
-	        layout.addView(mSelectedTag);
-			layout.addView(textViewSumMinutes);
-			layout.addView(add10);
-			layout.addView(mChrono);
-			layout.addView(start);
-			layout.addView(stop);
-			//layout.addView(mTag);
-			//layout.addView(addTag);
-			scrollLayout.addView(layout);
-			setContentView(scrollLayout);
-		}catch (Exception e){
-			Log.e("ERROR", "ERROR IN CODE: " + e.toString());
-			e.printStackTrace();
-		}
-	}
-	
-	public void updateContent2() {
+	public void updateContent() {
         //OTHER
 		mRowId = 1;
         Bundle extras = getIntent().getExtras();
