@@ -31,7 +31,7 @@ import android.widget.TextView;
 import android.os.Build;
 
 public class TimeAccumulatorActivity extends ActionBarActivity {
-
+	private static final int CHOOSE_TAG=0;
 	private DbHelper mDbHelper;
 	public String mSelectedTagString = "Android";
 	public TextView mSelectedTag;
@@ -91,7 +91,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public void goChooseTag(){
 		Intent intent = new Intent(this, ChooseTagActivity.class);
-	    startActivity(intent);
+		startActivity(intent);
+	    //startActivityForResult(intent, CHOOSE_TAG);
 	}
 	
 	@Override
@@ -112,6 +113,12 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        updateContent();
+    }
 
 	/**
 	 * A placeholder fragment containing a simple view.

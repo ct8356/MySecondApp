@@ -26,8 +26,8 @@ import android.widget.TextView;
 import android.os.Build;
 
 public class ChooseTagActivity extends ActionBarActivity {
-	
 	private DbHelper mDbHelper;
+	private static final int CREATE_TAG=0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +54,10 @@ public class ChooseTagActivity extends ActionBarActivity {
 				new SimpleCursorAdapter(this, R.layout.notes_row, cursor, from, to);
 		//Note, if use SCAdapter, have to use resources to define views.
 		listView.setAdapter(cursorAdapter); //This works. It takes data from cursor to fill list.
-		listView.setOnItemClickListener(
-				new AdapterView.OnItemClickListener() {
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	        			public void onItemClick(AdapterView l, View v, int position, long id) {
 	        				goTimeAccumulator(id);
-	        			}
-	        		}); //this not working yet. research.
+	        			}});
 		setContentView(listView);
 		mDbHelper.close(); //duh! this supposed to come AFTER cursor was used!
 	}
@@ -101,13 +99,27 @@ public class ChooseTagActivity extends ActionBarActivity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
+		switch (item.getItemId()) {
+			case R.id.action_settings:
+				return true;
+			case R.id.action_create:
+				goCreate();
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
     
+	public void goCreate(){
+		Intent intent = new Intent(this, CreateTagActivity.class);
+	    startActivityForResult(intent, CREATE_TAG);
+	}
+	
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        updateContent();
+    }
+	
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
