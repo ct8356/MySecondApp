@@ -32,11 +32,11 @@ import android.os.Build;
 
 public class TimeAccumulatorActivity extends ActionBarActivity {
 	private static final int CHOOSE_TAG=0;
+	private static final int START_SESSION=1;
 	private DbHelper mDbHelper;
 	public String mSelectedTagString = "Android";
 	public TextView mSelectedTag;
 	public String mTagString = "Android";
-	public EditText mTag;
 	public long mRowId;
 	//was getContext() ...
 	
@@ -79,20 +79,14 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		mDbHelper.close();
 	}
 	
-	public void addTag(String tag){
-		mDbHelper.openDatabase();	
-		try {
-			mDbHelper.insertTag(tag);
-		} catch (SQLiteConstraintException e) {
-			//Make pop saying "Tag already exists".
-		}
-		mDbHelper.close();
-	}
-	
 	public void goChooseTag(){
 		Intent intent = new Intent(this, ChooseTagActivity.class);
-		//startActivity(intent);
 	    startActivityForResult(intent, CHOOSE_TAG);
+	}
+	
+	public void goStartSession(){
+		Intent intent = new Intent(this, StartSessionActivity.class);
+	    startActivityForResult(intent, START_SESSION);
 	}
 	
 	@Override
@@ -148,8 +142,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			//TextView chosenTag = new TextView(this);
 			TextView textViewSumMinutes = new TextView(context);
 			Button add10 = new Button(context);
-			mTag = new EditText(context);
-			Button addTag = new Button(context);
+			Button startSession = new Button(context);
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
@@ -159,14 +152,14 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        chooseTag.setOnClickListener(new ChooseTagListener());
 			add10.setText("Add 10 minutes");
 	        add10.setOnClickListener(new add10Listener());
-	        mTag.setText(mTagString);
-			addTag.setText("Add tag");
-	        addTag.setOnClickListener(new addTagListener());
+	        startSession.setText("Start work session");
+	        startSession.setOnClickListener(new startSessionListener());
 			//ADD VIEWS
 	        layout.addView(chooseTag);
 	        layout.addView(mSelectedTag);
 			layout.addView(textViewSumMinutes);
 			layout.addView(add10);
+			layout.addView(startSession);
 			//layout.addView(mTag);
 			//layout.addView(addTag);
 			this.addView(layout);
@@ -186,11 +179,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		}
 	}
 	
-	public class addTagListener implements View.OnClickListener {
+	public class startSessionListener implements View.OnClickListener {
 		public void onClick(View view) {
-			mTagString = mTag.getText().toString();
-			addTag(mTagString);
-			updateContent();
+			goStartSession();
 		}
 	}
+	
 }

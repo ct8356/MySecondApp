@@ -19,16 +19,22 @@ import android.os.Build;
 
 public class StartSessionActivity extends ActionBarActivity {
 	private Chronometer mChrono;
-	
+	private Button start;
+	private Button pause;
+	private boolean stopped = false;
+	private long startTime;
+	private long elapsedTime;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_start_session);
-
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+		StartSessionLayout layout = new StartSessionLayout(this);
+		setContentView(layout);
+		mChrono.start();
+		//setContentView(R.layout.activity_start_session);
+		//if (savedInstanceState == null) {
+		//	getSupportFragmentManager().beginTransaction()
+		//			.add(R.id.container, new PlaceholderFragment()).commit();
+		//}
 	}
 
 	@Override
@@ -73,33 +79,64 @@ public class StartSessionActivity extends ActionBarActivity {
 			super(context);
 			//CREATE THE VIEWS
 			mChrono = new Chronometer(context);
-			Button start = new Button(context);
-			Button stop = new Button(context);
+			start = new Button(context);
+			pause = new Button(context);
+			Button reset = new Button(context);
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
 	        start.setText("Start");
 	        start.setOnClickListener(new startListener());
-	        stop.setText("Stop");
-	        stop.setOnClickListener(new stopListener());
+	        pause.setText("Stop");
+	        pause.setOnClickListener(new stopListener());
+	        pause.setVisibility(View.GONE);
+	        reset.setText("Reset");
+	        reset.setOnClickListener(new resetListener());
 			//ADD VIEWS
 			layout.addView(mChrono);
 			layout.addView(start);
-			layout.addView(stop);
+			layout.addView(pause);
+			layout.addView(reset);
+			this.addView(layout);
 		}
 	}
 			
-		public class startListener implements View.OnClickListener {
-			public void onClick(View view) {
+	public class startListener implements View.OnClickListener {
+		public void onClick(View view) {
+			start.setVisibility(View.GONE);
+			pause.setVisibility(View.VISIBLE);
+			if (stopped) {
+				mChrono.setBase(SystemClock.elapsedRealtime() - elapsedTime);
+				mChrono.start(); 
+				stopped = false;
+			} else {
 				mChrono.setBase(SystemClock.elapsedRealtime());
-				//elapsedRealtime is time from device boot up.
 				mChrono.start(); 
 			}
 		}
-		
-		public class stopListener implements View.OnClickListener {
-			public void onClick(View view) {
-				mChrono.stop();
-			}
+	}
+	
+	public class stopListener implements View.OnClickListener {
+		public void onClick(View view) {
+			mChrono.stop();
+			pause.setVisibility(View.GONE);
+			start.setVisibility(View.VISIBLE);
+			start.setText("Resume");
+			elapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
+			stopped = true;
 		}
+	}
+	
+	public class resetListener implements View.OnClickListener {
+		public void onClick(View view) {
+			mChrono.setBase(SystemClock.elapsedRealtime());
+			mChrono.stop();
+			pause.setVisibility(View.GONE);
+			start.setVisibility(View.VISIBLE);
+			start.setText("Start");
+			//elapsedRealtime is time from device boot up
+			stopped = false;
+		}
+	}
+	
 }

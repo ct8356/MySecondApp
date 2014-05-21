@@ -3,6 +3,7 @@ package com.ct8356.mysecondapp;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,10 +71,14 @@ public class CreateTagActivity extends ActionBarActivity {
         String tag = mTag.getText().toString();
         //if (mRowId == null) {
         mDbHelper.openDatabase();
-        long newId = mDbHelper.insertTag(tag);
-        if (newId > 0) {
-            mRowId = newId;
-        } //necessary?
+		try {
+			long newId = mDbHelper.insertTag(tag);
+	        if (newId > 0) {
+	            mRowId = newId;
+	        } //necessary?
+		} catch (SQLiteConstraintException e) {
+			//Make pop saying "Tag already exists".
+		}
         mDbHelper.close();
         //} else {
             //mDbHelper.updateNote(mRowId, title, body);

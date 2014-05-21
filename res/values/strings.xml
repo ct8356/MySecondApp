@@ -6,6 +6,8 @@
     <string name="action_create">Create</string>
     <string name="edit_message">Enter a message</string>
    	<string name="button_save_tag">Save tag</string>
+   	<string name="button_pause_resume">Pause/Resume</string>
+	<string name="button_stop_and_save">Stop session and save</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_time_accumulator">Time Accumulator</string>
     <string name="label_total_count">Total count:</string>
@@ -14,5 +16,5 @@
     <string name="title_activity_start_session">StartSessionActivity</string>
     <string name="title_activity_creata">CreataActivity</string>
 	<string name="text_enter_tag">Enter a tag name:</string>
-
+	<string name="text_session_length">Session length:</string>
 </resources>
