@@ -86,6 +86,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public void goStartSession(){
 		Intent intent = new Intent(this, StartSessionActivity.class);
+		intent.putExtra("tag", mSelectedTagString);
 	    startActivityForResult(intent, START_SESSION);
 	}
 	
@@ -111,7 +112,12 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        setIntent(intent);
+        switch (requestCode) {
+        case CHOOSE_TAG:
+        	setIntent(intent);
+        case START_SESSION:
+        	//Do not set intent.
+        }
         updateContent();
     }
 
