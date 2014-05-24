@@ -1,5 +1,6 @@
 package com.ct8356.mysecondapp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
@@ -34,10 +35,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	private static final int CHOOSE_TAG=0;
 	private static final int START_SESSION=1;
 	private DbHelper mDbHelper;
-	public String mSelectedTagString = "Android";
+	public List<String> mSelectedTags;
 	public TextView mSelectedTag;
-	public String mTagString = "Android";
-	public long mRowId;
+	public String mTags = "Android";
+	public List<String> mRowIds;
 	//was getContext() ...
 	
 	@Override
@@ -51,43 +52,45 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();	
+		//enterMockData();
 		updateContent();
+	}
+	
+	public void enterMockData() {
+		mDbHelper.openDatabase();
+		mDbHelper.insertTag("tag1");
+		mDbHelper.insertTag("tag2");
+		mDbHelper.close();
 	}
 	
 	public void updateContent() {
         //OTHER
-		mRowId = 1;
-        Bundle extras = getIntent().getExtras();
-        //mRowId = extras != null ? extras.getLong("tag") : null; //null pointer exception
-        if (extras != null) {
-        	mRowId = extras.getLong("tag");
-        }
+		mRowIds = new ArrayList<String>();
+		if (getIntent() != null) {
+			Bundle extras = getIntent().getExtras(); //Seems null intent is passed,
+			if (extras != null) {
+	        	mRowIds.add(extras.getString("tag"));
+	        } else {
+	    		mRowIds.add("1"); // FUDGE
+	        }
+		}//when press back from chooseTagAct.
 		//DO DATABASE STUFF
 		mDbHelper.openDatabase();
-		mSelectedTagString = mDbHelper.getTag(mRowId);
-		int sumMinutes = mDbHelper.sumMinutes(mSelectedTagString);
-		mDbHelper.close();
+		mSelectedTags = mDbHelper.getTags(mRowIds); //It works I believe!
+		int sumMinutes = mDbHelper.sumMinutes(mSelectedTags);
+		//it seems you can't look into contents of cursor.
+		//but could take an array from it.
+		mDbHelper.close();										
 		//CREATE THE VIEWS
-		TAALayout scrollLayout = new TAALayout(this,sumMinutes);
+		TAALayout scrollLayout = new TAALayout(this, sumMinutes);
 		setContentView(scrollLayout);
 	}
 	
-	public void add10Minutes(String projectName){
+	public void add10Minutes(List<String> projectName){
 		mDbHelper.openDatabase();
 		int minutes = 10;
-		mDbHelper.insertRecord(projectName, minutes);
+		mDbHelper.insertRecord(minutes, mSelectedTags);  //HARDCODE
 		mDbHelper.close();
-	}
-	
-	public void goChooseTag(){
-		Intent intent = new Intent(this, ChooseTagActivity.class);
-	    startActivityForResult(intent, CHOOSE_TAG);
-	}
-	
-	public void goStartSession(){
-		Intent intent = new Intent(this, StartSessionActivity.class);
-		intent.putExtra("tag", mSelectedTagString);
-	    startActivityForResult(intent, START_SESSION);
 	}
 	
 	@Override
@@ -114,7 +117,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (requestCode) {
         case CHOOSE_TAG:
-        	setIntent(intent);
+        	setIntent(intent); //Error here, because intent is not complete. has null.
         case START_SESSION:
         	//Do not set intent.
         }
@@ -145,14 +148,15 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			//CREATE THE VIEWS
 			Button chooseTag = new Button(context);
 			mSelectedTag = new TextView(context);
-			//TextView chosenTag = new TextView(this);
+			Button addTag = new Button(context);
 			TextView textViewSumMinutes = new TextView(context);
 			Button add10 = new Button(context);
 			Button startSession = new Button(context);
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
-			mSelectedTag.setText("Chosen tag: " + mSelectedTagString);
+			mSelectedTag.setText("Chosen tag: " + mSelectedTags);
+			//Cool. Can put List<String> in String, comes out in brackets.
 			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
 			chooseTag.setText("Choose tag");
 	        chooseTag.setOnClickListener(new ChooseTagListener());
@@ -174,20 +178,24 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public class ChooseTagListener implements View.OnClickListener {
 		public void onClick(View view) {
-			goChooseTag();
+			Intent intent = new Intent(TimeAccumulatorActivity.this, ChooseTagActivity.class);
+		    startActivityForResult(intent, CHOOSE_TAG);
 		}
 	}
 
 	public class add10Listener implements View.OnClickListener {
 		public void onClick(View view) {
-			add10Minutes(mSelectedTagString);
+			add10Minutes(mSelectedTags);
 			updateContent();
 		}
 	}
 	
 	public class startSessionListener implements View.OnClickListener {
 		public void onClick(View view) {
-			goStartSession();
+			Intent intent = new Intent(TimeAccumulatorActivity.this, 
+					StartSessionActivity.class);
+			intent.putExtra("tag", "tag1"); //HARDCODE
+		    startActivityForResult(intent, START_SESSION);
 		}
 	}
 	

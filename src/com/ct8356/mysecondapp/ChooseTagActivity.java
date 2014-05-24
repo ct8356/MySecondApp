@@ -83,12 +83,22 @@ public class ChooseTagActivity extends ActionBarActivity {
 	
 	public void goTimeAccumulator(long id) {
 		Intent intent = new Intent();
-		intent.putExtra("tag", id);
-	    //startActivity(intent);
+		intent.putExtra("tag", String.valueOf(id)); 
+		//it seems the intent has a null... try HARDCODE as STRING?
 		setResult(RESULT_OK, intent);
 		finish();
 	}
 	
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+    
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

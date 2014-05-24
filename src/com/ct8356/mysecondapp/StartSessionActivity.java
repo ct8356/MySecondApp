@@ -1,5 +1,8 @@
 package com.ct8356.mysecondapp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -28,7 +31,7 @@ public class StartSessionActivity extends ActionBarActivity {
 	private boolean stopped = false;
 	private long startTime;
 	private long mElapsedTime;
-	private String mSelectedTagString;
+	private String mSelectedTags;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class StartSessionActivity extends ActionBarActivity {
 		mDbHelper = new DbHelper(this);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-        	mSelectedTagString = extras.getString("tag");
+        	mSelectedTags = extras.getString("tag");
         }
 		mChrono.start();
 		//setContentView(R.layout.activity_start_session);
@@ -77,7 +80,9 @@ public class StartSessionActivity extends ActionBarActivity {
     private void saveState() {
         mDbHelper.openDatabase();
     	int mins = (int)((mElapsedTime/1000)/60); //CBTL Turn it to minutes
-        mDbHelper.insertRecord(mSelectedTagString, mins);
+    	List<String> mSelectedTagsList = new ArrayList<String>();
+    	mSelectedTagsList.add(mSelectedTags);
+        mDbHelper.insertRecord(mins, mSelectedTagsList); //BOTCH
         mDbHelper.close();
      }
 
