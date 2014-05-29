@@ -33,7 +33,8 @@ import android.os.Build;
 
 public class TimeAccumulatorActivity extends ActionBarActivity {
 	private static final int CHOOSE_TAG=0;
-	private static final int START_SESSION=1;
+	private static final int ADD_TAG=1;
+	private static final int START_SESSION=2;
 	private DbHelper mDbHelper;
 	public List<String> mSelectedTags;
 	public TextView mSelectedTag;
@@ -46,14 +47,15 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		//Gets the data repository in write mode
 		mDbHelper = new DbHelper(this);
-		updateContent();
+		mRowIds = new ArrayList<String>();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();	
 		//enterMockData();
-		updateContent();
+		updateContent(); //Not sure should do this here...
+		//but if do do it here, don't do it in onCreate or onActivityResult().
 	}
 	
 	public void enterMockData() {
@@ -64,16 +66,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	public void updateContent() {
-        //OTHER
-		mRowIds = new ArrayList<String>();
-		if (getIntent() != null) {
-			Bundle extras = getIntent().getExtras(); //Seems null intent is passed,
-			if (extras != null) {
-	        	mRowIds.add(extras.getString("tag"));
-	        } else {
-	    		mRowIds.add("1"); // FUDGE
-	        }
-		}//when press back from chooseTagAct.
 		//DO DATABASE STUFF
 		mDbHelper.openDatabase();
 		mSelectedTags = mDbHelper.getTags(mRowIds); //It works I believe!
@@ -118,10 +110,27 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
         switch (requestCode) {
         case CHOOSE_TAG:
         	setIntent(intent); //Error here, because intent is not complete. has null.
+			Bundle extras = getIntent().getExtras(); //Seems null intent is passed,
+			if (extras != null) {
+				mRowIds.clear();
+	        	mRowIds.add(extras.getString("tag"));
+	        } else {
+	    		mRowIds.add("1"); //
+	        }
+			break;
+        case ADD_TAG:
+        	setIntent(intent);
+        	extras = intent.getExtras();
+        	List<String> selectedTags = extras.getStringArrayList("tags");
+        	mDbHelper = new DbHelper(this);
+        	mDbHelper.openDatabase();
+        	mRowIds = mDbHelper.getTagIds(selectedTags); //causes issue
+        	mDbHelper.close();
+        	break;
         case START_SESSION:
         	//Do not set intent.
+        	break;
         }
-        updateContent();
     }
 
 	/**
@@ -160,6 +169,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
 			chooseTag.setText("Choose tag");
 	        chooseTag.setOnClickListener(new ChooseTagListener());
+	        addTag.setText("Choose another tag");
+	        addTag.setOnClickListener(new AddTagListener());
 			add10.setText("Add 10 minutes");
 	        add10.setOnClickListener(new add10Listener());
 	        startSession.setText("Start work session");
@@ -167,6 +178,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			//ADD VIEWS
 	        layout.addView(chooseTag);
 	        layout.addView(mSelectedTag);
+	        layout.addView(addTag);
 			layout.addView(textViewSumMinutes);
 			layout.addView(add10);
 			layout.addView(startSession);
@@ -177,9 +189,18 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	public class ChooseTagListener implements View.OnClickListener {
+		//Note, purpose of choose tag, is it allows you to choose single tag quickly.
+		//No need to delete (it is like "delete and add" button).
 		public void onClick(View view) {
 			Intent intent = new Intent(TimeAccumulatorActivity.this, ChooseTagActivity.class);
 		    startActivityForResult(intent, CHOOSE_TAG);
+		}
+	}
+	
+	public class AddTagListener implements View.OnClickListener {
+		public void onClick(View view) {
+			Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
+		    startActivityForResult(intent, ADD_TAG);
 		}
 	}
 

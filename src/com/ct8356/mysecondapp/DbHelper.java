@@ -139,37 +139,41 @@ public class DbHelper extends SQLiteOpenHelper {
 	public Cursor getTagsCursor(List<String> rowIds) {
 	  	String[] rowIdsSA = new String[rowIds.size()];
 	  	rowIds.toArray(rowIdsSA);
+		String tagIdsString = join(rowIds, ",");
+		String selectionString = Tags._ID + " IN("+tagIdsString+")"; 
 		Cursor cursor = mDb.query(
 	    		true, 
 	    		Tags.TABLE_NAME, 
 	    		new String[] {Tags._ID, Tags.TAG}, 
-	    		"_id = ?", // Potential ISSUE here, was "columnName = x".
-	            rowIdsSA, 
+	    		selectionString, 
+	    		null, 
 	            null, null, null, null
-	            ); //ISSUE HERE?
+	            ); //Also needs IN().
     	return cursor;
 	}
 	
 	public List<String> getTagIds(List<String> tags) {
 		Cursor cursor = getTagIdsCursor(tags);
-		List<String> ids = new ArrayList<String>(); //ahah, because List is abstract!
+		List<String> tagIds = new ArrayList<String>(); //ahah, because List is abstract!
     	while (cursor.moveToNext()){
-    		ids.add(cursor.getString(cursor.getColumnIndexOrThrow(Tags._ID)));
+    		tagIds.add(cursor.getString(cursor.getColumnIndexOrThrow(Tags._ID)));
     	}
-    	return ids;
+    	return tagIds;
 	}
     
 	public Cursor getTagIdsCursor(List<String> tags) {
 		String[] tagsSA = new String[tags.size()]; 
 		tags.toArray(tagsSA);
+		String tagsString = join(tags, "','");
+		String selectionString = Tags.TAG + " IN('"+tagsString+"')"; 
     	Cursor cursor = mDb.query(
 	    		true, 
 	    		Tags.TABLE_NAME, 
 	    		new String[] {Tags._ID, Tags.TAG}, 
-	     		Tags.TAG + " = ?", // Potential ISSUE here, was "columnName = x".
-	    		tagsSA,
+	     		selectionString,
+	    		null, 
 	    		null, null, null, null
-	            );
+	            ); //Needs IN().
     	return cursor;
 	}
 	
@@ -237,14 +241,16 @@ public class DbHelper extends SQLiteOpenHelper {
 	public Cursor getTimeEntryIdsCursor(List<String> tagIds) {
 		String[] tagIdsSA = new String[tagIds.size()]; 
 		tagIds.toArray(tagIdsSA);
+		String tagIdsString = join(tagIds, ",");
+		String selectionString = MinutesToTagJoins.TAGID + " IN("+tagIdsString+")"; 
 		Cursor cursor = mDb.query(
 	    		true, 
 	    		MinutesToTagJoins.TABLE_NAME, 
 	    		new String[] {MinutesToTagJoins._ID, MinutesToTagJoins.MINUTESID, MinutesToTagJoins.TAGID}, 
-	    		MinutesToTagJoins.TAGID + " = ?", //Duh, should have been TAGID, not MINUTESID
-	    		tagIdsSA,
+	    		selectionString,
+	    		null,
 	    		null, null, null, null
-	            );
+	            ); //ALSO needs IN(),
 		return cursor;
 	}
 	
