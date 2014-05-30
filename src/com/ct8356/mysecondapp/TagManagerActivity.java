@@ -45,11 +45,22 @@ public class TagManagerActivity extends ActionBarActivity {
     public CustomAdapter mCustomAdapter;
     private ListView mListView;
 	
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        updateContent(); //is this right place to do this? or onResume?
+    }
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDbHelper = new DbHelper(this);
 		mCustomAdapter = new CustomAdapter();
+
+		updateContent();
+	}
+	
+	public void updateContent() {
 		mTagIds = new ArrayList<String>();
 		mTagNames = new ArrayList<String>();
 		mCheckedTagIds = new ArrayList<String>();
@@ -75,10 +86,6 @@ public class TagManagerActivity extends ActionBarActivity {
 		}
 		mDbHelper.close();
 		//OTHER
-		updateContent();
-	}
-	
-	public void updateContent() {
 		mListView = new ListView(this);
 		//Ahah, remember, if want to get from XML, often need to inflate it!
 		mListView.setAdapter(mCustomAdapter);
