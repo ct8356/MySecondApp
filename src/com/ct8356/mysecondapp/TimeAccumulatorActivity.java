@@ -51,6 +51,11 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	@Override
+	protected void onStart() {
+		super.onStart();	
+	}
+	
+	@Override
 	protected void onResume() {
 		super.onResume();	
 		//enterMockData();
@@ -107,29 +112,36 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        switch (requestCode) {
-        case CHOOSE_TAG:
-        	setIntent(intent); //Error here, because intent is not complete. has null.
-			Bundle extras = getIntent().getExtras(); //Seems null intent is passed,
-			if (extras != null) {
-				mRowIds.clear();
-	        	mRowIds.add(extras.getString("tag"));
-	        } else {
-	    		mRowIds.add("1"); //
+        switch (resultCode) {
+        case RESULT_CANCELED:
+        	//Do nothing
+        	break;
+        case RESULT_OK:
+	        switch (requestCode) {
+	        case CHOOSE_TAG:
+	        	setIntent(intent); //Error here, because intent is not complete. has null.
+				Bundle extras = getIntent().getExtras(); //Seems null intent is passed,
+				if (extras != null) {
+					mRowIds.clear();
+		        	mRowIds.add(extras.getString("tag"));
+		        } else {
+		    		mRowIds.add("1"); //
+		        }
+				break;
+	        case ADD_TAG:
+	        	setIntent(intent);
+	        	extras = intent.getExtras();
+	        	List<String> selectedTags = extras.getStringArrayList("tags");
+	        	mDbHelper = new DbHelper(this);
+	        	mDbHelper.openDatabase();
+	        	mRowIds = mDbHelper.getTagIds(selectedTags); //causes issue
+	        	mDbHelper.close();
+	        	break;
+	        case START_SESSION:
+	        	//Do not set intent.
+	        	break;
 	        }
-			break;
-        case ADD_TAG:
-        	setIntent(intent);
-        	extras = intent.getExtras();
-        	List<String> selectedTags = extras.getStringArrayList("tags");
-        	mDbHelper = new DbHelper(this);
-        	mDbHelper.openDatabase();
-        	mRowIds = mDbHelper.getTagIds(selectedTags); //causes issue
-        	mDbHelper.close();
-        	break;
-        case START_SESSION:
-        	//Do not set intent.
-        	break;
+	        break;
         }
     }
 
