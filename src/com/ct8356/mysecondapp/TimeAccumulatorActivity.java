@@ -57,7 +57,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	@Override
 	protected void onResume() {
-		super.onResume();	
+		super.onResume();
 		//enterMockData();
 		updateContent(); //Not sure should do this here...
 		//but if do do it here, don't do it in onCreate or onActivityResult().

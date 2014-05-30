@@ -77,10 +77,12 @@ public class TagManagerActivity extends ActionBarActivity {
 	}
 	
 	public void toggle(int position) {
-		boolean[] checked = mChecked;
 		mChecked[position] = !mChecked[position];
-		checked = mChecked;
-		View view = mListView.getChildAt(position);
+		//View view = mListView.getSelectedView(); //Doesn't work.
+		int index = position - mListView.getFirstVisiblePosition();
+		View view = mListView.getChildAt(index); //its coz getChildAt takes index, not pos!
+		//Yep, I found how to use it, but did not read it properly. Assumed it took position.
+		//Ahah, also, the intellisense is quite misleading. It talks about "position".
 		mListView.getAdapter().getView(position, view, mListView);
 	}
 	

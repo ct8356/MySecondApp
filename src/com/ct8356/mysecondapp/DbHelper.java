@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	//may as well use it. Means I have to have SQLiteOpenHelper and SQLiteDatabase,
 	//But oh well.
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
     public static final String DATABASE_NAME = "Minutes.db";
     public SQLiteDatabase mDb;
     
