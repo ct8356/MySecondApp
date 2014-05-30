@@ -212,7 +212,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	public class AddTagListener implements View.OnClickListener {
 		public void onClick(View view) {
 			Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
-		    startActivityForResult(intent, ADD_TAG);
+			intent.putStringArrayListExtra("tags", (ArrayList<String>) mSelectedTags); 
+			startActivityForResult(intent, ADD_TAG);
 		}
 	}
 

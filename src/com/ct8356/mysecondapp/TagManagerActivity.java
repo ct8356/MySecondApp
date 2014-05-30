@@ -36,7 +36,10 @@ import android.widget.AbsListView;
 public class TagManagerActivity extends ActionBarActivity {
 	private DbHelper mDbHelper;
 	private static final int CREATE_TAG=0;
+	private List<String> mTagIds;
 	private List<String> mTagNames;
+	private List<String> mCheckedTagIds;
+	private List<String> mCheckedTags;
 	private List<Boolean> mItemCheckedQ = new ArrayList<Boolean>();
     private boolean[] mChecked;
     public CustomAdapter mCustomAdapter;
@@ -46,28 +49,38 @@ public class TagManagerActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDbHelper = new DbHelper(this);
+		mCustomAdapter = new CustomAdapter();
+		mTagIds = new ArrayList<String>();
+		mTagNames = new ArrayList<String>();
+		mCheckedTagIds = new ArrayList<String>();
+		Bundle extras = getIntent().getExtras();
+		mCheckedTags = extras.getStringArrayList("tags");
 		//DO DATABASE STUFF
 		mDbHelper.openDatabase();
-		Cursor cursor = mDbHelper.getCursorTags();
-		mTagNames = new ArrayList<String>();
+		Cursor cursor = mDbHelper.getCursorTags(); //Obviously, this can be neatened!
+        mChecked = new boolean[cursor.getCount()];
 		while (cursor.moveToNext()) {
+			//now make it so mCheckedTagIds gets filled correctly.
+			mTagIds.add(cursor.getString(cursor.getColumnIndex(Tags._ID)));
 			mTagNames.add(cursor.getString(cursor.getColumnIndex(Tags.TAG)));
+			if (mCheckedTags.contains(mTagNames.get(cursor.getPosition()))) { 
+				//If a match, then
+				mCheckedTagIds.add(mTagIds.get(cursor.getPosition()));
+				//add to Checked ids.
+				mChecked[cursor.getPosition()] = true;
+				//set checked to true.
+			} else { // Now make mChecked match this...
+				mChecked[cursor.getPosition()] = false;
+			}
 		}
 		mDbHelper.close();
 		//OTHER
-		mCustomAdapter = new CustomAdapter();
-        mChecked = new boolean[mCustomAdapter.getCount()];
-        for(int i=0; i<mChecked.length; i++){
-            mChecked[i]=false;
-        }
 		updateContent();
 	}
 	
 	public void updateContent() {
 		mListView = new ListView(this);
 		//Ahah, remember, if want to get from XML, often need to inflate it!
-		Button done = new Button(this);
-		done.setText("Done");
 		mListView.setAdapter(mCustomAdapter);
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	        			public void onItemClick(AdapterView l, View v, int position, long id) {
