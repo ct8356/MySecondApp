@@ -38,7 +38,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	private DbHelper mDbHelper;
 	public List<String> mSelectedTags;
 	public TextView mSelectedTagsText;
-	public String mTags = "Android";
 	public List<String> mRowIds;
 	//was getContext() ...
 	

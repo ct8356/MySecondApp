@@ -41,7 +41,7 @@ public class ChooseTagActivity extends ActionBarActivity {
 		//Do database stuff
 		mDbHelper.openDatabase();
 		Cursor cursor;
-		cursor = mDbHelper.getCursorTags();
+		cursor = mDbHelper.getAllTagsCursor();
 		//MAKE VIEWS
 		ListView listView = new ListView(this);
         startManagingCursor(cursor);
@@ -62,24 +62,24 @@ public class ChooseTagActivity extends ActionBarActivity {
 		mDbHelper.close(); //duh! this supposed to come AFTER cursor was used!
 	}
 	
-	public void updateContent2() {
-		//Do database stuff
-		mDbHelper.openDatabase();
-		Cursor cursor;
-		cursor = mDbHelper.getRawCursor();
-		String stringTag = "Tags:";
-		int count = cursor.getCount();
-		while (cursor.moveToNext()) {
-			stringTag += cursor.getString(1);
-		}
-		mDbHelper.close();
-		//MAKE VIEWS
-		TextView textView1 = new TextView(this);
-		LinearLayout layout = new LinearLayout(this);
-		textView1.setText(stringTag);
-		layout.addView(textView1);
-		setContentView(layout);
-	}
+//	public void updateContent2() {
+//		//Do database stuff
+//		mDbHelper.openDatabase();
+//		Cursor cursor;
+//		cursor = mDbHelper.getRawCursor();
+//		String stringTag = "Tags:";
+//		int count = cursor.getCount();
+//		while (cursor.moveToNext()) {
+//			stringTag += cursor.getString(1);
+//		}
+//		mDbHelper.close();
+//		//MAKE VIEWS
+//		TextView textView1 = new TextView(this);
+//		LinearLayout layout = new LinearLayout(this);
+//		textView1.setText(stringTag);
+//		layout.addView(textView1);
+//		setContentView(layout);
+//	}
 	
 	public void goTimeAccumulator(long id) {
 		Intent intent = new Intent();

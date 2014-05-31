@@ -18,6 +18,7 @@
             android:label="@string/title_activity_time_accumulator" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -45,6 +46,14 @@
         <activity
             android:name="com.ct8356.mysecondapp.TagManagerActivity"
             android:label="@string/title_activity_tag_manager"
+            android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
+            android:label="@string/title_activity_time_entry_manager"
             android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

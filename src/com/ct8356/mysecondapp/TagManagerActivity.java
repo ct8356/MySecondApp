@@ -56,7 +56,6 @@ public class TagManagerActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		mDbHelper = new DbHelper(this);
 		mCustomAdapter = new CustomAdapter();
-
 		updateContent();
 	}
 	
@@ -68,7 +67,7 @@ public class TagManagerActivity extends ActionBarActivity {
 		mCheckedTags = extras.getStringArrayList("tags");
 		//DO DATABASE STUFF
 		mDbHelper.openDatabase();
-		Cursor cursor = mDbHelper.getCursorTags(); //Obviously, this can be neatened!
+		Cursor cursor = mDbHelper.getAllTagsCursor(); //Obviously, this can be neatened!
         mChecked = new boolean[cursor.getCount()];
 		while (cursor.moveToNext()) {
 			//now make it so mCheckedTagIds gets filled correctly.
@@ -84,6 +83,7 @@ public class TagManagerActivity extends ActionBarActivity {
 				mChecked[cursor.getPosition()] = false;
 			}
 		}
+		//mTagIds = mDbHelper.
 		mDbHelper.close();
 		//OTHER
 		mListView = new ListView(this);
@@ -157,7 +157,7 @@ public class TagManagerActivity extends ActionBarActivity {
 	private class CustomAdapter extends BaseAdapter {
 	    public int getCount() {
 			mDbHelper.openDatabase();
-			Cursor cursor = mDbHelper.getCursorTags();
+			Cursor cursor = mDbHelper.getAllTagsCursor();
 			int count = cursor.getCount();
 			mDbHelper.close();
 			return count;

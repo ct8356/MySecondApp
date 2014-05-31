@@ -1204,14 +1204,16 @@ containing a value of this type.
         public static final int activity_start_session=0x7f03001a;
         public static final int activity_tag_manager=0x7f03001b;
         public static final int activity_time_accumulator=0x7f03001c;
-        public static final int fragment_choose_tag=0x7f03001d;
-        public static final int fragment_create_tag=0x7f03001e;
-        public static final int fragment_start_session=0x7f03001f;
-        public static final int fragment_tag_manager=0x7f030020;
-        public static final int fragment_time_accumulator=0x7f030021;
-        public static final int notes_row=0x7f030022;
-        public static final int row_tag_manager=0x7f030023;
-        public static final int support_simple_spinner_dropdown_item=0x7f030024;
+        public static final int activity_time_entry_manager=0x7f03001d;
+        public static final int fragment_choose_tag=0x7f03001e;
+        public static final int fragment_create_tag=0x7f03001f;
+        public static final int fragment_start_session=0x7f030020;
+        public static final int fragment_tag_manager=0x7f030021;
+        public static final int fragment_time_accumulator=0x7f030022;
+        public static final int fragment_time_entry_manager=0x7f030023;
+        public static final int notes_row=0x7f030024;
+        public static final int row_tag_manager=0x7f030025;
+        public static final int support_simple_spinner_dropdown_item=0x7f030026;
     }
     public static final class menu {
         public static final int choose_tag=0x7f0c0000;
@@ -1219,6 +1221,7 @@ containing a value of this type.
         public static final int start_session=0x7f0c0002;
         public static final int tag_manager=0x7f0c0003;
         public static final int time_accumulator=0x7f0c0004;
+        public static final int time_entry_manager=0x7f0c0005;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1279,6 +1282,7 @@ containing a value of this type.
         public static final int title_activity_start_session=0x7f0a001a;
         public static final int title_activity_tag_manager=0x7f0a001e;
         public static final int title_activity_time_accumulator=0x7f0a0016;
+        public static final int title_activity_time_entry_manager=0x7f0a001f;
     }
     public static final class style {
         /** 
