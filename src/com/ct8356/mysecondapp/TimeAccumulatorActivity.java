@@ -37,7 +37,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	private static final int START_SESSION=2;
 	private DbHelper mDbHelper;
 	public List<String> mSelectedTags;
-	public TextView mSelectedTag;
+	public TextView mSelectedTagsText;
 	public String mTags = "Android";
 	public List<String> mRowIds;
 	//was getContext() ...
@@ -167,45 +167,41 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		public TAALayout(Context context, int sumMinutes) {
 			super(context);
 			//CREATE THE VIEWS
-			Button chooseTag = new Button(context);
-			mSelectedTag = new TextView(context);
-			Button addTag = new Button(context);
+			Button removeTags = new Button(context);
+			mSelectedTagsText = new TextView(context);
+			Button addTags = new Button(context);
 			TextView textViewSumMinutes = new TextView(context);
 			Button add10 = new Button(context);
 			Button startSession = new Button(context);
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
-			mSelectedTag.setText("Chosen tag: " + mSelectedTags);
+			mSelectedTagsText.setText("Chosen tags: " + mSelectedTags);
 			//Cool. Can put List<String> in String, comes out in brackets.
 			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
-			chooseTag.setText("Choose tag");
-	        chooseTag.setOnClickListener(new ChooseTagListener());
-	        addTag.setText("Choose another tag");
-	        addTag.setOnClickListener(new AddTagListener());
+			removeTags.setText("Deselect tags");
+	        removeTags.setOnClickListener(new RemoveTagsListener());
+	        addTags.setText("Select tags");
+	        addTags.setOnClickListener(new AddTagListener());
 			add10.setText("Add 10 minutes");
 	        add10.setOnClickListener(new add10Listener());
 	        startSession.setText("Start work session");
 	        startSession.setOnClickListener(new startSessionListener());
 			//ADD VIEWS
-	        layout.addView(chooseTag);
-	        layout.addView(mSelectedTag);
-	        layout.addView(addTag);
+	        layout.addView(removeTags);
+	        layout.addView(mSelectedTagsText);
+	        layout.addView(addTags);
 			layout.addView(textViewSumMinutes);
 			layout.addView(add10);
 			layout.addView(startSession);
-			//layout.addView(mTag);
-			//layout.addView(addTag);
 			this.addView(layout);
 		}
 	}
 	
-	public class ChooseTagListener implements View.OnClickListener {
-		//Note, purpose of choose tag, is it allows you to choose single tag quickly.
-		//No need to delete (it is like "delete and add" button).
+	public class RemoveTagsListener implements View.OnClickListener {
 		public void onClick(View view) {
-			Intent intent = new Intent(TimeAccumulatorActivity.this, ChooseTagActivity.class);
-		    startActivityForResult(intent, CHOOSE_TAG);
+			mRowIds.clear();
+			updateContent();
 		}
 	}
 	
