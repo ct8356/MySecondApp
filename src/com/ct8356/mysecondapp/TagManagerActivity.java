@@ -1,6 +1,7 @@
 package com.ct8356.mysecondapp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Tags;
@@ -13,10 +14,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -35,20 +39,52 @@ import android.widget.AbsListView;
 
 public class TagManagerActivity extends ActionBarActivity {
 	private DbHelper mDbHelper;
-	private static final int CREATE_TAG=0;
-	private List<String> mTagIds;
-	private List<String> mTagNames;
-	private List<String> mCheckedTagIds;
-	private List<String> mCheckedTags;
-	private List<Boolean> mItemCheckedQ = new ArrayList<Boolean>();
-    private boolean[] mChecked;
+	private static final int CREATE_TAG = 0;
+	private static final int EDIT_TAG = Menu.FIRST;;
+	private static final int DELETE_TAG = Menu.FIRST + 1;;
+	//private List<String> mTagIds;
+	private List<String> mTagNames; //a key variable. it is called by getItem().
+	//private List<String> mCheckedTagIds;
+	//private List<String> mCheckedTags; //Just a translation variable. Can be local.
+	private List<Boolean> mChecked; //a key variable. Called by getView().
     public CustomAdapter mCustomAdapter;
     private ListView mListView;
+
+	public List<String> getCheckedTags() { 
+		//now this is only called once at end, when needed.
+		//and, one less member variable.
+		List<String> checkedTags = new ArrayList<String>();
+		for (int i=0; i<mTagNames.size(); i+=1) {
+			if (mChecked.get(i)) {
+				checkedTags.add(mTagNames.get(i));
+			}
+		}
+		return checkedTags;
+	}
+
+	public void goHome() {
+		Intent intent = new Intent();
+		List<String> checkedTags = getCheckedTags();
+		intent.putStringArrayListExtra("tags", (ArrayList<String>) checkedTags); 
+		setResult(RESULT_OK, intent);
+		finish();
+	}
+	
+	public void goCreateTag() {
+		Intent intent = new Intent(this, CreateTagActivity.class);
+	    startActivityForResult(intent, CREATE_TAG);
+	}
+	
+	public void goEditTag(Long rowId) {
+		Intent intent = new Intent(this, CreateTagActivity.class);
+		intent.putExtra(Tags._ID, rowId); 
+	    startActivityForResult(intent, CREATE_TAG);
+	}
 	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        updateContent(); //is this right place to do this? or onResume?
+        updateMTagNames();
     }
     
 	@Override
@@ -56,56 +92,11 @@ public class TagManagerActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		mDbHelper = new DbHelper(this);
 		mCustomAdapter = new CustomAdapter();
-		updateContent();
+		initialiseMemberVariables();
+		initialiseContent();
+		registerForContextMenu(mListView);
 	}
-	
-	public void updateContent() {
-		mTagIds = new ArrayList<String>();
-		mTagNames = new ArrayList<String>();
-		mCheckedTagIds = new ArrayList<String>();
-		Bundle extras = getIntent().getExtras();
-		mCheckedTags = extras.getStringArrayList("tags");
-		//DO DATABASE STUFF
-		mDbHelper.openDatabase();
-		Cursor cursor = mDbHelper.getAllTagsCursor(); //Obviously, this can be neatened!
-        mChecked = new boolean[cursor.getCount()];
-		while (cursor.moveToNext()) {
-			//now make it so mCheckedTagIds gets filled correctly.
-			mTagIds.add(cursor.getString(cursor.getColumnIndex(Tags._ID)));
-			mTagNames.add(cursor.getString(cursor.getColumnIndex(Tags.TAG)));
-			if (mCheckedTags.contains(mTagNames.get(cursor.getPosition()))) { 
-				//If a match, then
-				mCheckedTagIds.add(mTagIds.get(cursor.getPosition()));
-				//add to Checked ids.
-				mChecked[cursor.getPosition()] = true;
-				//set checked to true.
-			} else { // Now make mChecked match this...
-				mChecked[cursor.getPosition()] = false;
-			}
-		}
-		//mTagIds = mDbHelper.
-		mDbHelper.close();
-		//OTHER
-		mListView = new ListView(this);
-		//Ahah, remember, if want to get from XML, often need to inflate it!
-		mListView.setAdapter(mCustomAdapter);
-		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	        			public void onItemClick(AdapterView l, View v, int position, long id) {
-	        				toggle(position);	
-	        			}});
-		setContentView(mListView);	
-	}
-	
-	public void toggle(int position) {
-		mChecked[position] = !mChecked[position];
-		//View view = mListView.getSelectedView(); //Doesn't work.
-		int index = position - mListView.getFirstVisiblePosition();
-		View view = mListView.getChildAt(index); //its coz getChildAt takes index, not pos!
-		//Yep, I found how to use it, but did not read it properly. Assumed it took position.
-		//Ahah, also, the intellisense is quite misleading. It talks about "position".
-		mListView.getAdapter().getView(position, view, mListView);
-	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -131,27 +122,76 @@ public class TagManagerActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public ArrayList<String> getCheckedTags() {
-		ArrayList<String> checkedTags = new ArrayList<String>();
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0, EDIT_TAG, 0, R.string.menu_edit);
+        menu.add(0, DELETE_TAG, 0, R.string.menu_delete);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        List<String> tag = Arrays.asList(mTagNames.get(info.position));
+        //Ok since don't need to add() to this list.
+        mDbHelper.openDatabase();
+        Long rowId = Long.valueOf(mDbHelper.getTagIds(tag).get(0));
+    	switch(item.getItemId()) {
+        case EDIT_TAG:
+            goEditTag(rowId);
+            return true;
+        case DELETE_TAG:
+            mDbHelper.deleteTagAndJoins(rowId);
+            updateMTagNames(); //not enough. Must alertmListView?
+            mCustomAdapter.notifyDataSetChanged();
+            //mListView.invalidate(); //still not not enough. Must first alert listView of dataChange?
+            return true;
+        }
+        mDbHelper.close();
+        return super.onContextItemSelected(item);
+    }
+
+	public void initialiseContent() {
+		//OTHER
+		mListView = new ListView(this);
+		//Ahah, remember, if want to get from XML, often need to inflate it!
+		mListView.setAdapter(mCustomAdapter);
+		mListView.setOnItemClickListener(new OnItemClickListener());
+		setContentView(mListView);	
+	}
+	
+	public void initialiseMemberVariables() {
+		mTagNames = new ArrayList<String>();
+		Bundle extras = getIntent().getExtras();
+		List<String> checkedTags = extras.getStringArrayList("tags");
+		mChecked = new ArrayList<Boolean>();
+		//DO DATABASE STUFF
+		mDbHelper.openDatabase();
+		mTagNames = mDbHelper.getAllTags(Tags.TAG);
 		for (int i=0; i<mTagNames.size(); i+=1) {
-			if (mChecked[i]) {
-				checkedTags.add(mTagNames.get(i));
+			if (checkedTags.contains(mTagNames.get(i))) {
+				mChecked.add(true);
+			} else {
+				mChecked.add(false);
 			}
 		}
-		return checkedTags;
+		mDbHelper.close();
 	}
 	
-	public void goHome() {
-		Intent intent = new Intent();
-		ArrayList<String> checkedTags = getCheckedTags();
-		intent.putStringArrayListExtra("tags", checkedTags); 
-		setResult(RESULT_OK, intent);
-		finish();
+	public void updateMTagNames() {
+		mTagNames = new ArrayList<String>();
+		mDbHelper.openDatabase();
+		mTagNames = mDbHelper.getAllTags(Tags.TAG);
+		mDbHelper.close();
 	}
 	
-	public void goCreateTag() {
-		Intent intent = new Intent(this, CreateTagActivity.class);
-	    startActivityForResult(intent, CREATE_TAG);
+	public void toggle(int position) {
+		//update "key" member variable
+		mChecked.set(position, !mChecked.get(position));
+		//Now update the view in the ListView.
+		int index = position - mListView.getFirstVisiblePosition();
+		View convertView = mListView.getChildAt(index); 
+		mListView.getAdapter().getView(position, convertView, mListView);
 	}
 	
 	private class CustomAdapter extends BaseAdapter {
@@ -182,24 +222,14 @@ public class TagManagerActivity extends ActionBarActivity {
 	         TextView tv = (TextView) view.findViewById(R.id.textView1);
 	         tv.setText(getItem(pos));
 	         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox1);
-	         checkBox.setChecked(mChecked[pos]);    
+	         checkBox.setChecked(mChecked.get(pos));    
 	         return view;
 	    }
 	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		public PlaceholderFragment() {
-		}
-		
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_tag_manager,
-					container, false);
-			return rootView;
+	
+	public class OnItemClickListener implements AdapterView.OnItemClickListener {
+		public void onItemClick(AdapterView listView, View v, int position, long id) {
+			toggle(position);	
 		}
 	}
 }

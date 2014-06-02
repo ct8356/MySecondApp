@@ -1273,16 +1273,18 @@ containing a value of this type.
         public static final int button_stop_and_save=0x7f0a0014;
         public static final int edit_message=0x7f0a0011;
         public static final int hello_world=0x7f0a0015;
-        public static final int label_total_count=0x7f0a0017;
-        public static final int no_tags=0x7f0a0019;
-        public static final int text_enter_tag=0x7f0a001c;
-        public static final int text_session_length=0x7f0a001d;
-        public static final int title_activity_choose_tag=0x7f0a0018;
-        public static final int title_activity_creata=0x7f0a001b;
-        public static final int title_activity_start_session=0x7f0a001a;
-        public static final int title_activity_tag_manager=0x7f0a001e;
-        public static final int title_activity_time_accumulator=0x7f0a0016;
-        public static final int title_activity_time_entry_manager=0x7f0a001f;
+        public static final int label_total_count=0x7f0a0019;
+        public static final int menu_delete=0x7f0a0017;
+        public static final int menu_edit=0x7f0a0016;
+        public static final int no_tags=0x7f0a001b;
+        public static final int text_enter_tag=0x7f0a001e;
+        public static final int text_session_length=0x7f0a001f;
+        public static final int title_activity_choose_tag=0x7f0a001a;
+        public static final int title_activity_creata=0x7f0a001d;
+        public static final int title_activity_start_session=0x7f0a001c;
+        public static final int title_activity_tag_manager=0x7f0a0020;
+        public static final int title_activity_time_accumulator=0x7f0a0018;
+        public static final int title_activity_time_entry_manager=0x7f0a0021;
     }
     public static final class style {
         /** 

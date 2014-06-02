@@ -183,9 +183,9 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        addTags.setText("Select tags");
 	        addTags.setOnClickListener(new AddTagListener());
 			add10.setText("Add 10 minutes");
-	        add10.setOnClickListener(new add10Listener());
+	        add10.setOnClickListener(new Add10Listener());
 	        startSession.setText("Start work session");
-	        startSession.setOnClickListener(new startSessionListener());
+	        startSession.setOnClickListener(new StartSessionListener());
 			//ADD VIEWS
 	        layout.addView(removeTags);
 	        layout.addView(mSelectedTagsText);
@@ -212,14 +212,14 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		}
 	}
 
-	public class add10Listener implements View.OnClickListener {
+	public class Add10Listener implements View.OnClickListener {
 		public void onClick(View view) {
 			add10Minutes(mSelectedTags);
 			updateContent();
 		}
 	}
 	
-	public class startSessionListener implements View.OnClickListener {
+	public class StartSessionListener implements View.OnClickListener {
 		public void onClick(View view) {
 			Intent intent = new Intent(TimeAccumulatorActivity.this, 
 					StartSessionActivity.class);

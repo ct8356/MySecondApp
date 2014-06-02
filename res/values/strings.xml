@@ -10,6 +10,8 @@
     <string name="button_pause_resume">Pause/Resume</string>
     <string name="button_stop_and_save">Stop session and save</string>
     <string name="hello_world">Hello world!</string>
+    <string name="menu_edit">Edit tag</string>
+    <string name="menu_delete">Delete tag</string>
     <string name="title_activity_time_accumulator">Time Accumulator</string>
     <string name="label_total_count">Total count:</string>
     <string name="title_activity_choose_tag">ChooseTagActivity</string>

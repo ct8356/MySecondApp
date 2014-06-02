@@ -137,7 +137,16 @@ public class DbHelper extends SQLiteOpenHelper {
 	    		null, null, null, null);
 		return cursor;
 	}
-
+	
+	public List<String> getAllTags(String columnName) {
+		Cursor cursor = getAllTagsCursor();
+		List<String> tags = new ArrayList<String>();
+		while (cursor.moveToNext()) {
+			tags.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
+		}
+		return tags;
+	}
+	
 	public List<String> getTags(List<String> rowIds) {
 		Cursor cursor = getTagsCursor(rowIds);
 		List<String> tags = new ArrayList<String>();
@@ -201,6 +210,23 @@ public class DbHelper extends SQLiteOpenHelper {
 					Tags.TAG, //nullColumnHack
 					values);
     	return newRecordId;
+    }
+    
+    public long updateTag(long mRowId, String tag) throws SQLiteConstraintException {
+		ContentValues values = new ContentValues();
+		values.put(Tags.TAG, tag); 
+			long newRecordId = mDb.update(
+					Tags.TABLE_NAME,
+					values,
+					"_id = "+mRowId,
+					null);
+    	return newRecordId;
+    }
+    
+    public void deleteTagAndJoins(long mRowId) throws SQLiteConstraintException {
+			mDb.delete(Tags.TABLE_NAME, Tags._ID+" = "+mRowId, null);
+			mDb.delete(MinutesToTagJoins.TABLE_NAME, MinutesToTagJoins.TAGID+" = "+mRowId, 
+					null);
     }
     
     public int sumMinutes(List<String> tags){
