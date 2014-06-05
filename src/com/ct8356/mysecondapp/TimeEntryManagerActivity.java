@@ -1,8 +1,12 @@
 package com.ct8356.mysecondapp;
 
+import com.ct8356.mysecondapp.DbContract.Minutes;
+import com.ct8356.mysecondapp.DbContract.Tags;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,49 +15,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
-public class TimeEntryManagerActivity extends ActionBarActivity {
+public class TimeEntryManagerActivity extends AbstractManagerActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_time_entry_manager);
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
+		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
+		//could possibly put these in super class.
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.time_entry_manager, menu);
-		return true;
+	public void goCreateEntry() {
+		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
+		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
+		intent.putExtra("requestCode", CREATE_ENTRY);
+	    startActivityForResult(intent, CREATE_ENTRY);
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+	
+	public void goEditEntry(Long rowId) {
+		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
+		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
+		intent.putExtra("requestCode", EDIT_ENTRY);
+		intent.putExtra(DbContract._ID, rowId); 
+	    startActivityForResult(intent, EDIT_ENTRY);
 	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		public PlaceholderFragment() {
-		}
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(
-					R.layout.fragment_time_entry_manager, container, false);
-			return rootView;
-		}
-	}
-
+	
 }

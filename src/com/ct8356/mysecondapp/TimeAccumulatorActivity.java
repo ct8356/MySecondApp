@@ -35,6 +35,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	private static final int CHOOSE_TAG=0;
 	private static final int ADD_TAG=1;
 	private static final int START_SESSION=2;
+	private static final int MANAGE_ENTRIES=3;
 	private DbHelper mDbHelper;
 	public List<String> mSelectedTags;
 	public TextView mSelectedTagsText;
@@ -162,7 +163,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	public class TAALayout extends ScrollView {
-		
 		public TAALayout(Context context, int sumMinutes) {
 			super(context);
 			//CREATE THE VIEWS
@@ -172,6 +172,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			TextView textViewSumMinutes = new TextView(context);
 			Button add10 = new Button(context);
 			Button startSession = new Button(context);
+			Button manageTimeEntries = new Button(context);
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
@@ -186,6 +187,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        add10.setOnClickListener(new Add10Listener());
 	        startSession.setText("Start work session");
 	        startSession.setOnClickListener(new StartSessionListener());
+	        manageTimeEntries.setText("Manage time entries");
+	        manageTimeEntries.setOnClickListener(new ManageEntriesListener());
 			//ADD VIEWS
 	        layout.addView(removeTags);
 	        layout.addView(mSelectedTagsText);
@@ -193,6 +196,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			layout.addView(textViewSumMinutes);
 			layout.addView(add10);
 			layout.addView(startSession);
+			layout.addView(manageTimeEntries);
 			this.addView(layout);
 		}
 	}
@@ -225,6 +229,16 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 					StartSessionActivity.class);
 			intent.putExtra("tag", "tag1"); //HARDCODE
 		    startActivityForResult(intent, START_SESSION);
+		}
+	}
+	
+	public class ManageEntriesListener implements View.OnClickListener {
+		public void onClick(View view) {
+			Intent intent = new Intent(TimeAccumulatorActivity.this, 
+					TimeEntryManagerActivity.class);
+			intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
+			intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
+		    startActivityForResult(intent, MANAGE_ENTRIES);
 		}
 	}
 	

@@ -40,8 +40,8 @@ import android.widget.AbsListView;
 public class TagManagerActivity extends ActionBarActivity {
 	private DbHelper mDbHelper;
 	private static final int CREATE_TAG = 0;
-	private static final int EDIT_TAG = Menu.FIRST;;
-	private static final int DELETE_TAG = Menu.FIRST + 1;;
+	private static final int EDIT_TAG = Menu.FIRST;
+	private static final int DELETE_TAG = Menu.FIRST + 1;
 	//private List<String> mTagIds;
 	private List<String> mTagNames; //a key variable. it is called by getItem().
 	//private List<String> mCheckedTagIds;
@@ -84,7 +84,11 @@ public class TagManagerActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        int previousSize = mTagNames.size();
         updateMTagNames();
+        if (mTagNames.size() > previousSize) {
+        	mChecked.add(true);
+        }
     }
     
 	@Override
@@ -133,7 +137,7 @@ public class TagManagerActivity extends ActionBarActivity {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         List<String> tag = Arrays.asList(mTagNames.get(info.position));
-        //Ok since don't need to add() to this list.
+        //converts string to List. Ok since don't need to add() to this list.
         mDbHelper.openDatabase();
         Long rowId = Long.valueOf(mDbHelper.getTagIds(tag).get(0));
     	switch(item.getItemId()) {
@@ -142,9 +146,9 @@ public class TagManagerActivity extends ActionBarActivity {
             return true;
         case DELETE_TAG:
             mDbHelper.deleteTagAndJoins(rowId);
-            updateMTagNames(); //not enough. Must alertmListView?
+            updateMTagNames(); //not enough. Must notifyListViewOfChange? Yes.
             mCustomAdapter.notifyDataSetChanged();
-            //mListView.invalidate(); //still not not enough. Must first alert listView of dataChange?
+            mChecked.remove(info.position);
             return true;
         }
         mDbHelper.close();
@@ -179,7 +183,7 @@ public class TagManagerActivity extends ActionBarActivity {
 	}
 	
 	public void updateMTagNames() {
-		mTagNames = new ArrayList<String>();
+		//mTagNames = new ArrayList<String>();
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllTags(Tags.TAG);
 		mDbHelper.close();

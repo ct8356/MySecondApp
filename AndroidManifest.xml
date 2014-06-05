@@ -59,6 +59,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
         </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.AbstractManagerActivity"
+            android:label="@string/title_activity_abstract_manager" >
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.AbstractCreatorActivity"
+            android:label="@string/title_activity_abstract_creator" >
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.TimeEntryCreatorActivity"
+            android:label="@string/title_activity_time_entry_creator"
+            android:parentActivityName="com.ct8356.mysecondapp.TimeEntryManagerActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ct8356.mysecondapp.TimeEntryManagerActivity" />
+        </activity>
     </application>
 
 </manifest>

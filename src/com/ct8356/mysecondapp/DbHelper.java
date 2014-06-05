@@ -1,6 +1,7 @@
 package com.ct8356.mysecondapp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,16 +30,37 @@ public class DbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     
+    public String buildSelectionString(List<String> rowIds) {
+		String entryIdsString = join(rowIds, ",");
+		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
+		return selectionString;
+    }
+    
     public Cursor getRawCursor() {
     	Cursor cursor = mDb.rawQuery("SELECT * FROM Tags", null);
     	return cursor;
+    }
+    
+    public Cursor getAllEntriesCursor(String tableName) {
+		Cursor cursor = mDb.query(
+	    		false, //Don't really want distinct...
+	    		tableName, 
+	    		null, 
+	    		//passing null is discouraged, to prevent reading cols that wont be used; CBTL.
+	    		null, 
+	            null, 
+	            null, null, null, null
+	            );
+    	return cursor;
+        
     }
 
     public Cursor getAllJoinsCursor() {
 		Cursor cursor = mDb.query(
 	    		false, //Don't really want distinct...
 	    		MinutesToTagJoins.TABLE_NAME, 
-	    		new String[] {MinutesToTagJoins._ID, MinutesToTagJoins.MINUTESID, MinutesToTagJoins.TAGID}, 
+	    		new String[] {MinutesToTagJoins._ID, MinutesToTagJoins.MINUTESID, 
+	    				MinutesToTagJoins.TAGID}, 
 	    		null, 
 	            null, 
 	            null, null, null, null
@@ -71,6 +93,23 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
     //Are any of these getAll methods needed anymore?
     
+	public Cursor getJoinsCursor2(String joinTableName, String columnName, 
+			List<String> entryIds) {
+		String[] tagIdsSA = new String[entryIds.size()]; 
+		entryIds.toArray(tagIdsSA);
+		String entryIdsString = join(entryIds, ",");
+		String selectionString = columnName + " IN("+entryIdsString+")"; 
+		Cursor cursor = mDb.query(
+	    		false, //not distinct 
+	    		joinTableName, 
+	    		null, //null means get all columns
+	    		selectionString,
+	    		null,
+	    		null, null, null, null
+	            ); //ALSO needs IN(),
+		return cursor;
+	}
+    
 	public Cursor getJoinsCursor(List<String> tagIds) {
 		String[] tagIdsSA = new String[tagIds.size()]; 
 		tagIds.toArray(tagIdsSA);
@@ -86,7 +125,39 @@ public class DbHelper extends SQLiteOpenHelper {
 	            ); //ALSO needs IN(),
 		return cursor;
 	}
-
+	
+	public Cursor getEntriesCursor(String tableName, List<String> rowIds) {
+	  	String[] rowIdsSA = new String[rowIds.size()];
+	  	rowIds.toArray(rowIdsSA);
+		String entryIdsString = join(rowIds, ",");
+		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
+		Cursor cursor = mDb.query(
+	    		false, //Don't want distinct
+	    		tableName, 
+	    		null, //gets all columns, although this is not efficient apparently.
+	    		selectionString, 
+	    		null, 
+	            null, null, null, null
+	            );
+    	return cursor;
+	}
+	
+	public Cursor getEntriesCursor(String tableName, List<String> columnNames, 
+			List<String> rowIds) {
+	  	String[] columnNamesSA = (String[]) columnNames.toArray();
+		String entryIdsString = join(rowIds, ",");
+		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
+		Cursor cursor = mDb.query(
+	    		false, //Don't want distinct
+	    		tableName, 
+	    		columnNamesSA,
+	    		selectionString, 
+	    		null, 
+	            null, null, null, null
+	            );
+    	return cursor;
+	}
+	
 	public Cursor getTagsCursor(List<String> rowIds) {
 	  	String[] rowIdsSA = new String[rowIds.size()];
 	  	rowIds.toArray(rowIdsSA);
@@ -99,7 +170,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	    		selectionString, 
 	    		null, 
 	            null, null, null, null
-	            ); //Also needs IN().
+	            );
     	return cursor;
 	}
     
@@ -138,6 +209,12 @@ public class DbHelper extends SQLiteOpenHelper {
 		return cursor;
 	}
 	
+	public List<List<String>> getAllEntries(String tableName) {
+		Cursor cursor = getAllEntriesCursor(tableName);
+		List<List<String>> entries = lookInCursor(cursor);
+		return entries;
+	}
+	
 	public List<String> getAllTags(String columnName) {
 		Cursor cursor = getAllTagsCursor();
 		List<String> tags = new ArrayList<String>();
@@ -145,6 +222,19 @@ public class DbHelper extends SQLiteOpenHelper {
 			tags.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
 		}
 		return tags;
+	}
+	
+	public List<List<String>> getEntries(String tableName, List<String> rowIds) {
+		Cursor cursor = getEntriesCursor(tableName, rowIds);
+		List<List<String>> entries = lookInCursor(cursor);
+		return entries;
+	}
+	
+	public List<List<String>> getEntries(String tableName, List<String> columnNames, 
+			List<String> rowIds) {
+		Cursor cursor = getEntriesCursor(tableName, columnNames, rowIds);
+		List<List<String>> entries = lookInCursor(cursor);
+		return entries;
 	}
 	
 	public List<String> getTags(List<String> rowIds) {
@@ -212,6 +302,20 @@ public class DbHelper extends SQLiteOpenHelper {
     	return newRecordId;
     }
     
+    public long insertEntry(String tableName, List<String> columnNames, List<String> entry) {
+  		ContentValues values = new ContentValues();
+  		for (int i = 1; i < columnNames.size(); i+=1) {
+  			//i represents column index. i=1 to skip id column.
+  			values.put(columnNames.get(i), entry.get(i-1)); 
+  			//-1 because entry does not have id column.
+  		}
+		long newRecordId = mDb.insert(
+				tableName,
+				null, //nullColumnHack, null for now...
+				values);
+      	return newRecordId;
+    }
+   
     public long updateTag(long mRowId, String tag) throws SQLiteConstraintException {
 		ContentValues values = new ContentValues();
 		values.put(Tags.TAG, tag); 
@@ -221,6 +325,42 @@ public class DbHelper extends SQLiteOpenHelper {
 					"_id = "+mRowId,
 					null);
     	return newRecordId;
+    }
+    
+    public long updateEntry(String tableName, List<String> columnNames, List<String> entry, 
+    		long mRowId) {
+		ContentValues values = new ContentValues();
+  		for (int i = 1; i < columnNames.size(); i+=1) {
+  			//i represents column index. i=1 to skip id column.
+  			values.put(columnNames.get(i), entry.get(i-1)); 
+  			//-1 because entry does not have id column.
+  		}
+			long newRecordId = mDb.update(
+					tableName,
+					values,
+					"_id = "+mRowId,
+					null);
+    	return newRecordId;
+    }
+    
+    public void deleteEntryAndJoins(String entryTableName, String joinTableName, long entryId) {
+			mDb.delete(entryTableName, DbContract._ID+" = "+entryId, null);
+			//List<String> joinColumnName = Arrays.asList(entryTableName+"ID");
+			String joinColumnName = entryTableName+"ID";
+			//List<String> entryIds = Arrays.asList(String.valueOf(entryId));
+			//List<List<String>> joins = getEntries(joinTableName, joinColumnName, entryIds);
+			//String selectionString = buildSelectionString(entryId);
+			//Cursor cursor = mDb.query(
+//					false, //Don't want distinct
+//		    		tableName, 
+//		    		columnNamesSA,
+//		    		selectionString, 
+//		    		null, 
+//		            null, null, null, null
+//		            );
+//			List<List<String>> entries = lookInCursor(cursor);
+			//List<String> joinId = //Thinking you need this, was what mislead you!
+			mDb.delete(joinTableName, joinColumnName+" = "+entryId, null);
     }
     
     public void deleteTagAndJoins(long mRowId) throws SQLiteConstraintException {
