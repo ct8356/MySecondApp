@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Tags;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -41,7 +42,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
     private ListView mListView; 
     protected String mTableName; //CBTL what does protected mean?
     protected String mCreatorActivity; //leave just in case decide to use it.
-    private TextView mSelectedTags;
+    protected List<String> mSelectedTags;
+    private TextView mSelectedTagsText;
     
 	public List<String> getCheckedEntryIds() { 
 		//now this is only called once at end, when needed.
@@ -141,9 +143,9 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 				inflate(R.layout.fragment_abstract_manager, null);
 		setContentView(layout);
 		//since want to add views to content view (root view?), have to inflate it yourself.
-		mSelectedTags = new TextView(this);
-		mSelectedTags.setText("Selected tags: ");
-		layout.addView(mSelectedTags);
+		mSelectedTagsText = new TextView(this);
+		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+		layout.addView(mSelectedTagsText);
 		mListView = new ListView(this);
 		layout.addView(mListView);
 		//Ahah, remember, if want to get from XML, often need to inflate it!
@@ -153,18 +155,14 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	}
 	
 	public void initialiseMemberVariables() {
-		Bundle extras = getIntent().getExtras();
 		//List<String> checkedEntries = extras.getStringArrayList("tags"); // CBTL
 		List<String> checkedEntryIds = new ArrayList<String>();
 		checkedEntryIds.add("0"); //None of the ids will be 0.
-		mTableName = extras.getString(DbContract.TABLE_NAME);
+		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
+		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
+		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
+		updateMEntries();
 		mChecked = new ArrayList<Boolean>();
-		//DO DATABASE STUFF
-		mDbHelper.openDatabase();
-		mEntries = mDbHelper.getAllEntries(mTableName); //could just call updateMEntryNames..
-		// CBTL maybe do not want to get all columns. Only desired columns.
-		//Ok for now, because not that many columns.
-		//mChecked.clear();
 		for (int i=0; i<mEntries.size(); i+=1) {
 			//mEntries.size returns number of rows.
 			if (checkedEntryIds.contains(mEntries.get(i).get(0))) { //CBTL 0 for _ID
@@ -173,7 +171,6 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 				mChecked.add(false);
 			}
 		}
-		mDbHelper.close();
 	}
 	
 	public void updateMEntries() {
@@ -181,6 +178,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		mEntries = mDbHelper.getAllEntries(mTableName); 
 		//this is then used by the listView in getView.
 		mDbHelper.close();
+		// CBTL maybe do not want to get all columns. Only desired columns.
+	    //Ok for now, because not that many columns.
 	}
 	
 	public void toggle(int position) {

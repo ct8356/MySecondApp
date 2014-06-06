@@ -5,7 +5,8 @@ import android.provider.BaseColumns;
 public final class DbContract {
 	public static final String TABLE_NAME = "tableName";
 	public static final String CREATOR_ACTIVITY = "creator_activity";
-	public static String _ID = "_id";
+	public static final String _ID = "_id";
+	public static final String TAG_NAMES = "tag_names";
 	 // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
     public DbContract() {}

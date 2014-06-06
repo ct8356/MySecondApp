@@ -1,5 +1,7 @@
 package com.ct8356.mysecondapp;
 
+import java.util.ArrayList;
+
 import com.ct8356.mysecondapp.DbContract.Minutes;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
@@ -16,13 +18,6 @@ import android.view.ViewGroup;
 import android.os.Build;
 
 public class TimeEntryManagerActivity extends AbstractManagerActivity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
-		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
-		//could possibly put these in super class.
-	}
 
 	public void goCreateEntry() {
 		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);

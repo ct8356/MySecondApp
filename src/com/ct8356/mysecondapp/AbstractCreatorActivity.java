@@ -35,6 +35,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//INITIALISE STUFF
+		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
 		mDbHelper = new DbHelper(this);
 		//DATABASE STUFF
 		mDbHelper.openDatabase();

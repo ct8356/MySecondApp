@@ -176,7 +176,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
-			mSelectedTagsText.setText("Chosen tags: " + mSelectedTags);
+			mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 			//Cool. Can put List<String> in String, comes out in brackets.
 			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
 			removeTags.setText("Deselect tags");
@@ -238,6 +238,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 					TimeEntryManagerActivity.class);
 			intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
 			intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, (ArrayList<String>) mSelectedTags); 
 		    startActivityForResult(intent, MANAGE_ENTRIES);
 		}
 	}

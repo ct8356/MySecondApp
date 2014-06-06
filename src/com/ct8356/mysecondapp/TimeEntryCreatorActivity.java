@@ -24,11 +24,7 @@ public class TimeEntryCreatorActivity extends AbstractCreatorActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {	
-		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
 		super.onCreate(savedInstanceState);
-		//interesting. I want to do something before calling super method.
-		//I seem to remember people advising that super method should be called first.
-		//is there some better way of doing this?
 	}
 	
 	@Override
