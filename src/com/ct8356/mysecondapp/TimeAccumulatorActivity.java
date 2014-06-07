@@ -32,15 +32,14 @@ import android.widget.TextView;
 import android.os.Build;
 
 public class TimeAccumulatorActivity extends ActionBarActivity {
-	private static final int CHOOSE_TAG=0;
 	private static final int ADD_TAG=1;
 	private static final int START_SESSION=2;
 	private static final int MANAGE_ENTRIES=3;
 	private DbHelper mDbHelper;
 	public List<String> mSelectedTags;
 	public TextView mSelectedTagsText;
-	public List<String> mRowIds;
-	//was getContext() ...
+	public TextView mSumMinutesText;
+	private int mSumMinutes;
 
 	public void enterMockData() {
 		mDbHelper.openDatabase();
@@ -49,24 +48,21 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		mDbHelper.close();
 	}
 	
-	public void updateContent() {
-		//DO DATABASE STUFF
-		mDbHelper.openDatabase();
-		mSelectedTags = mDbHelper.getTags(mRowIds); //It works I believe!
-		int sumMinutes = mDbHelper.sumMinutes(mSelectedTags);
-		//it seems you can't look into contents of cursor.
-		//but could take an array from it.
-		mDbHelper.close();										
-		//CREATE THE VIEWS
-		TAALayout scrollLayout = new TAALayout(this, sumMinutes);
-		setContentView(scrollLayout);
-	}
-	
 	public void add10Minutes(List<String> projectName){
 		mDbHelper.openDatabase();
 		int minutes = 10;
-		mDbHelper.insertRecord(minutes, mSelectedTags);  //HARDCODE
+		mDbHelper.insertRecord(minutes, mSelectedTags);
 		mDbHelper.close();
+	}
+	
+	private void initialiseMemberVariables() {
+		mSelectedTags = new ArrayList<String>();
+	}
+	
+	public void initialiseViews() {									
+		//CREATE THE VIEWS
+		TAALayout scrollLayout = new TAALayout(this);
+		setContentView(scrollLayout);
 	}
 
     @Override
@@ -78,35 +74,21 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
         	break;
         case RESULT_OK:
 	        switch (requestCode) {
-	        case CHOOSE_TAG:
-	        	setIntent(intent); //Error here, because intent is not complete. has null.
-				Bundle extras = getIntent().getExtras(); //Seems null intent is passed,
-				if (extras != null) {
-					mRowIds.clear();
-		        	mRowIds.add(extras.getString("tag"));
-		        } else {
-		    		mRowIds.add("1"); //
-		        }
-				break;
 	        case ADD_TAG:
-	        	setIntent(intent);
-	        	extras = intent.getExtras();
-	        	List<String> selectedTags = extras.getStringArrayList("tags");
-	        	mDbHelper = new DbHelper(this);
-	        	mDbHelper.openDatabase();
-	        	mRowIds = mDbHelper.getTagIds(selectedTags); //causes issue
-	        	mDbHelper.close();
+	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+	        	updateMSumMinutesText();
 	        	break;
 	        case START_SESSION:
-	        	//Do not set intent.
+	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+	        	updateMSumMinutesText();
+	        	//needs to update these, incase these are changed during session.
 	        	break;
 	        case MANAGE_ENTRIES:
-	        	extras = intent.getExtras();
-	        	mSelectedTags = extras.getStringArrayList("tags");
-	        	mDbHelper = new DbHelper(this);
-	        	mDbHelper.openDatabase();
-	        	mRowIds = mDbHelper.getTagIds(mSelectedTags); //causes issue
-	        	mDbHelper.close();
+	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+	        	updateMSumMinutesText();
 	        	break;
 	        }
 	        break;
@@ -116,22 +98,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//Gets the data repository in write mode
-		mDbHelper = new DbHelper(this);
-		mRowIds = new ArrayList<String>();
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();	
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
 		//enterMockData();
-		updateContent(); //Not sure should do this here...
-		//but if do do it here, don't do it in onCreate or onActivityResult().
+		mDbHelper = new DbHelper(this);
+		initialiseMemberVariables();
+		initialiseViews();
 	}
 	
 	@Override
@@ -153,31 +123,21 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(
-					R.layout.fragment_time_accumulator, container, false);
-			return rootView;
-		}
+	public void updateMSumMinutesText() {
+		mDbHelper.openDatabase();
+		mSumMinutes = mDbHelper.sumMinutes(mSelectedTags);
+		mDbHelper.close();
+		mSumMinutesText.setText("Total minutes: " + mSumMinutes);
 	}
 	
 	public class TAALayout extends ScrollView {
-		public TAALayout(Context context, int sumMinutes) {
+		public TAALayout(Context context) {
 			super(context);
 			//CREATE THE VIEWS
 			Button removeTags = new Button(context);
 			mSelectedTagsText = new TextView(context);
 			Button addTags = new Button(context);
-			TextView textViewSumMinutes = new TextView(context);
+			mSumMinutesText = new TextView(context);
 			Button add10 = new Button(context);
 			Button startSession = new Button(context);
 			Button manageTimeEntries = new Button(context);
@@ -185,8 +145,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
 			mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-			//Cool. Can put List<String> in String, comes out in brackets.
-			textViewSumMinutes.setText("Total minutes: " + sumMinutes);
+			mSumMinutesText.setText("Total minutes: " + mSumMinutes);
 			removeTags.setText("Deselect tags");
 	        removeTags.setOnClickListener(new RemoveTagsListener());
 	        addTags.setText("Select tags");
@@ -201,7 +160,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        layout.addView(removeTags);
 	        layout.addView(mSelectedTagsText);
 	        layout.addView(addTags);
-			layout.addView(textViewSumMinutes);
+			layout.addView(mSumMinutesText);
 			layout.addView(add10);
 			layout.addView(startSession);
 			layout.addView(manageTimeEntries);
@@ -211,8 +170,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public class RemoveTagsListener implements View.OnClickListener {
 		public void onClick(View view) {
-			mRowIds.clear();
-			updateContent();
+			mSelectedTags.clear();
+			mSelectedTagsText.setText("Selected tags: " + mSelectedTags); 
+			updateMSumMinutesText();
+			//if start using these really often, could put them in own single line method.
 		}
 	}
 	
@@ -227,7 +188,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	public class Add10Listener implements View.OnClickListener {
 		public void onClick(View view) {
 			add10Minutes(mSelectedTags);
-			updateContent();
+			updateMSumMinutesText();
 		}
 	}
 	
@@ -246,7 +207,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 					TimeEntryManagerActivity.class);
 			intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
 			intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, (ArrayList<String>) mSelectedTags); 
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags); 
 		    startActivityForResult(intent, MANAGE_ENTRIES);
 		}
 	}
