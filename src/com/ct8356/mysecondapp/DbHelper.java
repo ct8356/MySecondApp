@@ -387,7 +387,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		for (int i = 0; i < tags.size(); i++ ) {
 			values = new ContentValues();
 			values.put(MinutesToTagJoins.MINUTESID, newTimeEntryId);
-			values.put(MinutesToTagJoins.TAGID, tagIds.get(i)); //HARDCODE
+			values.put(MinutesToTagJoins.TAGID, tagIds.get(i));
 			long newJoinId = mDb.insert(
 					MinutesToTagJoins.TABLE_NAME,
 					MinutesToTagJoins.MINUTESID, //nullColumnHack

@@ -227,7 +227,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		public void onClick(View view) {
 			Intent intent = new Intent(TimeAccumulatorActivity.this, 
 					StartSessionActivity.class);
-			intent.putExtra("tag", "tag1"); //HARDCODE
+			intent.putStringArrayListExtra("tag", (ArrayList<String>) mSelectedTags);
 		    startActivityForResult(intent, START_SESSION);
 		}
 	}

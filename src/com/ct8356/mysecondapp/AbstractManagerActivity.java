@@ -101,7 +101,6 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	        }
 	        break;
         }
-
     }
     
 	@Override

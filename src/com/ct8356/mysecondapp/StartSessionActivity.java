@@ -21,6 +21,7 @@ import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.os.Build;
 
 public class StartSessionActivity extends ActionBarActivity {
@@ -31,7 +32,9 @@ public class StartSessionActivity extends ActionBarActivity {
 	private boolean stopped = false;
 	private long startTime;
 	private long mElapsedTime;
-	private String mSelectedTags;
+	private String mSelectedTagsString;
+	private List<String> mSelectedTags;
+	private TextView mSelectedTagsText;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,9 @@ public class StartSessionActivity extends ActionBarActivity {
 		mDbHelper = new DbHelper(this);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-        	mSelectedTags = extras.getString("tag");
+        	//mSelectedTagsString = extras.getString("tag");
+        	mSelectedTags = extras.getStringArrayList("tag");
+        	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
         }
 		mChrono.start();
 		//setContentView(R.layout.activity_start_session);
@@ -79,10 +84,10 @@ public class StartSessionActivity extends ActionBarActivity {
     
     private void saveState() {
         mDbHelper.openDatabase();
-    	int mins = (int)((mElapsedTime/1000)/60); //CBTL Turn it to minutes
-    	List<String> mSelectedTagsList = new ArrayList<String>();
-    	mSelectedTagsList.add(mSelectedTags);
-        mDbHelper.insertRecord(mins, mSelectedTagsList); //BOTCH
+    	int mins = (int) ((mElapsedTime/1000)/60); //CBTL Turn it to minutes
+    	//List<String> mSelectedTagsList = new ArrayList<String>();
+    	//mSelectedTagsList.add(mSelectedTagsString);
+        mDbHelper.insertRecord(mins, mSelectedTags);
         mDbHelper.close();
      }
 
@@ -107,6 +112,7 @@ public class StartSessionActivity extends ActionBarActivity {
 		public StartSessionLayout(Context context) {
 			super(context);
 			//CREATE THE VIEWS
+			mSelectedTagsText = new TextView(context);
 			mChrono = new Chronometer(context);
 			start = new Button(context);
 			pause = new Button(context);
@@ -115,6 +121,7 @@ public class StartSessionActivity extends ActionBarActivity {
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
+			mSelectedTagsText.setText("Selected tags: "+ mSelectedTags);
 	        start.setText("Start");
 	        start.setOnClickListener(new StartListener());
 	        start.setVisibility(View.GONE);
@@ -125,6 +132,7 @@ public class StartSessionActivity extends ActionBarActivity {
 	        save.setText("Stop session and save");
 	        save.setOnClickListener(new SaveListener());
 			//ADD VIEWS
+	        layout.addView(mSelectedTagsText);
 			layout.addView(mChrono);
 			layout.addView(start);
 			layout.addView(pause);
