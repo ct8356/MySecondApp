@@ -67,6 +67,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 
 	public void goHome() {
 		Intent intent = new Intent();
+		intent.putStringArrayListExtra("tags", (ArrayList<String>) mSelectedTags); 
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -235,10 +236,16 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 //		for (int i = 0; i < timeEntryIdsList.size(); i++) {
 //			timeEntryIds.add(timeEntryIdsList.get(i).get(0));
 //		}
-		List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
-		mColumnNames = mDbHelper.getAllColumnNames(mTableName);
-		mEntries = mDbHelper.getEntries(mTableName, mColumnNames, Minutes._ID, timeEntryIds); 
-		//get zero gets first row.
+		switch (mSelectedTags.size()) {
+		case 0:
+			mEntries = mDbHelper.getAllEntries(mTableName);
+			break;
+		default:
+			List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
+			mColumnNames = mDbHelper.getAllColumnNames(mTableName);
+			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, Minutes._ID, timeEntryIds); 
+			break;
+		}
 		//this is then used by the listView in getView.
 		mDbHelper.close();
 		//CBTL maybe do not want to get all columns. Only desired columns.

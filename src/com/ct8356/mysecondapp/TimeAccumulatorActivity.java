@@ -100,6 +100,14 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        case START_SESSION:
 	        	//Do not set intent.
 	        	break;
+	        case MANAGE_ENTRIES:
+	        	extras = intent.getExtras();
+	        	mSelectedTags = extras.getStringArrayList("tags");
+	        	mDbHelper = new DbHelper(this);
+	        	mDbHelper.openDatabase();
+	        	mRowIds = mDbHelper.getTagIds(mSelectedTags); //causes issue
+	        	mDbHelper.close();
+	        	break;
 	        }
 	        break;
         }
