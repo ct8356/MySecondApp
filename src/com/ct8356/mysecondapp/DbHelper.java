@@ -45,14 +45,12 @@ public class DbHelper extends SQLiteOpenHelper {
 		Cursor cursor = mDb.query(
 	    		false, //Don't really want distinct...
 	    		tableName, 
-	    		null, 
-	    		//passing null is discouraged, to prevent reading cols that wont be used; CBTL.
-	    		null, 
-	            null, 
+	    		null,
+	    		null,
+	            null,
 	            null, null, null, null
 	            );
     	return cursor;
-        
     }
 
     public Cursor getAllJoinsCursor() {
@@ -109,7 +107,6 @@ public class DbHelper extends SQLiteOpenHelper {
 	            ); //ALSO needs IN(),
 		return cursor;
 	}
-
 	
 	public Cursor getEntriesCursor(String tableName, List<String> rowIds) {
 	  	String[] rowIdsSA = new String[rowIds.size()];
@@ -205,6 +202,22 @@ public class DbHelper extends SQLiteOpenHelper {
     	return cursor;
 	}
 	
+	public Cursor getEntriesCursor(String tableName, List<String> columnNames, 
+			String selectionColumnName, List<String> selections) {
+	  	String[] columnNamesSA = (String[]) columnNames.toArray();
+		String selectionsString = join(selections, ",");
+		String selectionString = selectionColumnName + " IN("+selectionsString+")"; 
+		Cursor cursor = mDb.query(
+	    		false, //Don't want distinct
+	    		tableName, 
+	    		columnNamesSA,
+	    		selectionString, 
+	    		null, 
+	            null, null, null, null
+	            );
+    	return cursor;
+	}
+	
 	public Cursor getTagsCursor(List<String> rowIds) {
 	  	String[] rowIdsSA = new String[rowIds.size()];
 	  	rowIds.toArray(rowIdsSA);
@@ -256,6 +269,12 @@ public class DbHelper extends SQLiteOpenHelper {
 		return cursor;
 	}
 	
+	public List<String> getAllColumnNames(String tableName) {
+		Cursor cursor = getAllEntriesCursor(tableName);
+		List<String> columnNames = Arrays.asList(cursor.getColumnNames());
+		return columnNames;
+	}
+	
 	public List<List<String>> getAllEntries(String tableName) {
 		Cursor cursor = getAllEntriesCursor(tableName);
 		List<List<String>> entries = lookInCursor(cursor);
@@ -280,6 +299,14 @@ public class DbHelper extends SQLiteOpenHelper {
 	public List<List<String>> getEntries(String tableName, List<String> columnNames, 
 			List<String> rowIds) {
 		Cursor cursor = getEntriesCursor(tableName, columnNames, rowIds);
+		List<List<String>> entries = lookInCursor(cursor);
+		return entries;
+	}
+	
+	public List<List<String>> getEntries(String tableName, List<String> columnNames, 
+			String selectionColumnName, List<String> selections) {
+		Cursor cursor = getEntriesCursor(tableName, columnNames, 
+				selectionColumnName, selections);
 		List<List<String>> entries = lookInCursor(cursor);
 		return entries;
 	}
@@ -446,7 +473,7 @@ public class DbHelper extends SQLiteOpenHelper {
 					null);
     }
     
-    public int sumMinutes(List<String> tags){
+    public List<String> getRelatedEntryIds(List<String> tags) {
     	List<String> tagIds = getTagIds(tags);
     	List<String> associatedTimeEntryIds = getTimeEntryIds(tagIds);
     	//YES, now it is distinct.
@@ -472,9 +499,14 @@ public class DbHelper extends SQLiteOpenHelper {
     			yesWanted.add(associatedTimeEntryIds.get(i));
     		}
     	}
+    	return yesWanted;
     	//OR, maybe is an SQL command that does this for you?
     	//List<String> associatedTimeEntryIds = getTimeEntryIdsWithANDCondition(tagIds);
     	//No, I don't think this will ever work. Must do it manually...
+    }
+    
+    public int sumMinutes(List<String> tags){
+    	List<String> yesWanted = getRelatedEntryIds(tags);
     	List<String> timeEntries = getTimeEntries(yesWanted);
     	//PROBLEM: timeEntries is empty... But could be because insert Record is faulty...
     	List<Integer> timeEntriesAsInt = new ArrayList<Integer>();

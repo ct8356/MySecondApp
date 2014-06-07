@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ct8356.mysecondapp.DbContract.Minutes;
+import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
 import android.support.v7.app.ActionBarActivity;
@@ -43,6 +45,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
     protected String mTableName; //CBTL what does protected mean?
     protected String mCreatorActivity; //leave just in case decide to use it.
     protected List<String> mSelectedTags;
+	private List<String> mColumnNames;
     private TextView mSelectedTagsText;
     
 	public List<String> getCheckedEntryIds() { 
@@ -175,10 +178,23 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	
 	public void updateMEntries() {
 		mDbHelper.openDatabase();
-		mEntries = mDbHelper.getAllEntries(mTableName); 
+		//List<String> selectedTagIds = mDbHelper.getTagIds(mSelectedTags);
+		//List<String> columnNames = Arrays.asList(MinutesToTagJoins.MINUTESID);
+		//List<List<String>> timeEntryIdsList = mDbHelper.getEntries(MinutesToTagJoins.TABLE_NAME, 
+		//		columnNames, MinutesToTagJoins.TAGID, selectedTagIds);
+		//causes a crash.
+		
+//		List<String> timeEntryIds = new ArrayList<String>();
+//		for (int i = 0; i < timeEntryIdsList.size(); i++) {
+//			timeEntryIds.add(timeEntryIdsList.get(i).get(0));
+//		}
+		List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
+		mColumnNames = mDbHelper.getAllColumnNames(mTableName);
+		mEntries = mDbHelper.getEntries(mTableName, mColumnNames, Minutes._ID, timeEntryIds); 
+		//get zero gets first row.
 		//this is then used by the listView in getView.
 		mDbHelper.close();
-		// CBTL maybe do not want to get all columns. Only desired columns.
+		//CBTL maybe do not want to get all columns. Only desired columns.
 	    //Ok for now, because not that many columns.
 	}
 	
