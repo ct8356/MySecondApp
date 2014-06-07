@@ -41,28 +41,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	public TextView mSelectedTagsText;
 	public List<String> mRowIds;
 	//was getContext() ...
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		//Gets the data repository in write mode
-		mDbHelper = new DbHelper(this);
-		mRowIds = new ArrayList<String>();
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();	
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		//enterMockData();
-		updateContent(); //Not sure should do this here...
-		//but if do do it here, don't do it in onCreate or onActivityResult().
-	}
-	
+
 	public void enterMockData() {
 		mDbHelper.openDatabase();
 		mDbHelper.insertTag("tag1");
@@ -89,26 +68,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		mDbHelper.insertRecord(minutes, mSelectedTags);  //HARDCODE
 		mDbHelper.close();
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.time_accumulator, menu);
-		return true;
-	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -145,6 +105,46 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
         }
     }
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		//Gets the data repository in write mode
+		mDbHelper = new DbHelper(this);
+		mRowIds = new ArrayList<String>();
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();	
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		//enterMockData();
+		updateContent(); //Not sure should do this here...
+		//but if do do it here, don't do it in onCreate or onActivityResult().
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.time_accumulator, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */

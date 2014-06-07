@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,6 +34,7 @@ import android.os.Build;
 public abstract class AbstractManagerActivity extends ActionBarActivity {
 	private DbHelper mDbHelper;
 	protected static final int CREATE_ENTRY = 0;
+	protected static final int SELECT_TAGS = 1;
 	protected static final int EDIT_ENTRY = Menu.FIRST;
 	private static final int DELETE_ENTRY = Menu.FIRST + 1;
 	
@@ -44,6 +46,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
     private ListView mListView; 
     protected String mTableName; //CBTL what does protected mean?
     protected String mCreatorActivity; //leave just in case decide to use it.
+    private LinearLayout layout;
     protected List<String> mSelectedTags;
 	private List<String> mColumnNames;
     private TextView mSelectedTagsText;
@@ -75,8 +78,30 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        updateMEntries();
-        mChecked.add(true);
+        switch (resultCode) {
+        case RESULT_CANCELED:
+        	//Do nothing
+        	break;
+        case RESULT_OK:
+	        switch (requestCode) {
+	        case CREATE_ENTRY:
+	            updateMEntries();
+	            mChecked.add(true);
+				break;
+	        case SELECT_TAGS:
+	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	updateMEntries();
+	        	updateMChecked();
+	        	//layout.invalidate();
+	        	updateContent();
+	        	mCustomAdapter.notifyDataSetChanged(); //nec?
+	        	//Well solved the problem!
+	        	//ofCourse! If textView doesn't auto-update, listView won't auto-update either!
+	        	break;
+	        }
+	        break;
+        }
+
     }
     
 	@Override
@@ -142,13 +167,17 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 
 	public void initialiseContent() {
 		//OTHER
-		LinearLayout layout = (LinearLayout) getLayoutInflater().
+		layout = (LinearLayout) getLayoutInflater().
 				inflate(R.layout.fragment_abstract_manager, null);
 		setContentView(layout);
 		//since want to add views to content view (root view?), have to inflate it yourself.
 		mSelectedTagsText = new TextView(this);
 		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 		layout.addView(mSelectedTagsText);
+		Button selectTags = new Button(this);
+		selectTags.setText("Select tags");
+		selectTags.setOnClickListener(new SelectTagsListener());
+		layout.addView(selectTags);
 		mListView = new ListView(this);
 		layout.addView(mListView);
 		//Ahah, remember, if want to get from XML, often need to inflate it!
@@ -165,6 +194,25 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
 		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
 		updateMEntries();
+		mChecked = new ArrayList<Boolean>();
+		for (int i=0; i<mEntries.size(); i+=1) {
+			//mEntries.size returns number of rows.
+			if (checkedEntryIds.contains(mEntries.get(i).get(0))) { //CBTL 0 for _ID
+				mChecked.add(true);
+			} else {
+				mChecked.add(false);
+			}
+		}
+	}
+	
+	public void updateContent() {
+		mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+		//I guess that if one of layouts children modified, layout auto-invalidated...
+	}
+	
+	public void updateMChecked() {
+		List<String> checkedEntryIds = new ArrayList<String>();
+		checkedEntryIds.add("0"); //None of the ids will be 0.
 		mChecked = new ArrayList<Boolean>();
 		for (int i=0; i<mEntries.size(); i+=1) {
 			//mEntries.size returns number of rows.
@@ -255,6 +303,14 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	public class OnItemClickListener implements AdapterView.OnItemClickListener {
 		public void onItemClick(AdapterView listView, View v, int position, long id) {
 			toggle(position);	
+		}
+	}
+	
+	public class SelectTagsListener implements View.OnClickListener {
+		public void onClick(View view) {
+			Intent intent = new Intent(AbstractManagerActivity.this, TagManagerActivity.class);
+			intent.putStringArrayListExtra("tags", (ArrayList<String>) mSelectedTags); 
+			startActivityForResult(intent, SELECT_TAGS);
 		}
 	}
 	
