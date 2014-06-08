@@ -35,8 +35,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	private DbHelper mDbHelper;
 	protected static final int CREATE_ENTRY = 0;
 	protected static final int SELECT_TAGS = 1;
-	protected static final int EDIT_ENTRY = Menu.FIRST;
-	private static final int DELETE_ENTRY = Menu.FIRST + 1;
+	protected static final int EDIT_ENTRY = 2;
+	private static final int DELETE_ENTRY = 3;
 	
 	private List<List<String>> mEntries; //a key variable. it is called by getItem().
 	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
@@ -89,8 +89,11 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	            updateMEntries();
 	            mChecked.add(true);
 				break;
+	        case EDIT_ENTRY:
+	            updateMEntries();
+				break;
 	        case SELECT_TAGS:
-	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTags = intent.getStringArrayListExtra("tags"); //HARDCODE
 	        	updateMEntries();
 	        	updateMChecked();
 	        	//layout.invalidate();
@@ -154,8 +157,9 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
             goEditEntry(rowId);
             return true;
         case DELETE_ENTRY:
-            mDbHelper.deleteEntryAndJoins(mTableName, "MinutesToTagJoins",
-            		rowId); //Could be tricky to softcode. //HARDCODE
+			String joinColumnName = mTableName+"ID"; //HARDCODE
+            mDbHelper.deleteEntryAndJoins(mTableName, MinutesToTagJoins.TABLE_NAME,
+            		joinColumnName, rowId); //Could be tricky to softcode.
             updateMEntries(); //not enough. Must notify.
             mChecked.remove(info.position);
             mCustomAdapter.notifyDataSetChanged();

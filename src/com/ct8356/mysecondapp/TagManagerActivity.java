@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
 import android.support.v7.app.ActionBarActivity;
@@ -139,13 +140,17 @@ public class TagManagerActivity extends ActionBarActivity {
         List<String> tag = Arrays.asList(mTagNames.get(info.position));
         //converts string to List. Ok since don't need to add() to this list.
         mDbHelper.openDatabase();
-        Long rowId = Long.valueOf(mDbHelper.getTagIds(tag).get(0));
+        Long rowId = Long.valueOf(mDbHelper.getEntryColumn(Tags.TABLE_NAME, Tags._ID, 
+        		Tags.TAG, tag).
+        		get(0));
     	switch(item.getItemId()) {
         case EDIT_TAG:
             goEditTag(rowId);
             return true;
         case DELETE_TAG:
-            mDbHelper.deleteTagAndJoins(rowId);
+			String joinColumnName = "TAGID"; //HARDCODE
+            mDbHelper.deleteEntryAndJoins(Tags.TABLE_NAME, MinutesToTagJoins.TABLE_NAME, 
+            		joinColumnName, rowId);
             updateMTagNames(); //not enough. Must notifyListViewOfChange? Yes.
             mCustomAdapter.notifyDataSetChanged();
             mChecked.remove(info.position);
@@ -171,7 +176,7 @@ public class TagManagerActivity extends ActionBarActivity {
 		mChecked = new ArrayList<Boolean>();
 		//DO DATABASE STUFF
 		mDbHelper.openDatabase();
-		mTagNames = mDbHelper.getAllTags(Tags.TAG);
+		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		for (int i=0; i<mTagNames.size(); i+=1) {
 			if (checkedTags.contains(mTagNames.get(i))) {
 				mChecked.add(true);
@@ -185,7 +190,7 @@ public class TagManagerActivity extends ActionBarActivity {
 	public void updateMTagNames() {
 		//mTagNames = new ArrayList<String>();
 		mDbHelper.openDatabase();
-		mTagNames = mDbHelper.getAllTags(Tags.TAG);
+		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
 	}
 	
@@ -201,7 +206,7 @@ public class TagManagerActivity extends ActionBarActivity {
 	private class CustomAdapter extends BaseAdapter {
 	    public int getCount() {
 			mDbHelper.openDatabase();
-			Cursor cursor = mDbHelper.getAllTagsCursor();
+			Cursor cursor = mDbHelper.getAllEntriesCursor(Tags.TABLE_NAME);
 			int count = cursor.getCount();
 			mDbHelper.close();
 			return count;

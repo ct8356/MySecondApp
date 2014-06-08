@@ -19,8 +19,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbHelper extends SQLiteOpenHelper {
 	//Since SQLiteOpenHelper is useful (I like its getWritableDatabase method),
-	//may as well use it. Means I have to have SQLiteOpenHelper and SQLiteDatabase,
-	//But oh well.
+	//may as well use it.
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 10;
     public static final String DATABASE_NAME = "Minutes.db";
@@ -35,12 +34,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
 		return selectionString;
     }
-    
-    public Cursor getRawCursor() {
-    	Cursor cursor = mDb.rawQuery("SELECT * FROM Tags", null);
-    	return cursor;
-    }
-    
+
     public Cursor getAllEntriesCursor(String tableName) {
 		Cursor cursor = mDb.query(
 	    		false, //Don't really want distinct...
@@ -52,65 +46,8 @@ public class DbHelper extends SQLiteOpenHelper {
 	            );
     	return cursor;
     }
-
-    public Cursor getAllJoinsCursor() {
-		Cursor cursor = mDb.query(
-	    		false, //Don't really want distinct...
-	    		MinutesToTagJoins.TABLE_NAME, 
-	    		new String[] {MinutesToTagJoins._ID, MinutesToTagJoins.MINUTESID, 
-	    				MinutesToTagJoins.TAGID}, 
-	    		null, 
-	            null, 
-	            null, null, null, null
-	            );
-    	return cursor;
-    }
-    
-    public Cursor getAllTagsCursor(){
-    	Cursor cursor = mDb.query(
-	    		true, 
-	    		Tags.TABLE_NAME, 
-	    		new String[] {Tags._ID, Tags.TAG}, 
-	    		null, // Potential ISSUE here, was "columnName = x".
-	    		null,
-	    		null, null, null, null
-	            );
-    	return cursor;
-    }
-    
-    public Cursor getAllTimeEntriesCursor() {
-		Cursor cursor = mDb.query(
-	    		true, 
-	    		Minutes.TABLE_NAME, 
-	    		new String[] {Minutes._ID, Minutes.MINUTES}, 
-	     		null,
-	    		null, 
-	    		null, null, null, null
-	            ); //Needs IN().
-		return cursor;
-	}
-    //Are any of these getAll methods needed anymore?
-    
-	public Cursor getJoinsCursor2(String joinTableName, String columnName, 
-			List<String> entryIds) {
-		String[] tagIdsSA = new String[entryIds.size()]; 
-		entryIds.toArray(tagIdsSA);
-		String entryIdsString = join(entryIds, ",");
-		String selectionString = columnName + " IN("+entryIdsString+")"; 
-		Cursor cursor = mDb.query(
-	    		false, //not distinct 
-	    		joinTableName, 
-	    		null, //null means get all columns
-	    		selectionString,
-	    		null,
-	    		null, null, null, null
-	            ); //ALSO needs IN(),
-		return cursor;
-	}
 	
 	public Cursor getEntriesCursor(String tableName, List<String> rowIds) {
-	  	String[] rowIdsSA = new String[rowIds.size()];
-	  	rowIds.toArray(rowIdsSA);
 		String entryIdsString = join(rowIds, ",");
 		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
 		Cursor cursor = mDb.query(
@@ -123,24 +60,8 @@ public class DbHelper extends SQLiteOpenHelper {
 	            );
     	return cursor;
 	}
-    
-	public Cursor getJoinsCursor(List<String> tagIds) {
-		String[] tagIdsSA = new String[tagIds.size()]; 
-		tagIds.toArray(tagIdsSA);
-		String tagIdsString = join(tagIds, ",");
-		String selectionString = MinutesToTagJoins.TAGID + " IN("+tagIdsString+")"; 
-		Cursor cursor = mDb.query(
-	    		true, 
-	    		MinutesToTagJoins.TABLE_NAME, 
-	    		new String[] {MinutesToTagJoins._ID, MinutesToTagJoins.MINUTESID, MinutesToTagJoins.TAGID}, 
-	    		selectionString,
-	    		null,
-	    		null, null, null, null
-	            ); //ALSO needs IN(),
-		return cursor;
-	}
 	
-	public Cursor getTimeEntryIdsFromJoinsCursor(List<String> tagIds) {
+	public Cursor getTimeEntryIdsFromJoinsCursor(List<String> tagIds) { //KEEP
 		String[] tagIdsSA = new String[tagIds.size()]; 
 		tagIds.toArray(tagIdsSA);
 		String tagIdsString = join(tagIds, ",");
@@ -156,7 +77,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		return cursor;
 	}
 	
-	public Cursor getJoinsCursorWithTimeEntryIds(List<String> timeEntryIds) {
+	public Cursor getJoinsCursorWithTimeEntryIds(List<String> timeEntryIds) { //KEEP
 		String timeEntryIdsString = join(timeEntryIds, ",");
 		String selectionString = MinutesToTagJoins.MINUTESID + " IN("+timeEntryIdsString+")"; 
 		Cursor cursor = mDb.query(
@@ -169,23 +90,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	            ); //ALSO needs IN(),
 		return cursor;
 	}
-	
-	public Cursor getJoinsCursorWithANDCondition(List<String> tagIds) {
-		for (int i = 0; i < tagIds.size(); i+=1) {
-			tagIds.set(i, MinutesToTagJoins.TAGID + "=" + tagIds.get(i)); 
-		}
-		String selectionString = join(tagIds, " AND ");
-		Cursor cursor = mDb.query(
-	    		true, 
-	    		MinutesToTagJoins.TABLE_NAME, 
-	    		new String[] {MinutesToTagJoins._ID, MinutesToTagJoins.MINUTESID, MinutesToTagJoins.TAGID}, 
-	    		selectionString,
-	    		null,
-	    		null, null, null, null
-	            ); //ALSO needs IN(),
-		return cursor;
-	}
-	
+
 	public Cursor getEntriesCursor(String tableName, List<String> columnNames, 
 			List<String> rowIds) {
 	  	String[] columnNamesSA = (String[]) columnNames.toArray();
@@ -218,56 +123,20 @@ public class DbHelper extends SQLiteOpenHelper {
     	return cursor;
 	}
 	
-	public Cursor getTagsCursor(List<String> rowIds) {
-	  	String[] rowIdsSA = new String[rowIds.size()];
-	  	rowIds.toArray(rowIdsSA);
-		String tagIdsString = join(rowIds, ",");
-		String selectionString = Tags._ID + " IN("+tagIdsString+")"; 
-		Cursor cursor = mDb.query(
-	    		true, 
-	    		Tags.TABLE_NAME, 
-	    		new String[] {Tags._ID, Tags.TAG}, 
-	    		selectionString, 
-	    		null, 
-	            null, null, null, null
-	            );
-    	return cursor;
-	}
-    
-	public Cursor getTagIdsCursor(List<String> tags) {
-		String[] tagsSA = new String[tags.size()]; 
-		tags.toArray(tagsSA);
-		String tagsString = join(tags, "','");
-		String selectionString = Tags.TAG + " IN('"+tagsString+"')"; 
+	public Cursor getEntryColumnCursor(String tableName, String columnName, 
+		String selectionColumnName, List<String> selection) {
+		String selectionsString = join(selection, "','");
+		String selectionString = selectionColumnName + " IN('"+selectionsString+"')"; 
     	Cursor cursor = mDb.query(
-	    		true, 
-	    		Tags.TABLE_NAME, 
-	    		new String[] {Tags._ID, Tags.TAG}, 
+	    		false, //do not want distinct only!
+	    		tableName, 
+	    		new String[] {columnName}, 
 	     		selectionString,
 	    		null, 
 	    		null, null, null, null
 	            ); //Needs IN().
     	return cursor;
 	} 
-	//possible this could replace the method above...
-	
-	public Cursor getTimeEntriesCursor(List<String> timeEntryIds) { 
-		//This method causing issues.
-		//Perhaps there is no matching value?
-		String[] timeEntryIdsSA = new String[timeEntryIds.size()]; 
-		timeEntryIds.toArray(timeEntryIdsSA);
-		String timeEntryIdsString = join(timeEntryIds, ",");
-		String selectionString = Minutes._ID + " IN("+timeEntryIdsString+")"; 
-		Cursor cursor = mDb.query(
-	    		false, 
-	    		Minutes.TABLE_NAME, 
-	    		new String[] {Minutes._ID, Minutes.MINUTES}, 
-	    		//needed minutesID in here...?
-	    		selectionString,
-	    		null,
-	    		null, null, null, null);
-		return cursor;
-	}
 	
 	public List<String> getAllColumnNames(String tableName) {
 		Cursor cursor = getAllEntriesCursor(tableName);
@@ -281,8 +150,8 @@ public class DbHelper extends SQLiteOpenHelper {
 		return entries;
 	}
 	
-	public List<String> getAllTags(String columnName) {
-		Cursor cursor = getAllTagsCursor();
+	public List<String> getAllEntriesColumn(String tableName, String columnName) {
+		Cursor cursor = getAllEntriesCursor(tableName);
 		List<String> tags = new ArrayList<String>();
 		while (cursor.moveToNext()) {
 			tags.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
@@ -310,26 +179,19 @@ public class DbHelper extends SQLiteOpenHelper {
 		List<List<String>> entries = lookInCursor(cursor);
 		return entries;
 	}
-	
-	public List<String> getTags(List<String> rowIds) {
-		Cursor cursor = getTagsCursor(rowIds);
-		List<String> tags = new ArrayList<String>();
-		while (cursor.moveToNext()) {
-			tags.add(cursor.getString(cursor.getColumnIndexOrThrow(Tags.TAG)));
-		}
-		return tags;
+
+	public List<String> getEntryColumn(String tableName, String columnName, 
+			String selectionColumnName, List<String> selections) {
+		Cursor cursor = getEntryColumnCursor(tableName, columnName, 
+				selectionColumnName, selections);
+		List<String> entries = new ArrayList<String>(); //ahah, because List is abstract!
+    	while (cursor.moveToNext()){
+    		entries.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
+    	}
+    	return entries;
 	}
 
-	public List<String> getTagIds(List<String> tags) {
-		Cursor cursor = getTagIdsCursor(tags);
-		List<String> tagIds = new ArrayList<String>(); //ahah, because List is abstract!
-    	while (cursor.moveToNext()){
-    		tagIds.add(cursor.getString(cursor.getColumnIndexOrThrow(Tags._ID)));
-    	}
-    	return tagIds;
-	}
-	
-	public List<String> getTagIdsFromJoin(List<String> timeEntryIds) {
+	public List<String> getTagIdsFromJoin(List<String> timeEntryIds) { //KEEP
 		Cursor cursor = getJoinsCursorWithTimeEntryIds(timeEntryIds);
 		//List<List<String>> test = lookInCursor(cursor); 
 		//Careful with this, it will move cursor to end!
@@ -339,43 +201,19 @@ public class DbHelper extends SQLiteOpenHelper {
     		tagIds.add(cursor.getString(cursor.getColumnIndexOrThrow(MinutesToTagJoins.TAGID)));
     	}
     	return tagIds;
-	}
+	}	
 	
-	public List<String> getTimeEntries(List<String> timeEntryIds) { 
-		Cursor cursor = getTimeEntriesCursor(timeEntryIds);
-		//List<List<String>> test = lookInCursor(cursor); 
-		List<String> timeEntries = new ArrayList<String>();
-		while (cursor.moveToNext()) {
-			timeEntries.add(cursor.getString(cursor.getColumnIndexOrThrow(Minutes.MINUTES)));
-		}
-		return timeEntries;
-	}
-
-	public List<String> getTimeEntryIds(List<String> tagIds) {
+	public List<String> getTimeEntryIdsFromJoin(List<String> tagIds) { //KEEP
 		Cursor cursor = getTimeEntryIdsFromJoinsCursor(tagIds);
-		//List<List<String>> test = lookInCursor(cursor); 
-		//Careful with this, it will move cursor to end!
 		List<String> timeEntryIds = new ArrayList<String>(); 
-		//ahah, need ArrayList, because List is abstract!
     	while (cursor.moveToNext()){
-    		timeEntryIds.add(cursor.getString(cursor.getColumnIndexOrThrow(MinutesToTagJoins.MINUTESID)));
+    		timeEntryIds.add(cursor.getString(cursor.
+    				getColumnIndexOrThrow(MinutesToTagJoins.MINUTESID)));
     	}
     	return timeEntryIds;
 	}
-	
-	public List<String> getTimeEntryIdsWithANDCondition(List<String> tagIds) {
-		Cursor cursor = getJoinsCursorWithANDCondition(tagIds);
-		//List<List<String>> test = lookInCursor(cursor); 
-		//Careful with this, it will move cursor to end!
-		List<String> ids = new ArrayList<String>(); 
-		//ahah, need ArrayList, because List is abstract!
-    	while (cursor.moveToNext()){
-    		ids.add(cursor.getString(cursor.getColumnIndexOrThrow(MinutesToTagJoins._ID)));
-    	}
-    	return ids;
-	}
 
-    public long insertRecord(int minutes, List<String> tags){
+    public long insertTimeEntry(int minutes, List<String> tags) {
 		ContentValues values = new ContentValues();
 		values.put(Minutes.MINUTES, minutes);
 		long newTimeEntryId = mDb.insert(
@@ -383,7 +221,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				Minutes.MINUTES, //nullColumnHack
 				values);
 		//NOW ADD THE JOINS
-		List<String> tagIds = getTagIds(tags);
+		List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
 		for (int i = 0; i < tags.size(); i++ ) {
 			values = new ContentValues();
 			values.put(MinutesToTagJoins.MINUTESID, newTimeEntryId);
@@ -394,20 +232,11 @@ public class DbHelper extends SQLiteOpenHelper {
 					values);
 		}
     	return newTimeEntryId;
-    }
+    }    
     
-    public long insertTag(String tag) throws SQLiteConstraintException {
-		ContentValues values = new ContentValues();
-		values.put(Tags.TAG, tag); 
-			long newRecordId = mDb.insert(
-					Tags.TABLE_NAME,
-					Tags.TAG, //nullColumnHack
-					values);
-    	return newRecordId;
-    }
-    
-    public long insertEntry(String tableName, List<String> columnNames, List<String> entry) {
+    public long insertEntry(String tableName, List<String> entry) {
   		ContentValues values = new ContentValues();
+  		List<String> columnNames = getAllColumnNames(tableName);
   		for (int i = 1; i < columnNames.size(); i+=1) {
   			//i represents column index. i=1 to skip id column.
   			values.put(columnNames.get(i), entry.get(i-1)); 
@@ -418,21 +247,10 @@ public class DbHelper extends SQLiteOpenHelper {
 				null, //nullColumnHack, null for now...
 				values);
       	return newRecordId;
-    }
-   
-    public long updateTag(long mRowId, String tag) throws SQLiteConstraintException {
-		ContentValues values = new ContentValues();
-		values.put(Tags.TAG, tag); 
-			long newRecordId = mDb.update(
-					Tags.TABLE_NAME,
-					values,
-					"_id = "+mRowId,
-					null);
-    	return newRecordId;
-    }
+    }   
     
-    public long updateEntry(String tableName, List<String> columnNames, List<String> entry, 
-    		long mRowId) {
+    public long updateEntry(String tableName, List<String> entry, long mRowId) {
+  		List<String> columnNames = getAllColumnNames(tableName);
 		ContentValues values = new ContentValues();
   		for (int i = 1; i < columnNames.size(); i+=1) {
   			//i represents column index. i=1 to skip id column.
@@ -442,79 +260,53 @@ public class DbHelper extends SQLiteOpenHelper {
 			long newRecordId = mDb.update(
 					tableName,
 					values,
-					"_id = "+mRowId,
+					DbContract._ID+" = "+mRowId,
 					null);
     	return newRecordId;
     }
-    
-    public void deleteEntryAndJoins(String entryTableName, String joinTableName, long entryId) {
+
+    public void deleteEntryAndJoins(String entryTableName, String joinTableName, 
+    		String joinColumnName, long entryId) {
 			mDb.delete(entryTableName, DbContract._ID+" = "+entryId, null);
-			//List<String> joinColumnName = Arrays.asList(entryTableName+"ID");
-			String joinColumnName = entryTableName+"ID";
-			//List<String> entryIds = Arrays.asList(String.valueOf(entryId));
-			//List<List<String>> joins = getEntries(joinTableName, joinColumnName, entryIds);
-			//String selectionString = buildSelectionString(entryId);
-			//Cursor cursor = mDb.query(
-//					false, //Don't want distinct
-//		    		tableName, 
-//		    		columnNamesSA,
-//		    		selectionString, 
-//		    		null, 
-//		            null, null, null, null
-//		            );
-//			List<List<String>> entries = lookInCursor(cursor);
-			//List<String> joinId = //Thinking you need this, was what mislead you!
 			mDb.delete(joinTableName, joinColumnName+" = "+entryId, null);
     }
     
-    public void deleteTagAndJoins(long mRowId) throws SQLiteConstraintException {
-			mDb.delete(Tags.TABLE_NAME, Tags._ID+" = "+mRowId, null);
-			mDb.delete(MinutesToTagJoins.TABLE_NAME, MinutesToTagJoins.TAGID+" = "+mRowId, 
-					null);
-    }
-    
     public List<String> getRelatedEntryIds(List<String> tags) {
-    	List<String> tagIds = getTagIds(tags);
-    	List<String> associatedTimeEntryIds = getTimeEntryIds(tagIds);
-    	//YES, now it is distinct.
+    	List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
+    	List<String> associatedTimeEntryIds = getTimeEntryIdsFromJoin(tagIds);
     	//Now shrink this, to just Ids that match ALL tagIds.
     	//For loop, going through each associated Id.
     	List<String> yesWanted = new ArrayList<String>();
     	for (int i = 0; i < associatedTimeEntryIds.size(); i++) {
     		//See if tagId got from EntryId matches every tagId. (nested for loop).
-    		List<String> associatedTagIds = getTagIdsFromJoin(Arrays.asList(associatedTimeEntryIds.get(i)));
-    		//ahah, should only pass a single timeEntry here!
     		//use SQL, its probs more efficient than searching a list yourself.
+    		List<String> associatedTagIds = getTagIdsFromJoin(Arrays.
+    				asList(associatedTimeEntryIds.get(i)));
 			boolean matchesAllTags = true;
-			//if very localised, ok (even faster) to use array.
     		for (int j = 0; j < tagIds.size(); j++) {
 	    		if (associatedTagIds.contains(tagIds.get(j))) {
 	    			//Do nothing.
 	    		} else {
 	    			matchesAllTags = false;
-	    		}	
+	    		}
     		}
-    		//If does, put it in new list. YEP. Practically the fastest way.
+    		//If does matches all tags, put it in new list. YEP. Practically the fastest way.
     		if (matchesAllTags) {
     			yesWanted.add(associatedTimeEntryIds.get(i));
     		}
     	}
     	return yesWanted;
-    	//OR, maybe is an SQL command that does this for you?
-    	//List<String> associatedTimeEntryIds = getTimeEntryIdsWithANDCondition(tagIds);
-    	//No, I don't think this will ever work. Must do it manually...
     }
     
     public int sumMinutes(List<String> tags){
     	List<String> yesWanted = getRelatedEntryIds(tags);
-    	List<String> timeEntries = getTimeEntries(yesWanted);
-    	//PROBLEM: timeEntries is empty... But could be because insert Record is faulty...
+    	List<String> timeEntries = getEntryColumn(Minutes.TABLE_NAME, Minutes.MINUTES,
+    			Minutes._ID, yesWanted);
     	List<Integer> timeEntriesAsInt = new ArrayList<Integer>();
 		for(String timeEntry : timeEntries) {
 			   timeEntriesAsInt.add(Integer.parseInt(timeEntry)); 
 		}
-		Integer sumMinutes = sum(timeEntriesAsInt); //BELOW HERE works.
-		//Note, it may be possible to add String to int, and its converted to int.
+		Integer sumMinutes = sum(timeEntriesAsInt);
 		int sumMinutesAsInt = (int) sumMinutes;
     	return sumMinutesAsInt;
     }

@@ -43,15 +43,15 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 
 	public void enterMockData() {
 		mDbHelper.openDatabase();
-		mDbHelper.insertTag("tag1");
-		mDbHelper.insertTag("tag2");
+		//mDbHelper.insertEntry("tag1");
+		//mDbHelper.insertEntry("tag2");
 		mDbHelper.close();
 	}
 	
 	public void add10Minutes(List<String> projectName){
 		mDbHelper.openDatabase();
 		int minutes = 10;
-		mDbHelper.insertRecord(minutes, mSelectedTags);
+		mDbHelper.insertTimeEntry(minutes, mSelectedTags);
 		mDbHelper.close();
 	}
 	

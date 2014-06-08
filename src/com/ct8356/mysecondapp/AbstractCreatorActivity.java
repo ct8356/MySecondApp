@@ -27,7 +27,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
     private DbHelper mDbHelper;
     private Long mRowId;
 	protected String mTableName;
-	private List<String> mColumnNames;
+	//private List<String> mColumnNames; //Leave in case use again.
 	protected int mColumnCount;
 	private LinearLayout mLayout;
 	
@@ -39,8 +39,8 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 		mDbHelper = new DbHelper(this);
 		//DATABASE STUFF
 		mDbHelper.openDatabase();
-		Cursor cursor = mDbHelper.getAllEntriesCursor(mTableName); //issues
-		mColumnNames = Arrays.asList(cursor.getColumnNames());
+		Cursor cursor = mDbHelper.getAllEntriesCursor(mTableName);
+		//mColumnNames = Arrays.asList(cursor.getColumnNames());
 		mColumnCount = cursor.getColumnCount();
 		mDbHelper.close();
 		//VIEW STUFF
@@ -122,14 +122,14 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
         for (int i = 1; i < mColumnCount; i += 1) {
         	//start with i=1, to skip the id column.
         	 EditText editText = (EditText) mLayout.getChildAt(i+2); 
-        	 //+2 because of enter entry, and Save button views.
+        	 //+2 because of enter entry, and Save button views. //HARDCODE
    	         entry.add(editText.getText().toString());
         }
         mDbHelper.openDatabase();
         if (mRowId == null) {
-			mRowId = mDbHelper.insertEntry(mTableName, mColumnNames, entry);
+			mRowId = mDbHelper.insertEntry(mTableName, entry);
         } else {
-            mDbHelper.updateEntry(mTableName, mColumnNames, entry, mRowId);
+            mDbHelper.updateEntry(mTableName, entry, mRowId);
         }
 		mDbHelper.close();
     }

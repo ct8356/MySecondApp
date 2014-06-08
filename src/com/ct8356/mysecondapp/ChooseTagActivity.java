@@ -41,7 +41,7 @@ public class ChooseTagActivity extends ActionBarActivity {
 		//Do database stuff
 		mDbHelper.openDatabase();
 		Cursor cursor;
-		cursor = mDbHelper.getAllTagsCursor();
+		cursor = mDbHelper.getAllEntriesCursor(Tags.TABLE_NAME);
 		//MAKE VIEWS
 		ListView listView = new ListView(this);
         startManagingCursor(cursor);

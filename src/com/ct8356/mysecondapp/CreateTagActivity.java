@@ -1,6 +1,7 @@
 package com.ct8356.mysecondapp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Tags;
@@ -40,7 +41,8 @@ public class CreateTagActivity extends ActionBarActivity {
 			mDbHelper.openDatabase();
 			List<String> rowId = new ArrayList<String>();
 			rowId.add(String.valueOf(mRowId));
-			List<String> tags = mDbHelper.getTags(rowId);
+			List<String> tags = mDbHelper.getEntryColumn(Tags.TABLE_NAME, Tags.TAG, 
+					Tags._ID, rowId);
 			mTag.setText(tags.get(0)); //This seems to cause issues...
 			mDbHelper.close();
 		}
@@ -87,10 +89,11 @@ public class CreateTagActivity extends ActionBarActivity {
         String tag = mTag.getText().toString();
         if (tag.length() != 0) {
 	        mDbHelper.openDatabase();
+	        List<String> columnNames = mDbHelper.getAllColumnNames(Tags.TABLE_NAME);
 	        if (mRowId == null) {
-				mRowId = mDbHelper.insertTag(tag);
+				mRowId = mDbHelper.insertEntry(Tags.TABLE_NAME, Arrays.asList(tag));
 	        } else {
-	            mDbHelper.updateTag(mRowId, tag);
+	            mDbHelper.updateEntry(Tags.TABLE_NAME, Arrays.asList(tag), mRowId);
 	        }
 			mDbHelper.close();
         }

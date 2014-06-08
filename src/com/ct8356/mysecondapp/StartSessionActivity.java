@@ -87,7 +87,7 @@ public class StartSessionActivity extends ActionBarActivity {
     	int mins = (int) ((mElapsedTime/1000)/60); //CBTL Turn it to minutes
     	//List<String> mSelectedTagsList = new ArrayList<String>();
     	//mSelectedTagsList.add(mSelectedTagsString);
-        mDbHelper.insertRecord(mins, mSelectedTags);
+        mDbHelper.insertTimeEntry(mins, mSelectedTags);
         mDbHelper.close();
      }
 
