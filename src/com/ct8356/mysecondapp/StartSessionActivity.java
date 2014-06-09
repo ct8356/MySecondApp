@@ -52,16 +52,10 @@ public class StartSessionActivity extends ActionBarActivity {
         	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
         }
 		mChrono.start();
-		//setContentView(R.layout.activity_start_session);
-		//if (savedInstanceState == null) {
-		//	getSupportFragmentManager().beginTransaction()
-		//			.add(R.id.container, new PlaceholderFragment()).commit();
-		//}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.start_session, menu);
 		return true;
@@ -69,9 +63,6 @@ public class StartSessionActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -88,29 +79,10 @@ public class StartSessionActivity extends ActionBarActivity {
     private void saveState() {
         mDbHelper.openDatabase();
     	String mins = String.valueOf((mElapsedTime/1000)/60); //CBTL Turn it to minutes
-    	//List<String> mSelectedTagsList = new ArrayList<String>();
-    	//mSelectedTagsList.add(mSelectedTagsString);
         mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, mins, 
         		MinutesToTagJoins.TABLE_NAME, mSelectedTags);
         mDbHelper.close();
      }
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_start_session,
-					container, false);
-			return rootView;
-		}
-	}
 
 	public class StartSessionLayout extends ScrollView {	
 		public StartSessionLayout(Context context) {

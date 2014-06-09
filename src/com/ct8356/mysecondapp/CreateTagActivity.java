@@ -26,6 +26,11 @@ public class CreateTagActivity extends ActionBarActivity {
     private DbHelper mDbHelper;
     private Long mRowId;
 	
+	public void goBackToStarter() {
+		setResult(RESULT_OK);
+		finish();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,17 +56,17 @@ public class CreateTagActivity extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.create_tag, menu);
+		getMenuInflater().inflate(R.menu.abstract_creator, menu);
 		return true;
-	}
+	} 
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			return true;
+		case R.id.action_done:
+			goBackToStarter();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -79,11 +84,6 @@ public class CreateTagActivity extends ActionBarActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
     }
 	
-	public void clickSaveTag(View view) {
-			setResult(RESULT_OK);
-			finish();
-	}
-	
    private void saveState() {
 		mTag = (EditText) findViewById(R.id.edit_create_tag);
         String tag = mTag.getText().toString();
@@ -98,22 +98,4 @@ public class CreateTagActivity extends ActionBarActivity {
 			mDbHelper.close();
         }
     }
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_create_tag,
-					container, false);
-			return rootView;
-		}
-	}
-
 }

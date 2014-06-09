@@ -99,7 +99,7 @@ public class TagManagerActivity extends ActionBarActivity {
 		mDbHelper = new DbHelper(this);
 		mCustomAdapter = new CustomAdapter();
 		initialiseMemberVariables();
-		initialiseContent();
+		initialiseViews();
 		registerForContextMenu(mListView);
 	}
 
@@ -112,9 +112,6 @@ public class TagManagerActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			return true;
@@ -161,8 +158,7 @@ public class TagManagerActivity extends ActionBarActivity {
         return super.onContextItemSelected(item);
     }
 
-	public void initialiseContent() {
-		//OTHER
+	public void initialiseViews() {
 		mListView = new ListView(this);
 		//Ahah, remember, if want to get from XML, often need to inflate it!
 		mListView.setAdapter(mCustomAdapter);
@@ -186,11 +182,9 @@ public class TagManagerActivity extends ActionBarActivity {
 				mChecked.add(false);
 			}
 		}
-		
 	}
 	
 	public void updateMTagNames() {
-		//mTagNames = new ArrayList<String>();
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
