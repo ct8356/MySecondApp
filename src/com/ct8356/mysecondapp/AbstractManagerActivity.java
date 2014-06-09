@@ -119,7 +119,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.tag_manager, menu);
+		getMenuInflater().inflate(R.menu.abstract_manager, menu);
 		return true;
 	}
 
@@ -170,7 +170,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 
 	public void initialiseViews() {
 		mLayout = (LinearLayout) getLayoutInflater().
-				inflate(R.layout.fragment_abstract_manager, null);
+				  inflate(R.layout.fragment_abstract_manager, null);
 		setContentView(mLayout);
 		//since want to add views to content view (root view?), have to inflate it yourself.?
 		mSelectedTagsText = new TextView(this);

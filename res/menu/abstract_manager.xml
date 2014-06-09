@@ -4,6 +4,16 @@
     tools:context="com.ct8356.mysecondapp.AbstractManagerActivity" >
 
     <item
+        android:id="@+id/action_done"
+        android:title="@string/action_done"
+        app:showAsAction="ifRoom|withText"/>
+    
+    <item
+        android:id="@+id/action_create"
+        android:title="@string/action_create"
+        app:showAsAction="ifRoom|withText"/>
+    
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
