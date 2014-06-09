@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
+import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -50,8 +51,9 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public void add10Minutes(List<String> projectName){
 		mDbHelper.openDatabase();
-		int minutes = 10;
-		mDbHelper.insertTimeEntry(minutes, mSelectedTags);
+		String minutes = "10";
+		mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, minutes, 
+				MinutesToTagJoins.TABLE_NAME, mSelectedTags);
 		mDbHelper.close();
 	}
 	
@@ -75,18 +77,18 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
         case RESULT_OK:
 	        switch (requestCode) {
 	        case ADD_TAG:
-	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
 	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 	        	updateMSumMinutesText();
 	        	break;
 	        case START_SESSION:
-	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
 	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 	        	updateMSumMinutesText();
 	        	//needs to update these, incase these are changed during session.
 	        	break;
 	        case MANAGE_ENTRIES:
-	        	mSelectedTags = intent.getStringArrayListExtra("tags");
+	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
 	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 	        	updateMSumMinutesText();
 	        	break;
@@ -180,7 +182,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	public class AddTagListener implements View.OnClickListener {
 		public void onClick(View view) {
 			Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
-			intent.putStringArrayListExtra("tags", (ArrayList<String>) mSelectedTags); 
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags); 
 			startActivityForResult(intent, ADD_TAG);
 		}
 	}
@@ -196,7 +199,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		public void onClick(View view) {
 			Intent intent = new Intent(TimeAccumulatorActivity.this, 
 					StartSessionActivity.class);
-			intent.putStringArrayListExtra("tag", (ArrayList<String>) mSelectedTags);
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags);
 		    startActivityForResult(intent, START_SESSION);
 		}
 	}

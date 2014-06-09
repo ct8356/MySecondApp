@@ -39,14 +39,14 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	private static final int DELETE_ENTRY = 3;
 	
 	private List<List<String>> mEntries; //a key variable. it is called by getItem().
-	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
 	//Note, every inner list, represents a row.
+	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
 	private List<Boolean> mChecked; //a key variable. Called by getView().
     public CustomAdapter mCustomAdapter; 
     private ListView mListView; 
     protected String mTableName; //CBTL what does protected mean?
     protected String mCreatorActivity; //leave just in case decide to use it.
-    private LinearLayout layout;
+    private LinearLayout mLayout;
     protected List<String> mSelectedTags;
 	private List<String> mColumnNames;
     private TextView mSelectedTagsText;
@@ -59,15 +59,16 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 			//size() here will give number of rows.
 			if (mChecked.get(i)) {
 				checkedEntryIds.add(mEntries.get(i).get(0));
-				//get(0) gets 0th column, which is _ID.
+				//get(0) gets 0th column, which is always _ID.
 			}
 		}
 		return checkedEntryIds;
 	}
 
-	public void goHome() {
+	public void goBackToStarter() {
 		Intent intent = new Intent();
-		intent.putStringArrayListExtra("tags", (ArrayList<String>) mSelectedTags); 
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags); 
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -93,13 +94,12 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	            updateMEntries();
 				break;
 	        case SELECT_TAGS:
-	        	mSelectedTags = intent.getStringArrayListExtra("tags"); //HARDCODE
+	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
 	        	updateMEntries();
 	        	updateMChecked();
-	        	//layout.invalidate();
-	        	updateContent();
-	        	mCustomAdapter.notifyDataSetChanged(); //nec?
-	        	//Well solved the problem!
+	        	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+	    		//I guess that if one of layouts children modified, layout auto-invalidated...
+	        	mCustomAdapter.notifyDataSetChanged();
 	        	//ofCourse! If textView doesn't auto-update, listView won't auto-update either!
 	        	break;
 	        }
@@ -111,9 +111,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDbHelper = new DbHelper(this);
-		mCustomAdapter = new CustomAdapter();
 		initialiseMemberVariables();
-		initialiseContent();
+		initialiseViews();
 		registerForContextMenu(mListView);
 	}
 
@@ -130,7 +129,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		case R.id.action_settings:
 			return true;
 		case R.id.action_done:
-			goHome();
+			goBackToStarter();
 			return true;
 		case R.id.action_create:
 			goCreateEntry();
@@ -159,7 +158,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         case DELETE_ENTRY:
 			String joinColumnName = mTableName+"ID"; //HARDCODE
             mDbHelper.deleteEntryAndJoins(mTableName, MinutesToTagJoins.TABLE_NAME,
-            		joinColumnName, rowId); //Could be tricky to softcode.
+            		joinColumnName, rowId);
             updateMEntries(); //not enough. Must notify.
             mChecked.remove(info.position);
             mCustomAdapter.notifyDataSetChanged();
@@ -169,31 +168,30 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         return super.onContextItemSelected(item);
     }
 
-	public void initialiseContent() {
-		//OTHER
-		layout = (LinearLayout) getLayoutInflater().
+	public void initialiseViews() {
+		mLayout = (LinearLayout) getLayoutInflater().
 				inflate(R.layout.fragment_abstract_manager, null);
-		setContentView(layout);
-		//since want to add views to content view (root view?), have to inflate it yourself.
+		setContentView(mLayout);
+		//since want to add views to content view (root view?), have to inflate it yourself.?
 		mSelectedTagsText = new TextView(this);
 		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-		layout.addView(mSelectedTagsText);
+		mLayout.addView(mSelectedTagsText);
 		Button selectTags = new Button(this);
 		selectTags.setText("Select tags");
 		selectTags.setOnClickListener(new SelectTagsListener());
-		layout.addView(selectTags);
+		mLayout.addView(selectTags);
 		mListView = new ListView(this);
-		layout.addView(mListView);
-		//Ahah, remember, if want to get from XML, often need to inflate it!
+		mLayout.addView(mListView);
+		mCustomAdapter = new CustomAdapter();
 		mListView.setAdapter(mCustomAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener());
-		//setContentView(mListView);	
 	}
 	
 	public void initialiseMemberVariables() {
-		//List<String> checkedEntries = extras.getStringArrayList("tags"); // CBTL
+		//List<String> checkedEntryIds = extras.getStringArrayList(DbContract.CHECKED_IDS);
+		//Might need above if activity is killed during ActForResult, due to low memory.
 		List<String> checkedEntryIds = new ArrayList<String>();
-		checkedEntryIds.add("0"); //None of the ids will be 0.
+		//checkedEntryIds.add("0"); //None of the ids will be 0.
 		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
 		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
 		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
@@ -201,17 +199,12 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		mChecked = new ArrayList<Boolean>();
 		for (int i=0; i<mEntries.size(); i+=1) {
 			//mEntries.size returns number of rows.
-			if (checkedEntryIds.contains(mEntries.get(i).get(0))) { //CBTL 0 for _ID
+			if (checkedEntryIds.contains(mEntries.get(i).get(0))) { //0 for _ID
 				mChecked.add(true);
 			} else {
 				mChecked.add(false);
 			}
 		}
-	}
-	
-	public void updateContent() {
-		mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-		//I guess that if one of layouts children modified, layout auto-invalidated...
 	}
 	
 	public void updateMChecked() {
@@ -230,27 +223,18 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	
 	public void updateMEntries() {
 		mDbHelper.openDatabase();
-		//List<String> selectedTagIds = mDbHelper.getTagIds(mSelectedTags);
-		//List<String> columnNames = Arrays.asList(MinutesToTagJoins.MINUTESID);
-		//List<List<String>> timeEntryIdsList = mDbHelper.getEntries(MinutesToTagJoins.TABLE_NAME, 
-		//		columnNames, MinutesToTagJoins.TAGID, selectedTagIds);
-		//causes a crash.
-		
-//		List<String> timeEntryIds = new ArrayList<String>();
-//		for (int i = 0; i < timeEntryIdsList.size(); i++) {
-//			timeEntryIds.add(timeEntryIdsList.get(i).get(0));
-//		}
 		switch (mSelectedTags.size()) {
 		case 0:
 			mEntries = mDbHelper.getAllEntries(mTableName);
+			//this is then used by the listView in getView.
 			break;
 		default:
 			List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
 			mColumnNames = mDbHelper.getAllColumnNames(mTableName);
-			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, Minutes._ID, timeEntryIds); 
+			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, 
+					Minutes._ID, timeEntryIds); 
 			break;
-		}
-		//this is then used by the listView in getView.
+		}	
 		mDbHelper.close();
 		//CBTL maybe do not want to get all columns. Only desired columns.
 	    //Ok for now, because not that many columns.
@@ -271,9 +255,6 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	    }
 	
 	    public List<String> getItem(int position) {	
-	    	//Cool. getItem is part of the Adapter interface, but can return any object
-	    	//So, do not need to use CursorAdapter afterall.
-	    	//(not that there is anything wrong with CA, just means change is nec.
 	        return mEntries.get(position); //this effectively returns a row.
 	    }
 	
@@ -295,13 +276,10 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 			         view.addView(textView);
 		         }
 	         }
-	         //I believe this calls for the view to be built dynamically.
-	         //i.e. based on whatever is returned by getItem().
-	         //List<TextView> textViews = new ArrayList<TextView>();
 	         for (int i = 0; i < getItem(pos).size(); i += 1) {
-	        	 TextView textView = (TextView) view.getChildAt(i+1); //+1 because of checkbox
+	        	 TextView textView = (TextView) view.getChildAt(i+1); 
+	        	 //+1 because of checkbox //HARDCODE
 		         textView.setText("  "+getItem(pos).get(i)); //get the ith column.
-		         //Yes! it works!
 	         } //expensive to do this every time getView is called?
 	         // No more than inflating i think... CBTL. 
 	         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox1);
@@ -319,7 +297,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	public class SelectTagsListener implements View.OnClickListener {
 		public void onClick(View view) {
 			Intent intent = new Intent(AbstractManagerActivity.this, TagManagerActivity.class);
-			intent.putStringArrayListExtra("tags", (ArrayList<String>) mSelectedTags); 
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags); 
 			startActivityForResult(intent, SELECT_TAGS);
 		}
 	}

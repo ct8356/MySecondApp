@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
 import android.support.v7.app.ActionBarActivity;
@@ -26,6 +27,7 @@ import android.os.Build;
 public abstract class AbstractCreatorActivity extends ActionBarActivity {
     private DbHelper mDbHelper;
     private Long mRowId;
+    private List<String> mSelectedTags;
 	protected String mTableName;
 	//private List<String> mColumnNames; //Leave in case use again.
 	protected int mColumnCount;
@@ -37,6 +39,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 		//INITIALISE STUFF
 		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
 		mDbHelper = new DbHelper(this);
+		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
 		//DATABASE STUFF
 		mDbHelper.openDatabase();
 		Cursor cursor = mDbHelper.getAllEntriesCursor(mTableName);
@@ -48,6 +51,9 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	    		  inflate(R.layout.fragment_abstract_creator, null);
 		setContentView(mLayout); //Note, this method will auto inflate this view...?
 		//but if want to edit a viewGroup dynamically, need to inflate the parent....?
+		TextView mSelectedTagsText = new TextView(this);
+		mLayout.addView(mSelectedTagsText);
+		mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
 		TextView id = new TextView(this);
 		mLayout.addView(id);
 		for (int i = 1; i < mColumnCount; i += 1) {
@@ -68,7 +74,8 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 			List<List<String>> entry = mDbHelper.getEntries(mTableName, rowId);
 			//might need a for loop here...
 			for (int i = 0; i < mColumnCount; i += 1) {
-		        	TextView text = (TextView) mLayout.getChildAt(i+2);
+		        	TextView text = (TextView) mLayout.getChildAt(i+3);
+		        	//HARDCODE
 		        	text.setText(entry.get(0).get(i));
 		        	//Note, textView is a super class of editText.
 		    }
@@ -121,13 +128,16 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
     	List<String> entry = new ArrayList<String>();
         for (int i = 1; i < mColumnCount; i += 1) {
         	//start with i=1, to skip the id column.
-        	 EditText editText = (EditText) mLayout.getChildAt(i+2); 
+        	 EditText editText = (EditText) mLayout.getChildAt(i+3); 
         	 //+2 because of enter entry, and Save button views. //HARDCODE
    	         entry.add(editText.getText().toString());
         }
+        String minutes = entry.get(0); //0 for minutes. HARDCODE
         mDbHelper.openDatabase();
         if (mRowId == null) {
-			mRowId = mDbHelper.insertEntry(mTableName, entry);
+			mRowId = mDbHelper.insertEntryAndJoins(mTableName, minutes, 
+					MinutesToTagJoins.TABLE_NAME, mSelectedTags);
+			//HARDCODE
         } else {
             mDbHelper.updateEntry(mTableName, entry, mRowId);
         }

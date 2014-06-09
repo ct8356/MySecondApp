@@ -23,6 +23,8 @@ public class TimeEntryManagerActivity extends AbstractManagerActivity {
 		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
 		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
 		intent.putExtra("requestCode", CREATE_ENTRY);
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags);
 	    startActivityForResult(intent, CREATE_ENTRY);
 	}
 	
@@ -30,6 +32,8 @@ public class TimeEntryManagerActivity extends AbstractManagerActivity {
 		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
 		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
 		intent.putExtra("requestCode", EDIT_ENTRY);
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags);
 		intent.putExtra(DbContract._ID, rowId); 
 	    startActivityForResult(intent, EDIT_ENTRY);
 	}

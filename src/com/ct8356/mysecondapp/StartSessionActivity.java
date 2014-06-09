@@ -3,6 +3,9 @@ package com.ct8356.mysecondapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ct8356.mysecondapp.DbContract.Minutes;
+import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -45,7 +48,7 @@ public class StartSessionActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
         	//mSelectedTagsString = extras.getString("tag");
-        	mSelectedTags = extras.getStringArrayList("tag");
+        	mSelectedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
         	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
         }
 		mChrono.start();
@@ -84,10 +87,11 @@ public class StartSessionActivity extends ActionBarActivity {
     
     private void saveState() {
         mDbHelper.openDatabase();
-    	int mins = (int) ((mElapsedTime/1000)/60); //CBTL Turn it to minutes
+    	String mins = String.valueOf((mElapsedTime/1000)/60); //CBTL Turn it to minutes
     	//List<String> mSelectedTagsList = new ArrayList<String>();
     	//mSelectedTagsList.add(mSelectedTagsString);
-        mDbHelper.insertTimeEntry(mins, mSelectedTags);
+        mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, mins, 
+        		MinutesToTagJoins.TABLE_NAME, mSelectedTags);
         mDbHelper.close();
      }
 

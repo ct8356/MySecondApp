@@ -66,7 +66,8 @@ public class TagManagerActivity extends ActionBarActivity {
 	public void goHome() {
 		Intent intent = new Intent();
 		List<String> checkedTags = getCheckedTags();
-		intent.putStringArrayListExtra("tags", (ArrayList<String>) checkedTags); 
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) checkedTags); 
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -172,11 +173,12 @@ public class TagManagerActivity extends ActionBarActivity {
 	public void initialiseMemberVariables() {
 		mTagNames = new ArrayList<String>();
 		Bundle extras = getIntent().getExtras();
-		List<String> checkedTags = extras.getStringArrayList("tags");
-		mChecked = new ArrayList<Boolean>();
+		List<String> checkedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
 		//DO DATABASE STUFF
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
+		mDbHelper.close();
+		mChecked = new ArrayList<Boolean>();
 		for (int i=0; i<mTagNames.size(); i+=1) {
 			if (checkedTags.contains(mTagNames.get(i))) {
 				mChecked.add(true);
@@ -184,7 +186,7 @@ public class TagManagerActivity extends ActionBarActivity {
 				mChecked.add(false);
 			}
 		}
-		mDbHelper.close();
+		
 	}
 	
 	public void updateMTagNames() {

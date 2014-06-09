@@ -213,26 +213,28 @@ public class DbHelper extends SQLiteOpenHelper {
     	return timeEntryIds;
 	}
 
-    public long insertTimeEntry(int minutes, List<String> tags) {
+    public long insertEntryAndJoins(String entryTableName, String minutes, 
+    		String joinTableName, List<String> tags) { //HARDCODE
 		ContentValues values = new ContentValues();
-		values.put(Minutes.MINUTES, minutes);
+		values.put(Minutes.MINUTES, minutes); //HARDCODE
 		long newTimeEntryId = mDb.insert(
-				Minutes.TABLE_NAME,
-				Minutes.MINUTES, //nullColumnHack
+				entryTableName,
+				null, //nullColumnHack, null for now.
 				values);
 		//NOW ADD THE JOINS
 		List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
+		//HARDCODE
 		for (int i = 0; i < tags.size(); i++ ) {
 			values = new ContentValues();
 			values.put(MinutesToTagJoins.MINUTESID, newTimeEntryId);
 			values.put(MinutesToTagJoins.TAGID, tagIds.get(i));
 			long newJoinId = mDb.insert(
-					MinutesToTagJoins.TABLE_NAME,
-					MinutesToTagJoins.MINUTESID, //nullColumnHack
+					joinTableName,
+					null, //nullColumnHack, null for now.
 					values);
 		}
     	return newTimeEntryId;
-    }    
+    }
     
     public long insertEntry(String tableName, List<String> entry) {
   		ContentValues values = new ContentValues();
@@ -304,7 +306,11 @@ public class DbHelper extends SQLiteOpenHelper {
     			Minutes._ID, yesWanted);
     	List<Integer> timeEntriesAsInt = new ArrayList<Integer>();
 		for(String timeEntry : timeEntries) {
+			try {
 			   timeEntriesAsInt.add(Integer.parseInt(timeEntry)); 
+			} catch (NumberFormatException e) {
+				//Do nothing.
+		    }
 		}
 		Integer sumMinutes = sum(timeEntriesAsInt);
 		int sumMinutesAsInt = (int) sumMinutes;
