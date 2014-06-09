@@ -113,7 +113,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 		if (mRequestCode == AbstractManagerActivity.EDIT_ENTRY) {
 			mDbHelper.openDatabase();
 			List<String> rowId = Arrays.asList(String.valueOf(mRowId));
-			List<List<String>> entry = mDbHelper.getEntries(mTableName, rowId);
+			List<List<String>> entry = mDbHelper.getEntries(mTableName, null, DbContract._ID, rowId);
 			for (int i = 0; i < mColumnCount; i += 1) {
 		        	TextView text = (TextView) mLayout.getChildAt(i+mFixedViewCount);
 		        	text.setText(entry.get(0).get(i));

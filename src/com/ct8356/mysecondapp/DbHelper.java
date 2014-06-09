@@ -29,9 +29,19 @@ public class DbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     
-    public String buildSelectionString(List<String> rowIds) {
-		String entryIdsString = join(rowIds, ",");
-		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
+    public String buildSelectionString(String selectionColumn, List<String> rowIds) {
+        StringBuilder builder = new StringBuilder();
+        Iterator<?> iter = rowIds.iterator();
+        while (iter.hasNext()) {
+            builder.append("?");
+            iter.next();
+            if (!iter.hasNext()) {
+              break;                  
+            }
+            builder.append(",");
+        }
+		String questionMarksString = builder.toString();
+		String selectionString = selectionColumn + " IN("+questionMarksString+")"; 
 		return selectionString;
     }
 
@@ -46,20 +56,6 @@ public class DbHelper extends SQLiteOpenHelper {
 	            );
     	return cursor;
     }
-	
-	public Cursor getEntriesCursor(String tableName, List<String> rowIds) {
-		String entryIdsString = join(rowIds, ",");
-		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
-		Cursor cursor = mDb.query(
-	    		true, //Do want distinct
-	    		tableName, 
-	    		null, //gets all columns, although this is not efficient apparently.
-	    		selectionString, 
-	    		null, 
-	            null, null, null, null
-	            );
-    	return cursor;
-	}
 	
 	public Cursor getTimeEntryIdsFromJoinsCursor(List<String> tagIds) { //KEEP
 		String[] tagIdsSA = new String[tagIds.size()]; 
@@ -90,34 +86,21 @@ public class DbHelper extends SQLiteOpenHelper {
 	            ); //ALSO needs IN(),
 		return cursor;
 	}
-
-	public Cursor getEntriesCursor(String tableName, List<String> columnNames, 
-			List<String> rowIds) {
-	  	String[] columnNamesSA = (String[]) columnNames.toArray();
-		String entryIdsString = join(rowIds, ",");
-		String selectionString = DbContract._ID + " IN("+entryIdsString+")"; 
-		Cursor cursor = mDb.query(
-	    		false, //Don't want distinct
-	    		tableName, 
-	    		columnNamesSA,
-	    		selectionString, 
-	    		null, 
-	            null, null, null, null
-	            );
-    	return cursor;
-	}
 	
 	public Cursor getEntriesCursor(String tableName, List<String> columnNames, 
-			String selectionColumnName, List<String> selections) {
-	  	String[] columnNamesSA = (String[]) columnNames.toArray();
-		String selectionsString = join(selections, ",");
-		String selectionString = selectionColumnName + " IN("+selectionsString+")"; 
+			String selectionColumnName, List<String> selection) {
+		String[] columnNamesSA = null;
+		if (columnNames != null) {
+			columnNamesSA = columnNames.toArray(new String[0]);
+		}
+		String selectionString = buildSelectionString(selectionColumnName, selection);
+		String[] selectionSA = selection.toArray(new String[0]);
 		Cursor cursor = mDb.query(
 	    		false, //Don't want distinct
-	    		tableName, 
+	    		tableName,
 	    		columnNamesSA,
-	    		selectionString, 
-	    		null, 
+	    		selectionString,
+	    		selectionSA,
 	            null, null, null, null
 	            );
     	return cursor;
@@ -125,14 +108,14 @@ public class DbHelper extends SQLiteOpenHelper {
 	
 	public Cursor getEntryColumnCursor(String tableName, String columnName, 
 		String selectionColumnName, List<String> selection) {
-		String selectionsString = join(selection, "','");
-		String selectionString = selectionColumnName + " IN('"+selectionsString+"')"; 
+		String selectionString = buildSelectionString(selectionColumnName, selection);
+		String[] selectionSA = selection.toArray(new String[0]);
     	Cursor cursor = mDb.query(
 	    		false, //do not want distinct only!
 	    		tableName, 
 	    		new String[] {columnName}, 
 	     		selectionString,
-	    		null, 
+	    		selectionSA, 
 	    		null, null, null, null
 	            ); //Needs IN().
     	return cursor;
@@ -157,19 +140,6 @@ public class DbHelper extends SQLiteOpenHelper {
 			tags.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)));
 		}
 		return tags;
-	}
-	
-	public List<List<String>> getEntries(String tableName, List<String> rowIds) {
-		Cursor cursor = getEntriesCursor(tableName, rowIds);
-		List<List<String>> entries = lookInCursor(cursor);
-		return entries;
-	}
-	
-	public List<List<String>> getEntries(String tableName, List<String> columnNames, 
-			List<String> rowIds) {
-		Cursor cursor = getEntriesCursor(tableName, columnNames, rowIds);
-		List<List<String>> entries = lookInCursor(cursor);
-		return entries;
 	}
 	
 	public List<List<String>> getEntries(String tableName, List<String> columnNames, 
