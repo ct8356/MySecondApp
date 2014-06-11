@@ -20,12 +20,13 @@
     <string name="title_activity_start_session">StartSessionActivity</string>
     <string name="title_activity_creata">CreataActivity</string>
     <string name="text_enter_tag">Enter a tag name:</string>
-     <string name="text_enter_entry">Enter an entry:</string>
+    <string name="text_enter_entry">Enter an entry:</string>
     <string name="text_session_length">Session length:</string>
     <string name="title_activity_tag_manager">TagManagerActivity</string>
     <string name="title_activity_time_entry_manager">TimeEntryManagerActivity</string>
     <string name="title_activity_abstract_manager">AbstractManagerActivity</string>
     <string name="title_activity_abstract_creator">AbstractCreator</string>
     <string name="title_activity_time_entry_creator">TimeEntryCreator</string>
+    <string name="title_activity_min1_tag_manager">Min1TagManagerActivity</string>
 
 </resources>

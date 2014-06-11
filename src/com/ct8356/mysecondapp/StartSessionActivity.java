@@ -35,9 +35,28 @@ public class StartSessionActivity extends ActionBarActivity {
 	private boolean stopped = false;
 	private long startTime;
 	private long mElapsedTime;
-	private String mSelectedTagsString;
 	private List<String> mSelectedTags;
 	private TextView mSelectedTagsText;
+	private static final int SELECT_MIN1_TAGS = 0;
+	private static final int SELECT_TAGS = 1;
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+    	switch (requestCode) {
+    	case SELECT_MIN1_TAGS:
+            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+            saveState();
+            setResult(RESULT_OK, intent);
+            finish();
+            break;
+    	case SELECT_TAGS:
+            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+            mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+            break;
+    	}
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +92,6 @@ public class StartSessionActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        saveState();
     }
     
     private void saveState() {
@@ -89,6 +107,7 @@ public class StartSessionActivity extends ActionBarActivity {
 			super(context);
 			//CREATE THE VIEWS
 			mSelectedTagsText = new TextView(context);
+			Button selectTags = new Button(context);
 			mChrono = new Chronometer(context);
 			start = new Button(context);
 			pause = new Button(context);
@@ -98,6 +117,8 @@ public class StartSessionActivity extends ActionBarActivity {
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
 			mSelectedTagsText.setText("Selected tags: "+ mSelectedTags);
+			selectTags.setText("Select tags");
+			selectTags.setOnClickListener(new SelectTagsListener());
 	        start.setText("Start");
 	        start.setOnClickListener(new StartListener());
 	        start.setVisibility(View.GONE);
@@ -109,6 +130,7 @@ public class StartSessionActivity extends ActionBarActivity {
 	        save.setOnClickListener(new SaveListener());
 			//ADD VIEWS
 	        layout.addView(mSelectedTagsText);
+	        layout.addView(selectTags);
 			layout.addView(mChrono);
 			layout.addView(start);
 			layout.addView(pause);
@@ -160,8 +182,29 @@ public class StartSessionActivity extends ActionBarActivity {
 		public void onClick(View view) {
 			mChrono.stop();
 			mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
-			setResult(RESULT_OK);
-			finish();
+			Intent intent;
+			if (mSelectedTags.size() == 0) {
+				intent = new Intent(StartSessionActivity.this, Min1TagManagerActivity.class);
+				intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+						(ArrayList<String>) mSelectedTags);
+				startActivityForResult(intent, SELECT_MIN1_TAGS);
+			} else {
+				saveState();
+				intent = new Intent();
+				intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+						(ArrayList<String>) mSelectedTags); 
+				setResult(RESULT_OK, intent);
+				finish();
+			}
+		}
+	}
+	
+	public class SelectTagsListener implements View.OnClickListener {
+		public void onClick(View view) {
+			Intent intent = new Intent(StartSessionActivity.this, TagManagerActivity.class);
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags); 
+			startActivityForResult(intent, SELECT_TAGS);
 		}
 	}
 	

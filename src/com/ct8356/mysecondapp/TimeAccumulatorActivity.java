@@ -82,7 +82,9 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        	updateMSumMinutesText();
 	        	break;
 	        case START_SESSION:
+	        	Bundle extras = intent.getExtras();
 	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+	        	//problem, nullpointerException. How is intent null?
 	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 	        	updateMSumMinutesText();
 	        	//needs to update these, incase these are changed during session.
@@ -211,6 +213,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 					TimeEntryManagerActivity.class);
 			intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
 			intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
+			//not needed anymore, but keep in case use it later.
 			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
 					(ArrayList<String>) mSelectedTags); 
 		    startActivityForResult(intent, MANAGE_ENTRIES);
