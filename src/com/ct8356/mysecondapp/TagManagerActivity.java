@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -157,6 +158,20 @@ public class TagManagerActivity extends ActionBarActivity {
         mDbHelper.close();
         return super.onContextItemSelected(item);
     }
+    
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+    	boolean[] checked = savedInstanceState.getBooleanArray(DbContract.CHECKED);
+    	for (int i = 0; i < checked.length; i++) { mChecked.set(i, checked[i]); }
+    	//CBTL, this is done twice, here and in onCreate...
+	}
+	
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		boolean[] checked = new boolean[mChecked.size()];
+		for (int i = 0; i < mChecked.size(); i++) { checked[i] = mChecked.get(i); }
+		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
+	}
 
 	public void initialiseViews() {
 		mListView = new ListView(this);

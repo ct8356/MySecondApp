@@ -167,6 +167,26 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         mDbHelper.close();
         return super.onContextItemSelected(item);
     }
+    
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
+		mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+    	boolean[] checked = savedInstanceState.getBooleanArray(DbContract.CHECKED);
+    	for (int i = 0; i < checked.length; i++) { 
+    		mChecked.set(i, checked[i]); 
+    	}
+    	//CBTL, this is done twice, here and in onCreate...
+	}
+	
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putStringArrayList(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags);
+		boolean[] checked = new boolean[mChecked.size()];
+		for (int i = 0; i < mChecked.size(); i++) { checked[i] = mChecked.get(i); }
+		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
+	}
 
 	public void initialiseViews() {
 		mLayout = (LinearLayout) getLayoutInflater().

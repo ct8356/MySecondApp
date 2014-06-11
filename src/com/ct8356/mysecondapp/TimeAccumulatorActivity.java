@@ -57,14 +57,52 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		mDbHelper.close();
 	}
 	
+	public void deselectTags(View view) {
+		mSelectedTags.clear();
+		mSelectedTagsText.setText("Selected tags: " + mSelectedTags); 
+		updateMSumMinutesText();
+		//if start using these really often, could put them in own single line method.
+	}
+	
+	public void goSelectTags(View view) {
+		Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags); 
+		startActivityForResult(intent, ADD_TAG);
+	}
+	
+	public void goStartSession(View view) {
+		Intent intent = new Intent(TimeAccumulatorActivity.this, 
+				StartSessionActivity.class);
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags);
+	    startActivityForResult(intent, START_SESSION);
+	}
+	
+	public void goManageTimeEntries(View view) {
+		Intent intent = new Intent(TimeAccumulatorActivity.this, 
+				TimeEntryManagerActivity.class);
+		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
+		intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
+		//not needed anymore, but keep in case use it later.
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags); 
+	    startActivityForResult(intent, MANAGE_ENTRIES);
+	}
+	
 	private void initialiseMemberVariables() {
 		mSelectedTags = new ArrayList<String>();
+		mSumMinutes = 0; //not sure why it worked without this...auto-init to zero?
 	}
 	
 	public void initialiseViews() {									
-		//CREATE THE VIEWS
-		TAALayout scrollLayout = new TAALayout(this);
-		setContentView(scrollLayout);
+		setContentView(R.layout.fragment_time_accumulator);
+		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
+		mSumMinutesText = (TextView) findViewById(R.id.sum_time_entries);
+		//Now hopefully, any updates to this, and layout will update automatically,
+		//since layout already inflated by setContentView, and this is a child of layout.
+		//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+		//mSumMinutesText.setText("Total minutes: " + mSumMinutes);
 	}
 
     @Override
@@ -117,14 +155,30 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	    //super.onRestoreInstanceState(savedInstanceState);
+		//They reccommend I should call this, but then its a double restore...
+		//works fine without it.
+	    mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
+	    mSumMinutes = savedInstanceState.getInt(DbContract.SUM_MINUTES);
+	    mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+    	updateMSumMinutesText();
+	} //This will be called anyway, so may as well use it.
+	//To avoid double restore, do little as possible in onCreate.
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	    savedInstanceState.putStringArrayList(DbContract.TAG_NAMES, (ArrayList<String>) mSelectedTags);
+	    savedInstanceState.putInt(DbContract.SUM_MINUTES, mSumMinutes);
+	    super.onSaveInstanceState(savedInstanceState);
 	}
 	
 	public void updateMSumMinutesText() {
@@ -133,91 +187,5 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		mDbHelper.close();
 		mSumMinutesText.setText("Total minutes: " + mSumMinutes);
 	}
-	
-	public class TAALayout extends ScrollView {
-		public TAALayout(Context context) {
-			super(context);
-			//CREATE THE VIEWS
-			Button removeTags = new Button(context);
-			mSelectedTagsText = new TextView(context);
-			Button addTags = new Button(context);
-			mSumMinutesText = new TextView(context);
-			Button add10 = new Button(context);
-			Button startSession = new Button(context);
-			Button manageTimeEntries = new Button(context);
-			LinearLayout layout = new LinearLayout(context);
-			layout.setOrientation(1);
-			//SET THE TEXT AND ACTIONS;
-			mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-			mSumMinutesText.setText("Total minutes: " + mSumMinutes);
-			removeTags.setText("Deselect tags");
-	        removeTags.setOnClickListener(new RemoveTagsListener());
-	        addTags.setText("Select tags");
-	        addTags.setOnClickListener(new AddTagListener());
-			add10.setText("Add 10 minutes");
-	        add10.setOnClickListener(new Add10Listener());
-	        startSession.setText("Start work session");
-	        startSession.setOnClickListener(new StartSessionListener());
-	        manageTimeEntries.setText("Manage time entries");
-	        manageTimeEntries.setOnClickListener(new ManageEntriesListener());
-			//ADD VIEWS
-	        layout.addView(removeTags);
-	        layout.addView(mSelectedTagsText);
-	        layout.addView(addTags);
-			layout.addView(mSumMinutesText);
-			layout.addView(add10);
-			layout.addView(startSession);
-			layout.addView(manageTimeEntries);
-			this.addView(layout);
-		}
-	}
-	
-	public class RemoveTagsListener implements View.OnClickListener {
-		public void onClick(View view) {
-			mSelectedTags.clear();
-			mSelectedTagsText.setText("Selected tags: " + mSelectedTags); 
-			updateMSumMinutesText();
-			//if start using these really often, could put them in own single line method.
-		}
-	}
-	
-	public class AddTagListener implements View.OnClickListener {
-		public void onClick(View view) {
-			Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags); 
-			startActivityForResult(intent, ADD_TAG);
-		}
-	}
 
-	public class Add10Listener implements View.OnClickListener {
-		public void onClick(View view) {
-			add10Minutes(mSelectedTags);
-			updateMSumMinutesText();
-		}
-	}
-	
-	public class StartSessionListener implements View.OnClickListener {
-		public void onClick(View view) {
-			Intent intent = new Intent(TimeAccumulatorActivity.this, 
-					StartSessionActivity.class);
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags);
-		    startActivityForResult(intent, START_SESSION);
-		}
-	}
-	
-	public class ManageEntriesListener implements View.OnClickListener {
-		public void onClick(View view) {
-			Intent intent = new Intent(TimeAccumulatorActivity.this, 
-					TimeEntryManagerActivity.class);
-			intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
-			intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
-			//not needed anymore, but keep in case use it later.
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags); 
-		    startActivityForResult(intent, MANAGE_ENTRIES);
-		}
-	}
-	
 }

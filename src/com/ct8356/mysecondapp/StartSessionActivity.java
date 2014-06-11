@@ -43,19 +43,26 @@ public class StartSessionActivity extends ActionBarActivity {
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-    	switch (requestCode) {
-    	case SELECT_MIN1_TAGS:
-            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-            saveState();
-            setResult(RESULT_OK, intent);
-            finish();
-            break;
-    	case SELECT_TAGS:
-            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-            mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-            break;
-    	}
+        switch (resultCode) {
+        case RESULT_CANCELED:
+        	//Do nothing
+        	break;
+        case RESULT_OK:
+	        switch (requestCode) {
+	    	case SELECT_MIN1_TAGS:
+	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+	            saveState();
+	            setResult(RESULT_OK, intent);
+	            finish();
+	            break;
+	    	case SELECT_TAGS:
+	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+	            mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+	            break;
+	    	}
+	        break;
+        }
 	}
 	
 	@Override
@@ -89,11 +96,25 @@ public class StartSessionActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-    
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		mElapsedTime = savedInstanceState.getLong(DbContract.ELAPSED_TIME);
+		mChrono.setBase(SystemClock.elapsedRealtime() - mElapsedTime);
+    	mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
+    	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+    	//CBTL, this is done twice, here and in onCreate...
+	}// Seems silly to me that onCreate is called after orientation change.
+	//Why could it not just call onOrientationChange or something?
+	//Then could just redraw the views, without having to instantiate them again.
+	
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
+		savedInstanceState.putLong(DbContract.ELAPSED_TIME, mElapsedTime);
+		savedInstanceState.putStringArrayList(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags);
+	}
+	
     private void saveState() {
         mDbHelper.openDatabase();
     	String mins = String.valueOf((mElapsedTime/1000)/60); //CBTL Turn it to minutes

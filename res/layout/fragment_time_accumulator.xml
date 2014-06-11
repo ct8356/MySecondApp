@@ -14,5 +14,47 @@
 	    android:paddingTop="@dimen/activity_vertical_margin"
 	    android:orientation="vertical" 
 	    tools:context="com.ct8356.mysecondapp.TimeAccumulatorActivity$PlaceholderFragment" >
+	    
+    	<Button
+    	    android:id="@+id/deselect_tags"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/deselect_tags"
+	        android:onClick="deselectTags" />
+    	
+	    <TextView
+	        android:id="@+id/selected_tags"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/selected_tags" />
+	    
+	    <Button
+    	    android:id="@+id/select_tags"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/select_tags" 
+	        android:onClick="goSelectTags"/>
+	    
+	   	<TextView
+	        android:id="@+id/sum_time_entries"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/sum_time_entries" 
+	        />
+	   	
+	   	<Button
+    	    android:id="@+id/start_session"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/start_session" 
+	        android:onClick="goStartSession"/>
+	   	
+	   	<Button
+    	    android:id="@+id/manage_time_entries"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/manage_time_entries" 
+	        android:onClick="goManageTimeEntries"/>
+	    
 	</LinearLayout>
 </ScrollView>

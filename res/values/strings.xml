@@ -6,10 +6,16 @@
     <string name="action_create">Create</string>
     <string name="action_done">Done</string>
     <string name="edit_message">Enter a message</string>
+    <!-- BUTTONS -->
     <string name="button_save_tag">Save tag</string>
     <string name="button_save_entry">Save entry</string>
     <string name="button_pause_resume">Pause/Resume</string>
     <string name="button_stop_and_save">Stop session and save</string>
+    <string name="deselect_tags">Deselect tags</string>
+    <string name="select_tags">Select tags</string>
+    <string name="start_session">Start session</string>
+    <string name="manage_time_entries">Manage time entries</string>
+    <!-- MENUS -->
     <string name="hello_world">Hello world!</string>
     <string name="menu_edit">Edit entry</string>
     <string name="menu_delete">Delete entry</string>
@@ -19,9 +25,13 @@
     <string name="no_tags">No tags</string>
     <string name="title_activity_start_session">StartSessionActivity</string>
     <string name="title_activity_creata">CreataActivity</string>
+    <!-- TEXTVIEWS -->
     <string name="text_enter_tag">Enter a tag name:</string>
     <string name="text_enter_entry">Enter an entry:</string>
     <string name="text_session_length">Session length:</string>
+    <string name="selected_tags">Selected tags: []</string>
+    <string name="sum_time_entries">Total minutes: 0</string>
+    <!-- TITLES -->
     <string name="title_activity_tag_manager">TagManagerActivity</string>
     <string name="title_activity_time_entry_manager">TimeEntryManagerActivity</string>
     <string name="title_activity_abstract_manager">AbstractManagerActivity</string>

@@ -4,8 +4,11 @@ import android.provider.BaseColumns;
 
 public final class DbContract {
 	public static final String TABLE_NAME = "tableName";
+	public static final String CHECKED = "checked";
 	public static final String CREATOR_ACTIVITY = "creator_activity";
+	public static final String ELAPSED_TIME = "elapsed_time";
 	public static final String REQUEST_CODE = "request_code";
+	public static final String SUM_MINUTES = "sum_minutes";
 	public static final String _ID = "_id";
 	public static final String TAG_NAMES = "tag_names";
 	 // To prevent someone from accidentally instantiating the contract class,
