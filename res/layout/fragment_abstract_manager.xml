@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,4 +9,52 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.ct8356.mysecondapp.AbstractManagerActivity$PlaceholderFragment" >
+    
+	    <TextView
+	        android:id="@+id/selected_tags"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/selected_tags" />
+	    
+	    <Button
+    	    android:id="@+id/select_tags"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/select_tags" 
+	        android:onClick="goSelectTags"/>
+	    
+	    <!--  HARDCODE! -->
+	    <LinearLayout
+            android:layout_width="match_parent"
+   			android:layout_height="wrap_content">
+   			
+   			<TextView
+		        android:layout_width="45dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="0"
+		        android:text=""/>
+           	
+           	<TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="Id"
+		        android:textStyle="bold" />
+           	
+           	<TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="Minutes" 
+		        android:textStyle="bold"/>
+           	
+           	<TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="Date" 
+		        android:textStyle="bold"/>
+           	
+	    </LinearLayout>
+	    
 </LinearLayout>

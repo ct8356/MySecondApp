@@ -21,6 +21,7 @@ public final class DbContract {
         //(Does BaseColumns automatically use autoincrement for ids?)
         //When check the table, id column is called "_id".
         public static final String MINUTES = "minutes";
+        public static final String DATE = "date";
     }
     
     public static abstract class Tags implements BaseColumns {

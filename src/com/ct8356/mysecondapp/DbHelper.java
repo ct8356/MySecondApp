@@ -3,25 +3,25 @@ package com.ct8356.mysecondapp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
 import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
 public class DbHelper extends SQLiteOpenHelper {
 	//Since SQLiteOpenHelper is useful (I like its getWritableDatabase method),
 	//may as well use it.
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "Minutes.db";
     public SQLiteDatabase mDb;
     
@@ -187,6 +187,7 @@ public class DbHelper extends SQLiteOpenHelper {
     		String joinTableName, List<String> tags) { //HARDCODE
 		ContentValues values = new ContentValues();
 		values.put(Minutes.MINUTES, minutes); //HARDCODE
+		values.put(Minutes.DATE, getDateString());
 		long newTimeEntryId = mDb.insert(
 				entryTableName,
 				null, //nullColumnHack, null for now.
@@ -219,7 +220,7 @@ public class DbHelper extends SQLiteOpenHelper {
 				null, //nullColumnHack, null for now...
 				values);
       	return newRecordId;
-    }   
+    } //Used to insert tags...
     
     public long updateEntry(String tableName, List<String> entry, long mRowId) {
   		List<String> columnNames = getAllColumnNames(tableName);
@@ -293,7 +294,7 @@ public class DbHelper extends SQLiteOpenHelper {
             sum = sum + i;
         return sum;
    }
-    
+   
     public List<List<String>> lookInCursor(Cursor cursor) {
     	List<List<String>> twoDList = new ArrayList<List<String>>();
     	int i;
@@ -330,7 +331,8 @@ public class DbHelper extends SQLiteOpenHelper {
     	String SQL_CREATE_MINUTES =
     		    "CREATE TABLE " + Minutes.TABLE_NAME + " (" +
     		    Minutes._ID + " INTEGER PRIMARY KEY," +
-    		    Minutes.MINUTES + " TEXT )"; 
+    		    Minutes.MINUTES + " TEXT, " +
+    		    Minutes.DATE + " TEXT )"; 
     	//The original horrible messy string above was proposed on developer.android.com.
     	//Probably is a much nicer "create" method in Java somewhere.
     	db.execSQL(SQL_CREATE_MINUTES);
@@ -351,6 +353,8 @@ public class DbHelper extends SQLiteOpenHelper {
     	//The original horrible messy string above was proposed on developer.android.com.
     	//Probably is a much nicer "create" method in Java somewhere.
     	db.execSQL(SQL_CREATE_MINUTES_TAG_JOINS);
+    	mDb = db; //double update if creating database, but never mind.
+    	enterMockData();
     }
     
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -368,5 +372,25 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
+
+	public void enterMockData() {
+		ContentValues values = new ContentValues();
+		values.put(Tags.TAG, "tag1"); 
+		mDb.insert(Tags.TABLE_NAME, null, values); //issue here.
+		values.put(Tags.TAG, "tag2"); 
+		mDb.insert(Tags.TABLE_NAME, null, values);
+		insertEntryAndJoins(Minutes.TABLE_NAME, "10", 
+				MinutesToTagJoins.TABLE_NAME, Arrays.asList("tag1"));
+		insertEntryAndJoins(Minutes.TABLE_NAME, "20", 
+				MinutesToTagJoins.TABLE_NAME, Arrays.asList("tag2"));
+	}
+	
+	public String getDateString() {
+		Date date = new Date();
+		long time = date.getTime();
+		java.sql.Date sqlDate = new java.sql.Date(time);
+		String dateString = sqlDate.toString();
+		return dateString;
+	}
 
 }

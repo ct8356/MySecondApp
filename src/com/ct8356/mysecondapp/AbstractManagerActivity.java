@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -64,7 +65,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		}
 		return checkedEntryIds;
 	}
-
+	
 	public void goBackToStarter() {
 		Intent intent = new Intent();
 		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
@@ -76,6 +77,13 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	public abstract void goCreateEntry();
 	
 	public abstract void goEditEntry(Long rowId); 
+	
+	public void goSelectTags(View view) {
+		Intent intent = new Intent(AbstractManagerActivity.this, TagManagerActivity.class);
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags); 
+		startActivityForResult(intent, SELECT_TAGS);
+	}
 	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -193,13 +201,14 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 				  inflate(R.layout.fragment_abstract_manager, null);
 		setContentView(mLayout);
 		//since want to add views to content view (root view?), have to inflate it yourself.?
-		mSelectedTagsText = new TextView(this);
+		//mSelectedTagsText = new TextView(this);
+		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
 		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-		mLayout.addView(mSelectedTagsText);
-		Button selectTags = new Button(this);
-		selectTags.setText("Select tags");
-		selectTags.setOnClickListener(new SelectTagsListener());
-		mLayout.addView(selectTags);
+		//mLayout.addView(mSelectedTagsText);
+		//Button selectTags = new Button(this);
+		//selectTags.setText("Select tags");
+		//selectTags.setOnClickListener(new SelectTagsListener());
+		//mLayout.addView(selectTags);
 		mListView = new ListView(this);
 		mLayout.addView(mListView);
 		mCustomAdapter = new CustomAdapter();
@@ -294,6 +303,9 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	 	         for (int i = 0; i < getItem(pos).size(); i += 1) {
 			         TextView textView = new TextView(AbstractManagerActivity.this);
 			         view.addView(textView);
+			         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1.0f);
+			         textView.setLayoutParams(params);
 		         }
 	         }
 	         for (int i = 0; i < getItem(pos).size(); i += 1) {
