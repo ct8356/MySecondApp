@@ -95,11 +95,17 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         case RESULT_OK:
 	        switch (requestCode) {
 	        case CREATE_ENTRY:
+	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+	          	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
 	            updateMEntries();
 	            mChecked.add(true);
+	        	mCustomAdapter.notifyDataSetChanged();
 				break;
 	        case EDIT_ENTRY:
+	          	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+	          	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
 	            updateMEntries();
+	         	mCustomAdapter.notifyDataSetChanged();
 				break;
 	        case SELECT_TAGS:
 	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
@@ -261,7 +267,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 			List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
 			mColumnNames = mDbHelper.getAllColumnNames(mTableName);
 			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, 
-					Minutes._ID, timeEntryIds); 
+					"_id", timeEntryIds); //Is the issue in get Entries? _ID is null! CBTL
+			//HARDCODE
 			break;
 		}	
 		mDbHelper.close();

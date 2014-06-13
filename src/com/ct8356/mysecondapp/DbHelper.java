@@ -230,12 +230,40 @@ public class DbHelper extends SQLiteOpenHelper {
   			values.put(columnNames.get(i), entry.get(i-1)); 
   			//-1 because entry does not have id column.
   		}
-			long newRecordId = mDb.update(
+			int noEntriesAffected = mDb.update(
 					tableName,
 					values,
 					DbContract._ID+" = "+mRowId,
 					null);
-    	return newRecordId;
+    	return mRowId;
+    }
+    
+    public long updateEntryAndJoins(String entryTableName, String minutes, 
+    		String joinTableName, List<String> tags, long entryId) {
+    	ContentValues values = new ContentValues();
+		values.put(Minutes.MINUTES, minutes); //HARDCODE
+		values.put(Minutes.DATE, getDateString());
+		int noRowsAffected = mDb.update(
+				entryTableName,
+				values,
+				DbContract._ID+" = "+entryId,
+				null);
+		//NOW DELETE THE JOINS
+		String joinColumnName = MinutesToTagJoins.MINUTESID; //HARDCODE
+		mDb.delete(joinTableName, joinColumnName+" = "+entryId, null);
+		//NOW ADD THE JOINS
+		List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
+		//HARDCODE
+		for (int i = 0; i < tags.size(); i++ ) {
+			values = new ContentValues();
+			values.put(MinutesToTagJoins.MINUTESID, entryId);
+			values.put(MinutesToTagJoins.TAGID, tagIds.get(i));
+			long newJoinId = mDb.insert(
+					joinTableName,
+					null, //nullColumnHack, null for now.
+					values);
+		}
+    	return entryId;
     }
 
     public void deleteEntryAndJoins(String entryTableName, String joinTableName, 
@@ -245,6 +273,10 @@ public class DbHelper extends SQLiteOpenHelper {
     }
     
     public List<String> getRelatedEntryIds(List<String> tags) {
+    	if (tags.size() == 0) {
+    		List<String> yesWanted = getAllEntriesColumn(Minutes.TABLE_NAME, Minutes._ID); //HARDCODE
+    		return yesWanted;
+    	}
     	List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
     	List<String> associatedTimeEntryIds = getTimeEntryIdsFromJoin(tagIds);
     	//Now shrink this, to just Ids that match ALL tagIds.
@@ -269,6 +301,12 @@ public class DbHelper extends SQLiteOpenHelper {
     		}
     	}
     	return yesWanted;
+    }
+    
+    public List<String> getRelatedTags(List<String> timeEntryIds) {
+    	List<String> tagIds = getTagIdsFromJoin(timeEntryIds);
+    	List<String> tags = getEntryColumn(Tags.TABLE_NAME, Tags.TAG, Tags._ID, tagIds);
+    	return tags;
     }
     
     public int sumMinutes(List<String> tags){

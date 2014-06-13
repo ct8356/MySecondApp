@@ -84,8 +84,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	private void initialiseMemberVariables() {
+		mDbHelper = new DbHelper(this);
 		mSelectedTags = new ArrayList<String>();
-		mSumMinutes = 0; //not sure why it worked without this...auto-init to zero?
 	}
 	
 	public void initialiseViews() {									
@@ -96,6 +96,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		//since layout already inflated by setContentView, and this is a child of layout.
 		//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 		//mSumMinutesText.setText("Total minutes: " + mSumMinutes);
+		updateMSumMinutesText(); 
 	}
 
     @Override
@@ -133,8 +134,6 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//enterMockData();
-		mDbHelper = new DbHelper(this);
 		initialiseMemberVariables();
 		initialiseViews();
 	}
@@ -179,6 +178,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 		mSumMinutes = mDbHelper.sumMinutes(mSelectedTags);
 		mDbHelper.close();
 		mSumMinutesText.setText("Total minutes: " + mSumMinutes);
+		return;
 	}
 
 }

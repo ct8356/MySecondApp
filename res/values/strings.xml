@@ -13,18 +13,16 @@
     <string name="button_stop_and_save">Stop session and save</string>
     <string name="deselect_tags">Deselect tags</string>
     <string name="select_tags">Select tags</string>
-    <string name="start_session">Start session</string>
-    <string name="manage_time_entries">Manage time entries</string>
+    <string name="start_session">Time a session</string>
+    <string name="manage_time_entries">Manage sessions</string>
+    
     <!-- MENUS -->
     <string name="hello_world">Hello world!</string>
     <string name="menu_edit">Edit entry</string>
     <string name="menu_delete">Delete entry</string>
-    <string name="title_activity_time_accumulator">Time Accumulator</string>
     <string name="label_total_count">Total count:</string>
-    <string name="title_activity_choose_tag">ChooseTagActivity</string>
     <string name="no_tags">No tags</string>
-    <string name="title_activity_start_session">StartSessionActivity</string>
-    <string name="title_activity_creata">CreataActivity</string>
+
     <!-- TEXTVIEWS -->
     <string name="text_enter_tag">Enter a tag name:</string>
     <string name="text_enter_entry">Enter an entry:</string>
@@ -32,11 +30,15 @@
     <string name="selected_tags">Selected tags: []</string>
     <string name="sum_time_entries">Total minutes: 0</string>
     <!-- TITLES -->
-    <string name="title_activity_tag_manager">TagManagerActivity</string>
-    <string name="title_activity_time_entry_manager">TimeEntryManagerActivity</string>
+    <string name="title_activity_time_accumulator">Time tracker home</string>
+    <string name="title_activity_choose_tag">ChooseTagActivity</string>
+    <string name="title_activity_start_session">Time your session</string>
+    <string name="title_activity_creata">Create/edit tag</string>
+    <string name="title_activity_tag_manager">Select tags</string>
+    <string name="title_activity_time_entry_manager">Manage sessions</string>
     <string name="title_activity_abstract_manager">AbstractManagerActivity</string>
     <string name="title_activity_abstract_creator">AbstractCreator</string>
-    <string name="title_activity_time_entry_creator">TimeEntryCreator</string>
-    <string name="title_activity_min1_tag_manager">Min1TagManagerActivity</string>
+    <string name="title_activity_time_entry_creator">Create/edit sessions</string>
+    <string name="title_activity_min1_tag_manager">Add at least 1 tag</string>
 
 </resources>
