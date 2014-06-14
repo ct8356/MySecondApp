@@ -44,9 +44,7 @@ public class TagManagerActivity extends ActionBarActivity {
 	private static final int CREATE_TAG = 0;
 	private static final int EDIT_TAG = Menu.FIRST;
 	private static final int DELETE_TAG = Menu.FIRST + 1;
-	//private List<String> mTagIds;
 	private List<String> mTagNames; //a key variable. it is called by getItem().
-	//private List<String> mCheckedTagIds;
 	//private List<String> mCheckedTags; //Just a translation variable. Can be local.
 	private List<Boolean> mChecked; //a key variable. Called by getView().
     public CustomAdapter mCustomAdapter;
@@ -82,6 +80,31 @@ public class TagManagerActivity extends ActionBarActivity {
 		Intent intent = new Intent(this, CreateTagActivity.class);
 		intent.putExtra(Tags._ID, rowId); 
 	    startActivityForResult(intent, CREATE_TAG);
+	}
+	
+	public void initialiseViews() {
+		mListView = new ListView(this);
+		//Ahah, remember, if want to get from XML, often need to inflate it!
+		mListView.setAdapter(mCustomAdapter);
+		mListView.setOnItemClickListener(new OnItemClickListener());
+		setContentView(mListView);	
+	}
+	
+	public void initialiseMemberVariables() {
+		mTagNames = new ArrayList<String>();
+		mDbHelper.openDatabase();
+		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
+		mDbHelper.close();
+		Bundle extras = getIntent().getExtras();
+		List<String> checkedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
+		mChecked = new ArrayList<Boolean>();
+		for (int i=0; i<mTagNames.size(); i+=1) {
+			if (checkedTags.contains(mTagNames.get(i))) {
+				mChecked.add(true);
+			} else {
+				mChecked.add(false);
+			}
+		}
 	}
 	
     @Override
@@ -162,41 +185,19 @@ public class TagManagerActivity extends ActionBarActivity {
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
     	boolean[] checked = savedInstanceState.getBooleanArray(DbContract.CHECKED);
-    	for (int i = 0; i < checked.length; i++) { mChecked.set(i, checked[i]); }
-    	//CBTL, this is done twice, here and in onCreate...
+    	for (int i = 0; i < checked.length; i++) { 
+    		mChecked.set(i, checked[i]); 
+    	}
+    	//CBTL, this is done twice, here and earlier in onCreate...
 	}
 	
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		boolean[] checked = new boolean[mChecked.size()];
-		for (int i = 0; i < mChecked.size(); i++) { checked[i] = mChecked.get(i); }
-		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
-	}
-
-	public void initialiseViews() {
-		mListView = new ListView(this);
-		//Ahah, remember, if want to get from XML, often need to inflate it!
-		mListView.setAdapter(mCustomAdapter);
-		mListView.setOnItemClickListener(new OnItemClickListener());
-		setContentView(mListView);	
-	}
-	
-	public void initialiseMemberVariables() {
-		mTagNames = new ArrayList<String>();
-		Bundle extras = getIntent().getExtras();
-		List<String> checkedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
-		//DO DATABASE STUFF
-		mDbHelper.openDatabase();
-		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
-		mDbHelper.close();
-		mChecked = new ArrayList<Boolean>();
-		for (int i=0; i<mTagNames.size(); i+=1) {
-			if (checkedTags.contains(mTagNames.get(i))) {
-				mChecked.add(true);
-			} else {
-				mChecked.add(false);
-			}
+		for (int i = 0; i < mChecked.size(); i++) { 
+			checked[i] = mChecked.get(i); 
 		}
+		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
 	}
 	
 	public void updateMTagNames() {
