@@ -42,18 +42,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	public TextView mSumMinutesText;
 	private int mSumMinutes;
 	
-	public void add10Minutes(List<String> projectName){
-		mDbHelper.openDatabase();
-		String minutes = "10";
-		mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, minutes, 
-				MinutesToTagJoins.TABLE_NAME, mSelectedTags);
-		mDbHelper.close();
-	}
-	
 	public void deselectTags(View view) {
 		mSelectedTags.clear();
 		mSelectedTagsText.setText("Selected tags: " + mSelectedTags); 
-		updateMSumMinutesText();
+		updateMSumMinutesAndText();
 		//if start using these really often, could put them in own single line method.
 	}
 	
@@ -89,14 +81,11 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	public void initialiseViews() {									
-		setContentView(R.layout.fragment_time_accumulator);
+		setContentView(R.layout.time_accumulator);
 		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
 		mSumMinutesText = (TextView) findViewById(R.id.sum_time_entries);
-		//Now hopefully, any updates to this, and layout will update automatically,
-		//since layout already inflated by setContentView, and this is a child of layout.
-		//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-		//mSumMinutesText.setText("Total minutes: " + mSumMinutes);
-		updateMSumMinutesText(); 
+		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+		updateMSumMinutesAndText(); 
 	}
 
     @Override
@@ -109,22 +98,11 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
         case RESULT_OK:
 	        switch (requestCode) {
 	        case ADD_TAG:
-	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-	        	updateMSumMinutesText();
-	        	break;
 	        case START_SESSION:
-	        	Bundle extras = intent.getExtras();
-	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	        	//problem, nullpointerException. How is intent null?
-	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-	        	updateMSumMinutesText();
-	        	//needs to update these, incase these are changed during session.
-	        	break;
 	        case MANAGE_ENTRIES:
 	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
 	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-	        	updateMSumMinutesText();
+	        	updateMSumMinutesAndText();
 	        	break;
 	        }
 	        break;
@@ -157,14 +135,14 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 	    //super.onRestoreInstanceState(savedInstanceState);
-		//They reccommend I should call this, but then its a double restore...
+		//They recommend I should call above, but then its a double restore...
 		//works fine without it.
 	    mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
 	    mSumMinutes = savedInstanceState.getInt(DbContract.SUM_MINUTES);
 	    mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-    	updateMSumMinutesText();
-	} //This will be called anyway, so may as well use it.
-	//To avoid double restore, do little as possible in onCreate.
+    	updateMSumMinutesAndText();
+	} //onRestoreInstanceSt will be called anyway, so may as well use it.
+	//To avoid double restore, do little as possible in onCreate...?
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -173,7 +151,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	    super.onSaveInstanceState(savedInstanceState);
 	}
 	
-	public void updateMSumMinutesText() {
+	public void updateMSumMinutesAndText() {
 		mDbHelper.openDatabase();
 		mSumMinutes = mDbHelper.sumMinutes(mSelectedTags);
 		mDbHelper.close();
