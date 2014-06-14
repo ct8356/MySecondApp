@@ -204,7 +204,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 
 	public void initialiseViews() {
 		mLayout = (LinearLayout) getLayoutInflater().
-				  inflate(R.layout.fragment_abstract_manager, null);
+				  inflate(R.layout.abstract_manager, null);
 		setContentView(mLayout);
 		//since want to add views to content view (root view?), have to inflate it yourself.?
 		//mSelectedTagsText = new TextView(this);

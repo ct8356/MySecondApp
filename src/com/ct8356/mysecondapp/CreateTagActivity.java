@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.os.Build;
 
 public class CreateTagActivity extends ActionBarActivity {
+	//Note, should make this extend AbstractCreatorActivity...
 	private EditText mTag;
     private DbHelper mDbHelper;
     private Long mRowId;
@@ -36,7 +37,7 @@ public class CreateTagActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		//INITIALISE STUFF
 		mDbHelper = new DbHelper(this);
-		setContentView(R.layout.fragment_create_tag);
+		setContentView(R.layout.create_tag);
 		mTag = (EditText) findViewById(R.id.edit_create_tag);
 		//needs inflating?
 		Bundle extras = getIntent().getExtras();

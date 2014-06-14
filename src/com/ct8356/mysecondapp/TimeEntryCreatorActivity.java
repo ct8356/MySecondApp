@@ -26,7 +26,7 @@ public class TimeEntryCreatorActivity extends AbstractCreatorActivity {
 	@Override
 	public void initialiseViews() {
 		mLayout = (LinearLayout) getLayoutInflater().
-	    		  inflate(R.layout.fragment_abstract_creator, null);
+	    		  inflate(R.layout.abstract_creator, null);
 		setContentView(mLayout);
 		mFixedViewCount = mLayout.getChildCount(); // should give 2?
 		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
