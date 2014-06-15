@@ -1207,7 +1207,7 @@ containing a value of this type.
         public static final int entry_column_names=0x7f03001b;
         public static final int min1_tag_manager=0x7f03001c;
         public static final int notes_row=0x7f03001d;
-        public static final int row_manager=0x7f03001e;
+        public static final int row_abstract_manager=0x7f03001e;
         public static final int row_tag_manager=0x7f03001f;
         public static final int start_session=0x7f030020;
         public static final int support_simple_spinner_dropdown_item=0x7f030021;

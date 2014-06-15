@@ -40,6 +40,7 @@ import android.os.Build;
 import android.widget.AbsListView;
 
 public class TagManagerActivity extends ActionBarActivity {
+	//Note, could make this extend abstractManagerActivity...
 	private DbHelper mDbHelper;
 	private static final int CREATE_TAG = 0;
 	private static final int EDIT_TAG = Menu.FIRST;
@@ -62,7 +63,7 @@ public class TagManagerActivity extends ActionBarActivity {
 		return checkedTags;
 	}
 
-	public void goHome() {
+	public void goBackToStarter() {
 		Intent intent = new Intent();
 		List<String> checkedTags = getCheckedTags();
 		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
@@ -140,7 +141,7 @@ public class TagManagerActivity extends ActionBarActivity {
 		case R.id.action_settings:
 			return true;
 		case R.id.action_done:
-			goHome();
+			goBackToStarter();
 			return true;
 		case R.id.action_create:
 			goCreateTag();

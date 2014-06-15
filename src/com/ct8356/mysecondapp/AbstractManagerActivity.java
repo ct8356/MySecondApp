@@ -62,7 +62,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 			}
 		}
 		return checkedEntryIds;
-	}
+	} //Not currently used, but save for later...
 	
 	public void goBackToStarter() {
 		Intent intent = new Intent();
@@ -81,6 +81,30 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
 				(ArrayList<String>) mSelectedTags); 
 		startActivityForResult(intent, SELECT_TAGS);
+	}
+
+	public void initialiseViews() {
+		mLayout = (LinearLayout) getLayoutInflater().
+				  inflate(R.layout.abstract_manager, null);
+		setContentView(mLayout);
+		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
+		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+		mListView = new ListView(this);
+		mLayout.addView(mListView);
+		mCustomAdapter = new CustomAdapter();
+		mListView.setAdapter(mCustomAdapter);
+		mListView.setOnItemClickListener(new OnItemClickListener());
+	}
+	
+	public void initialiseMemberVariables() {
+		//List<String> checkedEntryIds = extras.getStringArrayList(DbContract.CHECKED_IDS);
+		//Might need above if activity is killed during ActForResult, due to low memory.
+		//mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
+		//Better to do it in subclass! CBTL.
+		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
+		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
+		updateMEntries();
+		updateMChecked();
 	}
 	
     @Override
@@ -191,30 +215,6 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
 	}
 
-	public void initialiseViews() {
-		mLayout = (LinearLayout) getLayoutInflater().
-				  inflate(R.layout.abstract_manager, null);
-		setContentView(mLayout);
-		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
-		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-		mListView = new ListView(this);
-		mLayout.addView(mListView);
-		mCustomAdapter = new CustomAdapter();
-		mListView.setAdapter(mCustomAdapter);
-		mListView.setOnItemClickListener(new OnItemClickListener());
-	}
-	
-	public void initialiseMemberVariables() {
-		//List<String> checkedEntryIds = extras.getStringArrayList(DbContract.CHECKED_IDS);
-		//Might need above if activity is killed during ActForResult, due to low memory.
-		//mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
-		//Better to do it in subclass! CBTL.
-		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
-		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
-		updateMEntries();
-		updateMChecked();
-	}
-	
 	public void updateMChecked() {
 		List<String> checkedEntryIds = new ArrayList<String>();
 		mChecked = new ArrayList<Boolean>();
@@ -265,7 +265,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	
 	    public long getItemId(int position) {
 	    	//Not needed just yet.
-	    	//CBTL, this is where your getting ID code should have gone.
+	    	//CBTL, this is where your getting ID code should have gone...?
 	        return 0;
 	    }
 	    
@@ -275,7 +275,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	         if (view == null) {
 	        	 //Do all initialising here.
 	             view = (LinearLayout) getLayoutInflater().
-	            		  inflate(R.layout.row_manager, parent, false);
+	            		  inflate(R.layout.row_abstract_manager, parent, false);
 	 	         for (int i = 0; i < getItem(pos).size(); i += 1) {
 			         TextView textView = new TextView(AbstractManagerActivity.this);
 			         view.addView(textView);

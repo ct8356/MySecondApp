@@ -18,7 +18,8 @@ import android.os.Build;
 public class Min1TagManagerActivity extends TagManagerActivity {
 	
 	@Override
-	public void goHome() {
+	public void goBackToStarter() {
+		//Bit of duplicate code here...
 		List<String> checkedTags = getCheckedTags();
 		if (checkedTags.size() == 0){
 			//If no tags selected, do nothing.

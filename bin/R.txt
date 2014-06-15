@@ -336,7 +336,7 @@ int layout create_tag 0x7f03001a
 int layout entry_column_names 0x7f03001b
 int layout min1_tag_manager 0x7f03001c
 int layout notes_row 0x7f03001d
-int layout row_manager 0x7f03001e
+int layout row_abstract_manager 0x7f03001e
 int layout row_tag_manager 0x7f03001f
 int layout start_session 0x7f030020
 int layout support_simple_spinner_dropdown_item 0x7f030021
