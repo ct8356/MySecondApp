@@ -53,8 +53,6 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
     private TextView mSelectedTagsText;
     
 	public List<String> getCheckedEntryIds() { 
-		//now this is only called once at end, when needed.
-		//and, one less member variable.
 		List<String> checkedEntryIds = new ArrayList<String>();
 		for (int i=0; i<mEntries.size(); i+=1) {
 			//size() here will give number of rows.
@@ -93,30 +91,21 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         	//Do nothing
         	break;
         case RESULT_OK:
+        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+          	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+            updateMEntries();
 	        switch (requestCode) {
-	        case CREATE_ENTRY:
-	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	          	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-	            updateMEntries();
+	        case CREATE_ENTRY:          
 	            mChecked.add(true);
-	        	mCustomAdapter.notifyDataSetChanged();
 				break;
 	        case EDIT_ENTRY:
-	          	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	          	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-	            updateMEntries();
-	         	mCustomAdapter.notifyDataSetChanged();
+	        	//Do nothing.
 				break;
 	        case SELECT_TAGS:
-	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	        	updateMEntries();
 	        	updateMChecked();
-	        	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-	    		//I guess that if one of layouts children modified, layout auto-invalidated...
-	        	mCustomAdapter.notifyDataSetChanged();
-	        	//ofCourse! If textView doesn't auto-update, listView won't auto-update either!
 	        	break;
 	        }
+	     	mCustomAdapter.notifyDataSetChanged();
 	        break;
         }
     }
@@ -173,7 +162,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 			String joinColumnName = mTableName+"ID"; //HARDCODE
             mDbHelper.deleteEntryAndJoins(mTableName, MinutesToTagJoins.TABLE_NAME,
             		joinColumnName, rowId);
-            updateMEntries(); //not enough. Must notify.
+            updateMEntries();
             mChecked.remove(info.position);
             mCustomAdapter.notifyDataSetChanged();
             return true;
@@ -206,15 +195,8 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		mLayout = (LinearLayout) getLayoutInflater().
 				  inflate(R.layout.abstract_manager, null);
 		setContentView(mLayout);
-		//since want to add views to content view (root view?), have to inflate it yourself.?
-		//mSelectedTagsText = new TextView(this);
 		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
 		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-		//mLayout.addView(mSelectedTagsText);
-		//Button selectTags = new Button(this);
-		//selectTags.setText("Select tags");
-		//selectTags.setOnClickListener(new SelectTagsListener());
-		//mLayout.addView(selectTags);
 		mListView = new ListView(this);
 		mLayout.addView(mListView);
 		mCustomAdapter = new CustomAdapter();
@@ -225,26 +207,16 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	public void initialiseMemberVariables() {
 		//List<String> checkedEntryIds = extras.getStringArrayList(DbContract.CHECKED_IDS);
 		//Might need above if activity is killed during ActForResult, due to low memory.
-		List<String> checkedEntryIds = new ArrayList<String>();
-		//checkedEntryIds.add("0"); //None of the ids will be 0.
-		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
+		//mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
+		//Better to do it in subclass! CBTL.
 		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
 		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
 		updateMEntries();
-		mChecked = new ArrayList<Boolean>();
-		for (int i=0; i<mEntries.size(); i+=1) {
-			//mEntries.size returns number of rows.
-			if (checkedEntryIds.contains(mEntries.get(i).get(0))) { //0 for _ID
-				mChecked.add(true);
-			} else {
-				mChecked.add(false);
-			}
-		}
+		updateMChecked();
 	}
 	
 	public void updateMChecked() {
 		List<String> checkedEntryIds = new ArrayList<String>();
-		checkedEntryIds.add("0"); //None of the ids will be 0.
 		mChecked = new ArrayList<Boolean>();
 		for (int i=0; i<mEntries.size(); i+=1) {
 			//mEntries.size returns number of rows.
@@ -261,19 +233,16 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		switch (mSelectedTags.size()) {
 		case 0:
 			mEntries = mDbHelper.getAllEntries(mTableName);
-			//this is then used by the listView in getView.
+			//mEntries is then used by the listView in getView.
 			break;
 		default:
 			List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
 			mColumnNames = mDbHelper.getAllColumnNames(mTableName);
 			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, 
-					"_id", timeEntryIds); //Is the issue in get Entries? _ID is null! CBTL
-			//HARDCODE
+					"_id", timeEntryIds); //HARDCODE
 			break;
 		}	
 		mDbHelper.close();
-		//CBTL maybe do not want to get all columns. Only desired columns.
-	    //Ok for now, because not that many columns.
 	}
 	
 	public void toggle(int position) {
@@ -330,15 +299,6 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	public class OnItemClickListener implements AdapterView.OnItemClickListener {
 		public void onItemClick(AdapterView listView, View v, int position, long id) {
 			toggle(position);	
-		}
-	}
-	
-	public class SelectTagsListener implements View.OnClickListener {
-		public void onClick(View view) {
-			Intent intent = new Intent(AbstractManagerActivity.this, TagManagerActivity.class);
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags); 
-			startActivityForResult(intent, SELECT_TAGS);
 		}
 	}
 	

@@ -2,10 +2,12 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">MySecondApp</string>
+    
+    <!-- ACTION BAR -->
     <string name="action_settings">Settings</string>
     <string name="action_create">Create</string>
     <string name="action_done">Done</string>
-    <string name="edit_message">Enter a message</string>
+
     <!-- BUTTONS -->
     <string name="button_save_tag">Save tag</string>
     <string name="button_save_entry">Save entry</string>
@@ -20,8 +22,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_edit">Edit entry</string>
     <string name="menu_delete">Delete entry</string>
-    <string name="label_total_count">Total count:</string>
-    <string name="no_tags">No tags</string>
 
     <!-- TEXTVIEWS -->
     <string name="text_enter_tag">Enter a tag name:</string>
@@ -29,6 +29,10 @@
     <string name="text_session_length">Session length:</string>
     <string name="selected_tags">Selected tags: []</string>
     <string name="sum_time_entries">Total minutes: 0</string>
+    <string name="label_total_count">Total count:</string>
+    <string name="no_tags">No tags</string>
+    <string name="edit_message">Enter a message</string>
+    
     <!-- TITLES -->
     <string name="title_activity_time_accumulator">Time tracker home</string>
     <string name="title_activity_choose_tag">ChooseTagActivity</string>

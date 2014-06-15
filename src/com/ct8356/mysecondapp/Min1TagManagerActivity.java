@@ -21,6 +21,7 @@ public class Min1TagManagerActivity extends TagManagerActivity {
 	public void goHome() {
 		List<String> checkedTags = getCheckedTags();
 		if (checkedTags.size() == 0){
+			//If no tags selected, do nothing.
 			return;
 		}
 		Intent intent = new Intent();

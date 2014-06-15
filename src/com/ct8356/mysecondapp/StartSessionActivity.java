@@ -39,6 +39,14 @@ public class StartSessionActivity extends ActionBarActivity {
 	private TextView mSelectedTagsText;
 	private static final int SELECT_MIN1_TAGS = 0;
 	private static final int SELECT_TAGS = 1;
+	private static final int MANAGE_TIME_ENTRIES = 2;
+	
+	public void goManageTimeEntries() {
+		Intent intent = new Intent(this, TimeEntryManagerActivity.class);
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags); 
+		startActivityForResult(intent, MANAGE_TIME_ENTRIES);
+	}
 	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -49,10 +57,15 @@ public class StartSessionActivity extends ActionBarActivity {
         	break;
         case RESULT_OK:
 	        switch (requestCode) {
+	        case MANAGE_TIME_ENTRIES:
+	        	setResult(RESULT_OK, intent);
+	            finish();
+	        	break;
 	    	case SELECT_MIN1_TAGS:
 	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);      
 	            saveState();
+	            //goManageTimeEntries(); 
 	            setResult(RESULT_OK, intent);
 	            finish();
 	            break;

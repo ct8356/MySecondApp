@@ -38,4 +38,9 @@ public class TimeEntryManagerActivity extends AbstractManagerActivity {
 	    startActivityForResult(intent, EDIT_ENTRY);
 	}
 	
+	@Override
+	public void initialiseMemberVariables() {
+		mTableName = Minutes.TABLE_NAME;
+		super.initialiseMemberVariables();
+	}
 }

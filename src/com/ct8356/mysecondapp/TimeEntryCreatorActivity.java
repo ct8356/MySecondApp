@@ -25,6 +25,7 @@ public class TimeEntryCreatorActivity extends AbstractCreatorActivity {
     
 	@Override
 	public void initialiseViews() {
+		//Lot of duplicate code here.... needs improving....
 		mLayout = (LinearLayout) getLayoutInflater().
 	    		  inflate(R.layout.abstract_creator, null);
 		setContentView(mLayout);
