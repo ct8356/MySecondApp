@@ -36,7 +36,7 @@ public class StartSessionActivity extends ActionBarActivity {
 	private long startTime;
 	private long mElapsedTime;
 	private List<String> mSelectedTags;
-	private TextView mSelectedTagsText;
+	//private TextView mSelectedTagsText;
 	private static final int SELECT_MIN1_TAGS = 0;
 	private static final int SELECT_TAGS = 1;
 	private static final int MANAGE_TIME_ENTRIES = 2;
@@ -71,7 +71,7 @@ public class StartSessionActivity extends ActionBarActivity {
 	            break;
 	    	case SELECT_TAGS:
 	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	            mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
 	            break;
 	    	}
 	        break;
@@ -88,7 +88,7 @@ public class StartSessionActivity extends ActionBarActivity {
         if (extras != null) {
         	//mSelectedTagsString = extras.getString("tag");
         	mSelectedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
-        	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+        	//mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
         }
 		mChrono.start();
 	}
@@ -114,7 +114,7 @@ public class StartSessionActivity extends ActionBarActivity {
 		mElapsedTime = savedInstanceState.getLong(DbContract.ELAPSED_TIME);
 		mChrono.setBase(SystemClock.elapsedRealtime() - mElapsedTime);
     	mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
-    	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+    	//mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
     	//CBTL, this is done twice, here and in onCreate...
 	}// Seems silly to me that onCreate is called after orientation change.
 	//Why could it not just call onOrientationChange or something?
@@ -140,8 +140,8 @@ public class StartSessionActivity extends ActionBarActivity {
 		public StartSessionLayout(Context context) {
 			super(context);
 			//CREATE THE VIEWS
-			mSelectedTagsText = new TextView(context);
-			Button selectTags = new Button(context);
+			//mSelectedTagsText = new TextView(context);
+			//Button selectTags = new Button(context);
 			mChrono = new Chronometer(context);
 			start = new Button(context);
 			pause = new Button(context);
@@ -150,9 +150,10 @@ public class StartSessionActivity extends ActionBarActivity {
 			LinearLayout layout = new LinearLayout(context);
 			layout.setOrientation(1);
 			//SET THE TEXT AND ACTIONS;
-			mSelectedTagsText.setText("Selected tags: "+ mSelectedTags);
-			selectTags.setText("Select tags");
-			selectTags.setOnClickListener(new SelectTagsListener());
+			//mSelectedTagsText.setText("Selected tags: "+ mSelectedTags);
+			//selectTags.setText("Select tags");
+			//selectTags.setOnClickListener(new SelectTagsListener());
+			mChrono.setTextSize(100);
 	        start.setText("Start");
 	        start.setOnClickListener(new StartListener());
 	        start.setVisibility(View.GONE);
@@ -163,8 +164,8 @@ public class StartSessionActivity extends ActionBarActivity {
 	        save.setText("Stop session and save");
 	        save.setOnClickListener(new SaveListener());
 			//ADD VIEWS
-	        layout.addView(mSelectedTagsText);
-	        layout.addView(selectTags);
+	        //layout.addView(mSelectedTagsText);
+	        //layout.addView(selectTags);
 			layout.addView(mChrono);
 			layout.addView(start);
 			layout.addView(pause);
@@ -233,13 +234,13 @@ public class StartSessionActivity extends ActionBarActivity {
 		}
 	}
 	
-	public class SelectTagsListener implements View.OnClickListener {
-		public void onClick(View view) {
-			Intent intent = new Intent(StartSessionActivity.this, TagManagerActivity.class);
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags); 
-			startActivityForResult(intent, SELECT_TAGS);
-		}
-	}
+//	public class SelectTagsListener implements View.OnClickListener {
+//		public void onClick(View view) {
+//			Intent intent = new Intent(StartSessionActivity.this, TagManagerActivity.class);
+//			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+//					(ArrayList<String>) mSelectedTags); 
+//			startActivityForResult(intent, SELECT_TAGS);
+//		}
+//	}
 	
 }

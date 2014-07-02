@@ -42,19 +42,19 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	public TextView mSumMinutesText;
 	private int mSumMinutes;
 	
-	public void deselectTags(View view) {
-		mSelectedTags.clear();
-		mSelectedTagsText.setText("Selected tags: " + mSelectedTags); 
-		updateMSumMinutesAndText();
-		//if start using these really often, could put them in own single line method.
-	}
+//	public void deselectTags(View view) {
+//		mSelectedTags.clear();
+//		mSelectedTagsText.setText("Selected tags: " + mSelectedTags); 
+//		updateMSumMinutesAndText();
+//		//if start using these really often, could put them in own single line method.
+//	}
 	
-	public void goSelectTags(View view) {
-		Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags); 
-		startActivityForResult(intent, ADD_TAG);
-	}
+//	public void goSelectTags(View view) {
+//		Intent intent = new Intent(TimeAccumulatorActivity.this, TagManagerActivity.class);
+//		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+//				(ArrayList<String>) mSelectedTags); 
+//		startActivityForResult(intent, ADD_TAG);
+//	}
 	
 	public void goStartSession(View view) {
 		Intent intent = new Intent(TimeAccumulatorActivity.this, 
@@ -82,10 +82,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	
 	public void initialiseViews() {									
 		setContentView(R.layout.time_accumulator);
-		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
-		mSumMinutesText = (TextView) findViewById(R.id.sum_time_entries);
-		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-		updateMSumMinutesAndText(); 
+		//mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
+		//mSumMinutesText = (TextView) findViewById(R.id.sum_time_entries);
+		//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+		//updateMSumMinutesAndText(); 
 	}
 
     @Override
@@ -101,8 +101,8 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	        case START_SESSION:
 	        case MANAGE_ENTRIES:
 	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	        	mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-	        	updateMSumMinutesAndText();
+	        	//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+	        	//updateMSumMinutesAndText();
 	        	break;
 	        }
 	        break;
@@ -137,10 +137,10 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	    //super.onRestoreInstanceState(savedInstanceState);
 		//They recommend I should call above, but then its a double restore...
 		//works fine without it.
-	    mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
-	    mSumMinutes = savedInstanceState.getInt(DbContract.SUM_MINUTES);
-	    mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-    	updateMSumMinutesAndText();
+	    //mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
+	    //mSumMinutes = savedInstanceState.getInt(DbContract.SUM_MINUTES);
+	    //mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+    	//updateMSumMinutesAndText();
 	} //onRestoreInstanceSt will be called anyway, so may as well use it.
 	//To avoid double restore, do little as possible in onCreate...?
 	
@@ -151,12 +151,12 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	    super.onSaveInstanceState(savedInstanceState);
 	}
 	
-	public void updateMSumMinutesAndText() {
-		mDbHelper.openDatabase();
-		mSumMinutes = mDbHelper.sumMinutes(mSelectedTags);
-		mDbHelper.close();
-		mSumMinutesText.setText("Total minutes: " + mSumMinutes);
-		return;
-	}
+//	public void updateMSumMinutesAndText() {
+//		mDbHelper.openDatabase();
+//		mSumMinutes = mDbHelper.sumMinutes(mSelectedTags);
+//		mDbHelper.close();
+//		mSumMinutesText.setText("Total minutes: " + mSumMinutes);
+//		return;
+//	}
 
 }
