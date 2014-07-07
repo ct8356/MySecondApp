@@ -2,7 +2,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">MySecondApp</string>
-    
+
     <!-- ACTION BAR -->
     <string name="action_settings">Settings</string>
     <string name="action_create">Create</string>
@@ -17,7 +17,7 @@
     <string name="select_tags">Select tags</string>
     <string name="start_session">Time a session</string>
     <string name="manage_time_entries">Manage sessions</string>
-    
+
     <!-- MENUS -->
     <string name="hello_world">Hello world!</string>
     <string name="menu_edit">Edit entry</string>
@@ -32,7 +32,7 @@
     <string name="label_total_count">Total count:</string>
     <string name="no_tags">No tags</string>
     <string name="edit_message">Enter a message</string>
-    
+
     <!-- TITLES -->
     <string name="title_activity_time_accumulator">Time tracker home</string>
     <string name="title_activity_choose_tag">ChooseTagActivity</string>
@@ -44,5 +44,7 @@
     <string name="title_activity_abstract_creator">AbstractCreator</string>
     <string name="title_activity_time_entry_creator">Create/edit sessions</string>
     <string name="title_activity_min1_tag_manager">Add at least 1 tag</string>
+    <string name="title_activity_abstract">AbstractActivity</string>
+    <string name="title_activity_one_tag_manager">OneTagManagerActivity</string>
 
 </resources>

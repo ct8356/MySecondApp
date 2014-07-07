@@ -41,15 +41,15 @@ import android.widget.AbsListView;
 
 public class TagManagerActivity extends ActionBarActivity {
 	//Note, could make this extend abstractManagerActivity...
-	private DbHelper mDbHelper;
+	protected DbHelper mDbHelper;
 	private static final int CREATE_TAG = 0;
 	private static final int EDIT_TAG = Menu.FIRST;
 	private static final int DELETE_TAG = Menu.FIRST + 1;
-	private List<String> mTagNames; //a key variable. it is called by getItem().
+	protected List<String> mTagNames; //a key variable. it is called by getItem().
 	//private List<String> mCheckedTags; //Just a translation variable. Can be local.
-	private List<Boolean> mChecked; //a key variable. Called by getView().
+	protected List<Boolean> mChecked; //a key variable. Called by getView().
     public CustomAdapter mCustomAdapter;
-    private ListView mListView;
+    protected ListView mListView;
 
 	public List<String> getCheckedTags() { 
 		//now this is only called once at end, when needed.
@@ -216,7 +216,7 @@ public class TagManagerActivity extends ActionBarActivity {
 		mListView.getAdapter().getView(position, convertView, mListView);
 	}
 	
-	private class CustomAdapter extends BaseAdapter {
+	protected class CustomAdapter extends BaseAdapter {
 	    public int getCount() {
 			mDbHelper.openDatabase();
 			Cursor cursor = mDbHelper.getAllEntriesCursor(Tags.TABLE_NAME);
@@ -249,7 +249,7 @@ public class TagManagerActivity extends ActionBarActivity {
 	    }
 	}
 	
-	public class OnItemClickListener implements AdapterView.OnItemClickListener {
+	protected class OnItemClickListener implements AdapterView.OnItemClickListener {
 		public void onItemClick(AdapterView listView, View v, int position, long id) {
 			toggle(position);	
 		}

@@ -15,48 +15,62 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.ct8356.mysecondapp.TimeAccumulatorActivity"
-            android:label="@string/title_activity_time_accumulator" >
+            android:label="@string/title_activity_time_accumulator"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.ct8356.mysecondapp.ChooseTagActivity"
-            android:label="@string/title_activity_choose_tag" >
-        </activity>
-        <activity
             android:name="com.ct8356.mysecondapp.StartSessionActivity"
-            android:label="@string/title_activity_start_session" >
+            android:label="@string/title_activity_start_session"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.CreateTagActivity"
-            android:label="@string/title_activity_creata" >
+            android:label="@string/title_activity_creata"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TagManagerActivity"
-            android:label="@string/title_activity_tag_manager" >
+            android:label="@string/title_activity_tag_manager"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
-            android:label="@string/title_activity_time_entry_manager" >
+            android:label="@string/title_activity_time_entry_manager"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.AbstractManagerActivity"
-            android:label="@string/title_activity_abstract_manager" >
+            android:label="@string/title_activity_abstract_manager"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.AbstractCreatorActivity"
-            android:label="@string/title_activity_abstract_creator" >
+            android:label="@string/title_activity_abstract_creator"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TimeEntryCreatorActivity"
-            android:label="@string/title_activity_time_entry_creator" >
+            android:label="@string/title_activity_time_entry_creator"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.Min1TagManagerActivity"
-            android:label="@string/title_activity_min1_tag_manager" >
+            android:label="@string/title_activity_min1_tag_manager"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.AbstractActivity"
+            android:label="@string/title_activity_abstract"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.OneTagManagerActivity"
+            android:label="@string/title_activity_one_tag_manager"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

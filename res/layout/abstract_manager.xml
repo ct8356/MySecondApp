@@ -9,20 +9,27 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.ct8356.mysecondapp.AbstractManagerActivity$PlaceholderFragment" >
-    
-	    <TextView
-	        android:id="@+id/selected_tags"
-	        android:layout_width="match_parent"
+  	
+  	<LinearLayout
+   		android:layout_width="match_parent"
+		android:layout_height="wrap_content">	
+   		<TextView
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="@string/selected_tags" />
-	    
-	    <Button
-    	    android:id="@+id/select_tags"
-	        android:layout_width="match_parent"
+	        android:text="Project   "
+	        android:textStyle="bold"
+	        android:textSize="20sp" />
+ 		<!-- <Button
+ 	 		android:id="@+id/selected_tags"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="@string/select_tags" 
-	        android:onClick="goSelectTags"/>
-	    
+			android:onClick="goSelectTags"/> -->
+		<Spinner
+		    android:id="@+id/selected_tag"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"/>
+	</LinearLayout>
+ 	
 	    <!--  HARDCODE! -->
 	    <LinearLayout
             android:layout_width="match_parent"

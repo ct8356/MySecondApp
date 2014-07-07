@@ -3,6 +3,7 @@ package com.ct8356.mysecondapp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
 import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
@@ -10,8 +11,15 @@ import com.ct8356.mysecondapp.DbContract.Tags;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.animation.AnimatorSet.Builder;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -22,35 +30,42 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.os.Build;
 
-public abstract class AbstractManagerActivity extends ActionBarActivity {
+public abstract class AbstractManagerActivity extends AbstractActivity implements AdapterView.OnItemSelectedListener {
 	private DbHelper mDbHelper;
+	protected SharedPreferences mPrefs;
 	protected static final int CREATE_ENTRY = 0;
 	protected static final int SELECT_TAGS = 1;
 	protected static final int EDIT_ENTRY = 2;
 	private static final int DELETE_ENTRY = 3;
-	
+	private static final int DIALOG_ALERT = 10;
 	private List<List<String>> mEntries; //a key variable. it is called by getItem().
 	//Note, every inner list, represents a row.
 	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
 	private List<Boolean> mChecked; //a key variable. Called by getView().
-    public CustomAdapter mCustomAdapter; 
-    private ListView mListView; 
+    public CustomAdapter mCustomAdapter;
+    private ListView mListView;
+    protected Spinner mSpinner;
     protected String mTableName; //CBTL what does protected mean?
     protected String mCreatorActivity; //leave just in case decide to use it.
     private LinearLayout mLayout;
-    protected List<String> mSelectedTags;
+    protected List<String> mTagNames; //a key variable. it is called by getItem().
+    protected List<String> mSelectedTags; //NOTE! Use this, but with single tag in it,
+    //want to keep this in shared preferences!?
 	private List<String> mColumnNames;
-    private TextView mSelectedTagsText;
+    //private Button mSelectedTagsText;
     
 	public List<String> getCheckedEntryIds() { 
 		List<String> checkedEntryIds = new ArrayList<String>();
@@ -74,21 +89,30 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	
 	public abstract void goCreateEntry();
 	
-	public abstract void goEditEntry(Long rowId); 
+	public abstract void goEditEntry(Long rowId);
 	
 	public void goSelectTags(View view) {
-		Intent intent = new Intent(AbstractManagerActivity.this, TagManagerActivity.class);
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags); 
-		startActivityForResult(intent, SELECT_TAGS);
+//		Intent intent = new Intent(AbstractManagerActivity.this, OneTagManagerActivity.class);
+//		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+//				(ArrayList<String>) mSelectedTags); 
+//		startActivityForResult(intent, SELECT_TAGS);
+	    DialogFragment dFragment = new CustomDialogFragment();
+	    dFragment.show(getSupportFragmentManager(), "selectTag");
 	}
 
 	public void initialiseViews() {
+		//LAYOUT
 		mLayout = (LinearLayout) getLayoutInflater().
 				  inflate(R.layout.abstract_manager, null);
 		setContentView(mLayout);
-		mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
-		mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
+		//mSelectedTagsText = (Button) findViewById(R.id.selected_tags);
+		//mSelectedTagsText.setText(""+mSelectedTags);
+		//SPINNER
+		mSpinner = (Spinner) findViewById(R.id.selected_tag);
+		TagNamesAdapter tagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, mTagNames);
+		mSpinner.setAdapter(tagNamesAdapter);
+		mSpinner.setOnItemSelectedListener(this);
+		//LISTVIEW
 		mListView = new ListView(this);
 		mLayout.addView(mListView);
 		mCustomAdapter = new CustomAdapter();
@@ -96,13 +120,20 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		mListView.setOnItemClickListener(new OnItemClickListener());
 	}
 	
+	@SuppressLint("NewApi") //CBTL
 	public void initialiseMemberVariables() {
 		//List<String> checkedEntryIds = extras.getStringArrayList(DbContract.CHECKED_IDS);
 		//Might need above if activity is killed during ActForResult, due to low memory.
 		//mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
 		//Better to do it in subclass! CBTL.
+		mTagNames = new ArrayList<String>();
+		mDbHelper.openDatabase();
+		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
+		mDbHelper.close();
+		
 		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
 		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
+		//not used, but keep just in case.
 		updateMEntries();
 		updateMChecked();
 	}
@@ -116,7 +147,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         	break;
         case RESULT_OK:
         	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-          	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+          	//mSelectedTagsText.setText(""+mSelectedTags);
             updateMEntries();
 	        switch (requestCode) {
 	        case CREATE_ENTRY:          
@@ -165,6 +196,15 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+	  switch (id) {
+	    case DIALOG_ALERT:
+	    CustomDialogFragment builder = new CustomDialogFragment(); 
+	  }
+	  return super.onCreateDialog(id);
+	}
+	
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -195,10 +235,18 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
         return super.onContextItemSelected(item);
     }
     
+    public void onDataPass(String selectedTag) {
+    	mSelectedTags = new ArrayList<String>();
+    	mSelectedTags.add(selectedTag);
+		//mSelectedTagsText.setText(""+mSelectedTags);
+		updateMEntries();
+		mCustomAdapter.notifyDataSetChanged();
+    }
+    
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
-		mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+		//mSelectedTagsText.setText(""+mSelectedTags);
     	boolean[] checked = savedInstanceState.getBooleanArray(DbContract.CHECKED);
     	for (int i = 0; i < checked.length; i++) { 
     		mChecked.set(i, checked[i]); 
@@ -214,6 +262,20 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 		for (int i = 0; i < mChecked.size(); i++) { checked[i] = mChecked.get(i); }
 		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
 	}
+	
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        // An item was selected. You can retrieve the selected item using
+        String selectedTag = parent.getItemAtPosition(pos).toString();
+    	mSelectedTags = new ArrayList<String>();
+    	mSelectedTags.add(selectedTag);
+		//mSelectedTagsText.setText(""+mSelectedTags);
+		updateMEntries();
+		mCustomAdapter.notifyDataSetChanged();
+    }
+
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Do nothing.
+    }
 
 	public void updateMChecked() {
 		List<String> checkedEntryIds = new ArrayList<String>();
@@ -241,7 +303,7 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, 
 					"_id", timeEntryIds); //HARDCODE
 			break;
-		}	
+		}
 		mDbHelper.close();
 	}
 	
@@ -296,10 +358,16 @@ public abstract class AbstractManagerActivity extends ActionBarActivity {
 	    }
 	}
 	
+	private class TagNamesAdapter extends ArrayAdapter<String> {
+	    public TagNamesAdapter(Context context, int resource, List<String> list) {
+			super(context, resource, list);
+		}
+	}
+
 	public class OnItemClickListener implements AdapterView.OnItemClickListener {
 		public void onItemClick(AdapterView listView, View v, int position, long id) {
 			toggle(position);	
 		}
-	}
+	} //NOte, could probs put this in XML, if put listView in XML.
 	
 }

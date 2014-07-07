@@ -218,29 +218,29 @@ public class StartSessionActivity extends ActionBarActivity {
 			mChrono.stop();
 			mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
 			Intent intent;
-			if (mSelectedTags.size() == 0) {
-				intent = new Intent(StartSessionActivity.this, Min1TagManagerActivity.class);
+//			if (mSelectedTags.size() == 0) {
+				intent = new Intent(StartSessionActivity.this, OneTagManagerActivity.class);
 				intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
 						(ArrayList<String>) mSelectedTags);
 				startActivityForResult(intent, SELECT_MIN1_TAGS);
-			} else {
-				saveState();
-				intent = new Intent();
-				intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-						(ArrayList<String>) mSelectedTags); 
-				setResult(RESULT_OK, intent);
-				finish();
-			}
+//			} else {
+//				saveState();
+//				intent = new Intent();
+//				intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+//						(ArrayList<String>) mSelectedTags); 
+//				setResult(RESULT_OK, intent);
+//				finish();
+//			}
 		}
 	}
 	
 //	public class SelectTagsListener implements View.OnClickListener {
 //		public void onClick(View view) {
-//			Intent intent = new Intent(StartSessionActivity.this, TagManagerActivity.class);
+//			Intent intent = new Intent(StartSessionActivity.this, OneManagerActivity.class);
 //			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
 //					(ArrayList<String>) mSelectedTags); 
 //			startActivityForResult(intent, SELECT_TAGS);
 //		}
 //	}
-	
+//Use XML, not this...
 }
