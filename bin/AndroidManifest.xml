@@ -17,15 +17,20 @@
             android:name="com.ct8356.mysecondapp.TimeAccumulatorActivity"
             android:label="@string/title_activity_time_accumulator"
             android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.StartSessionActivity"
             android:label="@string/title_activity_start_session"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" 
+            android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity" >
+	        <!-- Parent activity meta-data to support 4.0 and lower -->
+	        <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.CreateTagActivity"
@@ -40,7 +45,12 @@
         <activity
             android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
             android:label="@string/title_activity_time_entry_manager"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" 
+            android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity" >
+	        <!-- Parent activity meta-data to support 4.0 and lower -->
+	        <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.AbstractManagerActivity"

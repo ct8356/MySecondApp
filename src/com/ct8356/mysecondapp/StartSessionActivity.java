@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.os.Build;
 
 public class StartSessionActivity extends ActionBarActivity {
@@ -40,6 +41,7 @@ public class StartSessionActivity extends ActionBarActivity {
 	private static final int SELECT_MIN1_TAGS = 0;
 	private static final int SELECT_TAGS = 1;
 	private static final int MANAGE_TIME_ENTRIES = 2;
+	protected String mMins;
 	
 	public void goManageTimeEntries() {
 		Intent intent = new Intent(this, TimeEntryManagerActivity.class);
@@ -57,22 +59,25 @@ public class StartSessionActivity extends ActionBarActivity {
         	break;
         case RESULT_OK:
 	        switch (requestCode) {
-	        case MANAGE_TIME_ENTRIES:
-	        	setResult(RESULT_OK, intent);
-	            finish();
-	        	break;
+//	        case MANAGE_TIME_ENTRIES:
+//	        	setResult(RESULT_OK, intent);
+//	            finish();
+//	        	break;
 	    	case SELECT_MIN1_TAGS:
 	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);      
+	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);  
 	            saveState();
-	            //goManageTimeEntries(); 
-	            setResult(RESULT_OK, intent);
-	            finish();
+	            //goManageTimeEntries();
+	            //setResult(RESULT_OK, intent);
+	            //finish();
+	            //SHOW TOAST!!!
+	            String text = "Saved "+mMins+" minutes to project '"+mSelectedTags.get(0)+"'";
+	            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
 	            break;
-	    	case SELECT_TAGS:
-	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-	            break;
+//	    	case SELECT_TAGS:
+//	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
+//	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+//	            break;
 	    	}
 	        break;
         }
@@ -84,13 +89,14 @@ public class StartSessionActivity extends ActionBarActivity {
 		StartSessionLayout layout = new StartSessionLayout(this);
 		setContentView(layout);
 		mDbHelper = new DbHelper(this);
+		mSelectedTags = new ArrayList<String>();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
         	//mSelectedTagsString = extras.getString("tag");
         	mSelectedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
         	//mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
         }
-		mChrono.start();
+		//mChrono.start();
 	}
 
 	@Override
@@ -103,7 +109,11 @@ public class StartSessionActivity extends ActionBarActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		switch (id) {
+		case R.id.action_settings:
+			return true;
+		case R.id.view_time_entries:
+			goManageTimeEntries();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -130,8 +140,8 @@ public class StartSessionActivity extends ActionBarActivity {
 	
     private void saveState() {
         mDbHelper.openDatabase();
-    	String mins = String.valueOf((mElapsedTime/1000)/60); //CBTL Turn it to minutes
-        mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, mins, 
+    	mMins = String.valueOf((mElapsedTime/1000)/60); //CBTL Turn it to minutes
+        mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, mMins, 
         		MinutesToTagJoins.TABLE_NAME, mSelectedTags);
         mDbHelper.close();
      }
@@ -156,9 +166,9 @@ public class StartSessionActivity extends ActionBarActivity {
 			mChrono.setTextSize(100);
 	        start.setText("Start");
 	        start.setOnClickListener(new StartListener());
-	        start.setVisibility(View.GONE);
 	        pause.setText("Pause");
 	        pause.setOnClickListener(new StopListener());
+	        pause.setVisibility(View.GONE);
 	        reset.setText("Reset");
 	        reset.setOnClickListener(new ResetListener());
 	        save.setText("Stop session and save");

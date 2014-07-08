@@ -43,7 +43,8 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.os.Build;
 
-public abstract class AbstractManagerActivity extends AbstractActivity implements AdapterView.OnItemSelectedListener {
+public abstract class AbstractManagerActivity extends AbstractActivity 
+implements AdapterView.OnItemSelectedListener {
 	private DbHelper mDbHelper;
 	protected SharedPreferences mPrefs;
 	protected static final int CREATE_ENTRY = 0;
@@ -51,11 +52,13 @@ public abstract class AbstractManagerActivity extends AbstractActivity implement
 	protected static final int EDIT_ENTRY = 2;
 	private static final int DELETE_ENTRY = 3;
 	private static final int DIALOG_ALERT = 10;
+	protected String PREF_NAME = "com.ct8356.mysecondapp.currentproject";
 	private List<List<String>> mEntries; //a key variable. it is called by getItem().
 	//Note, every inner list, represents a row.
 	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
 	private List<Boolean> mChecked; //a key variable. Called by getView().
     public CustomAdapter mCustomAdapter;
+    protected TagNamesAdapter mTagNamesAdapter;
     private ListView mListView;
     protected Spinner mSpinner;
     protected String mTableName; //CBTL what does protected mean?
@@ -109,9 +112,10 @@ public abstract class AbstractManagerActivity extends AbstractActivity implement
 		//mSelectedTagsText.setText(""+mSelectedTags);
 		//SPINNER
 		mSpinner = (Spinner) findViewById(R.id.selected_tag);
-		TagNamesAdapter tagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, mTagNames);
-		mSpinner.setAdapter(tagNamesAdapter);
+		mSpinner.setAdapter(mTagNamesAdapter);
 		mSpinner.setOnItemSelectedListener(this);
+		int pos = mTagNamesAdapter.getPosition(mSelectedTags.get(0));
+		mSpinner.setSelection(pos);
 		//LISTVIEW
 		mListView = new ListView(this);
 		mLayout.addView(mListView);
@@ -130,8 +134,18 @@ public abstract class AbstractManagerActivity extends AbstractActivity implement
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
-		
-		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
+		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
+				mTagNames);
+		mPrefs = getSharedPreferences(PREF_NAME, 0);
+		mSelectedTags = new ArrayList<String>();
+		String selectedTagPref = mPrefs.getString(DbContract.TAG_NAMES, "Pref_no_exist");
+
+		if (selectedTagPref != "Pref_no_exist") {
+			mSelectedTags.add(selectedTagPref);
+		} else {
+			mSelectedTags.add(mTagNamesAdapter.getItem(0)); //Get first item in list.
+		}
+		//mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
 		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
 		//not used, but keep just in case.
 		updateMEntries();
@@ -263,6 +277,17 @@ public abstract class AbstractManagerActivity extends AbstractActivity implement
 		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
 	}
 	
+	public void onStop() {
+		super.onStop();
+		//This is where supposed to do shared pref stuff.
+		//SHARED PREF
+		mPrefs = getSharedPreferences(PREF_NAME, 0); //0 is reqd mode
+		SharedPreferences.Editor editor = mPrefs.edit();
+		editor.putString(DbContract.TAG_NAMES, mSelectedTags.get(0));
+		// Commit the edits!
+		editor.commit();
+	}
+	
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         // An item was selected. You can retrieve the selected item using
         String selectedTag = parent.getItemAtPosition(pos).toString();
@@ -270,6 +295,7 @@ public abstract class AbstractManagerActivity extends AbstractActivity implement
     	mSelectedTags.add(selectedTag);
 		//mSelectedTagsText.setText(""+mSelectedTags);
 		updateMEntries();
+		updateMChecked();
 		mCustomAdapter.notifyDataSetChanged();
     }
 

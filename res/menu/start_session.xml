@@ -9,4 +9,9 @@
         android:title="@string/action_settings"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/view_time_entries"
+        android:orderInCategory="101"
+        android:title="@string/view_time_entries"
+        app:showAsAction="never"/>
 </menu>

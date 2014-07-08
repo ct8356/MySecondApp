@@ -1151,6 +1151,7 @@ containing a value of this type.
         public static final int top_action_bar=0x7f050020;
         public static final int up=0x7f050021;
         public static final int useLogo=0x7f050003;
+        public static final int view_time_entries=0x7f050048;
         public static final int withText=0x7f05000c;
     }
     public static final class integer {
@@ -1280,49 +1281,50 @@ containing a value of this type.
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
         public static final int action_create=0x7f0a000f;
         public static final int action_done=0x7f0a0010;
-        /**  ACTION BAR 
+        /**  OPTIONS MENU / ACTION BAR 
          */
         public static final int action_settings=0x7f0a000e;
         public static final int app_name=0x7f0a000d;
-        public static final int button_pause_resume=0x7f0a0013;
-        public static final int button_save_entry=0x7f0a0012;
+        public static final int button_pause_resume=0x7f0a0014;
+        public static final int button_save_entry=0x7f0a0013;
         /**  BUTTONS 
          */
-        public static final int button_save_tag=0x7f0a0011;
-        public static final int button_stop_and_save=0x7f0a0014;
-        public static final int deselect_tags=0x7f0a0015;
-        public static final int edit_message=0x7f0a0023;
-        /**  MENUS 
+        public static final int button_save_tag=0x7f0a0012;
+        public static final int button_stop_and_save=0x7f0a0015;
+        public static final int deselect_tags=0x7f0a0016;
+        public static final int edit_message=0x7f0a0024;
+        /**  CONTEXT MENUS 
          */
-        public static final int hello_world=0x7f0a0019;
-        public static final int label_total_count=0x7f0a0021;
-        public static final int manage_time_entries=0x7f0a0018;
-        public static final int menu_delete=0x7f0a001b;
-        public static final int menu_edit=0x7f0a001a;
-        public static final int no_tags=0x7f0a0022;
-        public static final int select_tags=0x7f0a0016;
-        public static final int selected_tags=0x7f0a001f;
-        public static final int start_session=0x7f0a0017;
-        public static final int sum_time_entries=0x7f0a0020;
-        public static final int text_enter_entry=0x7f0a001d;
+        public static final int hello_world=0x7f0a001a;
+        public static final int label_total_count=0x7f0a0022;
+        public static final int manage_time_entries=0x7f0a0019;
+        public static final int menu_delete=0x7f0a001c;
+        public static final int menu_edit=0x7f0a001b;
+        public static final int no_tags=0x7f0a0023;
+        public static final int select_tags=0x7f0a0017;
+        public static final int selected_tags=0x7f0a0020;
+        public static final int start_session=0x7f0a0018;
+        public static final int sum_time_entries=0x7f0a0021;
+        public static final int text_enter_entry=0x7f0a001e;
         /**  TEXTVIEWS 
          */
-        public static final int text_enter_tag=0x7f0a001c;
-        public static final int text_session_length=0x7f0a001e;
-        public static final int title_activity_abstract=0x7f0a002e;
-        public static final int title_activity_abstract_creator=0x7f0a002b;
-        public static final int title_activity_abstract_manager=0x7f0a002a;
-        public static final int title_activity_choose_tag=0x7f0a0025;
-        public static final int title_activity_creata=0x7f0a0027;
-        public static final int title_activity_min1_tag_manager=0x7f0a002d;
-        public static final int title_activity_one_tag_manager=0x7f0a002f;
-        public static final int title_activity_start_session=0x7f0a0026;
-        public static final int title_activity_tag_manager=0x7f0a0028;
+        public static final int text_enter_tag=0x7f0a001d;
+        public static final int text_session_length=0x7f0a001f;
+        public static final int title_activity_abstract=0x7f0a002f;
+        public static final int title_activity_abstract_creator=0x7f0a002c;
+        public static final int title_activity_abstract_manager=0x7f0a002b;
+        public static final int title_activity_choose_tag=0x7f0a0026;
+        public static final int title_activity_creata=0x7f0a0028;
+        public static final int title_activity_min1_tag_manager=0x7f0a002e;
+        public static final int title_activity_one_tag_manager=0x7f0a0030;
+        public static final int title_activity_start_session=0x7f0a0027;
+        public static final int title_activity_tag_manager=0x7f0a0029;
         /**  TITLES 
          */
-        public static final int title_activity_time_accumulator=0x7f0a0024;
-        public static final int title_activity_time_entry_creator=0x7f0a002c;
-        public static final int title_activity_time_entry_manager=0x7f0a0029;
+        public static final int title_activity_time_accumulator=0x7f0a0025;
+        public static final int title_activity_time_entry_creator=0x7f0a002d;
+        public static final int title_activity_time_entry_manager=0x7f0a002a;
+        public static final int view_time_entries=0x7f0a0011;
     }
     public static final class style {
         /** 
