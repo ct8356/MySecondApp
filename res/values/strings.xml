@@ -5,7 +5,7 @@
 
     <!-- OPTIONS MENU / ACTION BAR -->
     <string name="action_settings">Settings</string>
-    <string name="action_create">Create</string>
+    <string name="new_entry">New entry</string>
     <string name="action_done">Done</string>
     <string name="view_time_entries">View time entries</string>
 
@@ -47,5 +47,6 @@
     <string name="title_activity_min1_tag_manager">Add at least 1 tag</string>
     <string name="title_activity_abstract">AbstractActivity</string>
     <string name="title_activity_one_tag_manager">OneTagManagerActivity</string>
+    <string name="title_activity_time_entry_editor">TimeEntryEditorAct</string>
 
 </resources>

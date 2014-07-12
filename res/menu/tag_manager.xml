@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ct8356.mysecondapp.TagManagerActivity" >
     
-    <item
+	<item
         android:id="@+id/action_done"
         android:title="@string/action_done"
         app:showAsAction="ifRoom|withText"/>
     
     <item
-        android:id="@+id/action_create"
-        android:title="@string/action_create"
-        app:showAsAction="ifRoom|withText"/>
+        android:id="@+id/new_entry"
+        android:title="@string/new_entry"
+        app:showAsAction="never"/>
     
     <item
         android:id="@+id/action_settings"

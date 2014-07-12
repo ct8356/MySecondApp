@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.os.Build;
 
@@ -30,12 +31,15 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	protected DbHelper mDbHelper;
     protected Long mRowId;
     protected List<String> mSelectedTags;
+    protected List<String> mColumnNames;
+	protected List<List<String>> mTable;
 	protected String mTableName;
 	//private List<String> mColumnNames; //Leave in case use again.
 	protected int mColumnCount;
 	protected int mRequestCode;
 	protected int mFixedViewCount;
 	protected LinearLayout mLayout;
+	protected ListView mListView;
 	protected TextView mSelectedTagsText;
 	private static final int SELECT_MIN1_TAGS = 0;
 	private static final int SELECT_TAGS = 1;
@@ -146,6 +150,8 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 		mDbHelper.close();
 		mRequestCode = getIntent().getIntExtra(DbContract.REQUEST_CODE, 
 				AbstractManagerActivity.CREATE_ENTRY); 
+		//FILL MTABLE
+		//fillMTable();
 		// CBTL means, if no request code, its a create_request.
 		if (mRequestCode == AbstractManagerActivity.EDIT_ENTRY) {
 			//If it was an edit request...
@@ -155,16 +161,19 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 			mDbHelper.close();
 			//return zero, then cursor will be empty.
 		}
+
     }
     
-    public abstract void initialiseViews();
+    public abstract void fillMTable();
+
+	public abstract void initialiseViews();
 	
     private void saveState() {
     	List<String> entry = new ArrayList<String>();
         for (int i = 1; i < mColumnCount; i += 1) {
-        	//start with i=1, to skip the id column.
-        	 TextView text = (TextView) mLayout.getChildAt(i+mFixedViewCount); 
-        	 //+2 because of enter entry, and Save button views.
+        	 //start with i=1, to skip the id column.
+        	 LinearLayout formLine = (LinearLayout) mListView.getChildAt(i);
+        	 TextView text = (TextView) formLine.getChildAt(1);
    	         entry.add(text.getText().toString());
         }
         String minutes = entry.get(0); //0 for minutes. HARDCODE
@@ -173,7 +182,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 			mRowId = mDbHelper.insertEntryAndJoins(mTableName, minutes, 
 					MinutesToTagJoins.TABLE_NAME, mSelectedTags);//HARDCODE
         } else {
-            mDbHelper.updateEntryAndJoins(mTableName, minutes, 
+            mDbHelper.updateEntryAndJoins(mTableName, entry, 
             		MinutesToTagJoins.TABLE_NAME, mSelectedTags, mRowId);//HARDCODE
         }
 		mDbHelper.close();

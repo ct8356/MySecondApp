@@ -1088,7 +1088,6 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f050023;
         public static final int action_bar_title=0x7f050022;
         public static final int action_context_bar=0x7f05001d;
-        public static final int action_create=0x7f050047;
         public static final int action_done=0x7f050046;
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
@@ -1100,12 +1099,13 @@ containing a value of this type.
         public static final int checkBox1=0x7f050042;
         public static final int checkbox=0x7f05002d;
         public static final int collapseActionView=0x7f05000d;
-        public static final int container=0x7f05003f;
+        public static final int container=0x7f05003d;
         public static final int default_activity_button=0x7f050028;
         public static final int dialog=0x7f05000e;
         public static final int disableHome=0x7f050008;
         public static final int dropdown=0x7f05000f;
-        public static final int edit_create_tag=0x7f050040;
+        public static final int editText=0x7f050040;
+        public static final int edit_create_tag=0x7f05003e;
         public static final int edit_query=0x7f050030;
         public static final int end=0x7f050013;
         public static final int expand_activities_button=0x7f050026;
@@ -1116,10 +1116,12 @@ containing a value of this type.
         public static final int icon=0x7f05002a;
         public static final int ifRoom=0x7f05000a;
         public static final int image=0x7f050027;
+        public static final int label=0x7f05003f;
         public static final int listMode=0x7f050001;
         public static final int list_item=0x7f050029;
         public static final int middle=0x7f050012;
         public static final int never=0x7f050009;
+        public static final int new_entry=0x7f050047;
         public static final int none=0x7f050010;
         public static final int normal=0x7f050000;
         public static final int progress_circular=0x7f050018;
@@ -1135,9 +1137,7 @@ containing a value of this type.
         public static final int search_plate=0x7f050036;
         public static final int search_src_text=0x7f050037;
         public static final int search_voice_btn=0x7f05003b;
-        public static final int select_tags=0x7f05003d;
-        public static final int selected_tag=0x7f05003e;
-        public static final int selected_tags=0x7f05003c;
+        public static final int selected_tag=0x7f05003c;
         public static final int shortcut=0x7f05002e;
         public static final int showCustom=0x7f050007;
         public static final int showHome=0x7f050004;
@@ -1208,34 +1208,37 @@ containing a value of this type.
         public static final int abstract_manager=0x7f030019;
         public static final int activity_abstract=0x7f03001a;
         public static final int activity_one_tag_manager=0x7f03001b;
-        public static final int create_tag=0x7f03001c;
-        public static final int entry_column_names=0x7f03001d;
-        public static final int fragment_abstract=0x7f03001e;
-        public static final int fragment_one_tag_manager=0x7f03001f;
-        public static final int min1_tag_manager=0x7f030020;
-        public static final int notes_row=0x7f030021;
-        public static final int row_abstract_manager=0x7f030022;
-        public static final int row_tag_manager=0x7f030023;
-        public static final int start_session=0x7f030024;
-        public static final int support_simple_spinner_dropdown_item=0x7f030025;
-        public static final int tag_manager=0x7f030026;
-        public static final int tag_name=0x7f030027;
-        public static final int time_accumulator=0x7f030028;
-        public static final int time_entry_creator=0x7f030029;
-        public static final int time_entry_manager=0x7f03002a;
+        public static final int activity_time_entry_editor=0x7f03001c;
+        public static final int create_tag=0x7f03001d;
+        public static final int entry_column_names=0x7f03001e;
+        public static final int form_line=0x7f03001f;
+        public static final int fragment_abstract=0x7f030020;
+        public static final int fragment_one_tag_manager=0x7f030021;
+        public static final int fragment_time_entry_editor=0x7f030022;
+        public static final int min1_tag_manager=0x7f030023;
+        public static final int notes_row=0x7f030024;
+        public static final int row_abstract_manager=0x7f030025;
+        public static final int row_tag_manager=0x7f030026;
+        public static final int start_session=0x7f030027;
+        public static final int support_simple_spinner_dropdown_item=0x7f030028;
+        public static final int tag_manager=0x7f030029;
+        public static final int tag_name=0x7f03002a;
+        public static final int time_accumulator=0x7f03002b;
+        public static final int time_entry_creator=0x7f03002c;
+        public static final int time_entry_manager=0x7f03002d;
     }
     public static final class menu {
         public static final int abstract_act=0x7f0c0000;
         public static final int abstract_creator=0x7f0c0001;
         public static final int abstract_manager=0x7f0c0002;
-        public static final int choose_tag=0x7f0c0003;
-        public static final int create_tag=0x7f0c0004;
-        public static final int min1_tag_manager=0x7f0c0005;
-        public static final int one_tag_manager=0x7f0c0006;
-        public static final int start_session=0x7f0c0007;
-        public static final int tag_manager=0x7f0c0008;
-        public static final int time_accumulator=0x7f0c0009;
-        public static final int time_entry_creator=0x7f0c000a;
+        public static final int create_tag=0x7f0c0003;
+        public static final int min1_tag_manager=0x7f0c0004;
+        public static final int one_tag_manager=0x7f0c0005;
+        public static final int start_session=0x7f0c0006;
+        public static final int tag_manager=0x7f0c0007;
+        public static final int time_accumulator=0x7f0c0008;
+        public static final int time_entry_creator=0x7f0c0009;
+        public static final int time_entry_editor=0x7f0c000a;
         public static final int time_entry_manager=0x7f0c000b;
     }
     public static final class string {
@@ -1279,7 +1282,6 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
-        public static final int action_create=0x7f0a000f;
         public static final int action_done=0x7f0a0010;
         /**  OPTIONS MENU / ACTION BAR 
          */
@@ -1300,6 +1302,7 @@ containing a value of this type.
         public static final int manage_time_entries=0x7f0a0019;
         public static final int menu_delete=0x7f0a001c;
         public static final int menu_edit=0x7f0a001b;
+        public static final int new_entry=0x7f0a000f;
         public static final int no_tags=0x7f0a0023;
         public static final int select_tags=0x7f0a0017;
         public static final int selected_tags=0x7f0a0020;
@@ -1323,6 +1326,7 @@ containing a value of this type.
          */
         public static final int title_activity_time_accumulator=0x7f0a0025;
         public static final int title_activity_time_entry_creator=0x7f0a002d;
+        public static final int title_activity_time_entry_editor=0x7f0a0031;
         public static final int title_activity_time_entry_manager=0x7f0a002a;
         public static final int view_time_entries=0x7f0a0011;
     }

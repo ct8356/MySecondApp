@@ -29,7 +29,7 @@ public class TimeEntryManagerActivity extends AbstractManagerActivity {
 	}
 	
 	public void goEditEntry(Long rowId) {
-		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
+		Intent intent = new Intent(this, TimeEntryEditorAct.class);
 		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
 		intent.putExtra(DbContract.REQUEST_CODE, EDIT_ENTRY);
 		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 

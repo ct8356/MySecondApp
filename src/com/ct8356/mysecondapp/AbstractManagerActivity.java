@@ -203,7 +203,7 @@ implements AdapterView.OnItemSelectedListener {
 		case R.id.action_done:
 			goBackToStarter();
 			return true;
-		case R.id.action_create:
+		case R.id.new_entry:
 			goCreateEntry();
 			return true;
 		}

@@ -230,24 +230,25 @@ public class DbHelper extends SQLiteOpenHelper {
   			values.put(columnNames.get(i), entry.get(i-1)); 
   			//-1 because entry does not have id column.
   		}
-			int noEntriesAffected = mDb.update(
-					tableName,
-					values,
-					DbContract._ID+" = "+mRowId,
-					null);
+  		mDb.update(
+			tableName,
+			values,
+			DbContract._ID+" = "+mRowId,
+			null);
     	return mRowId;
     }
     
-    public long updateEntryAndJoins(String entryTableName, String minutes, 
+    public long updateEntryAndJoins(String entryTableName, List<String> entry, 
     		String joinTableName, List<String> tags, long entryId) {
-    	ContentValues values = new ContentValues();
-		values.put(Minutes.MINUTES, minutes); //HARDCODE
-		values.put(Minutes.DATE, getDateString());
-		int noRowsAffected = mDb.update(
-				entryTableName,
-				values,
-				DbContract._ID+" = "+entryId,
-				null);
+//    	ContentValues values = new ContentValues();
+//		values.put(Minutes.MINUTES, minutes); //HARDCODE
+//		values.put(Minutes.DATE, getDateString());
+//		mDb.update(
+//				entryTableName,
+//				values,
+//				DbContract._ID+" = "+entryId,
+//				null);;
+    	updateEntry(entryTableName, entry, entryId);
 		//NOW DELETE THE JOINS
 		String joinColumnName = MinutesToTagJoins.MINUTESID; //HARDCODE
 		mDb.delete(joinTableName, joinColumnName+" = "+entryId, null);
@@ -255,7 +256,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
 		//HARDCODE
 		for (int i = 0; i < tags.size(); i++ ) {
-			values = new ContentValues();
+			ContentValues values = new ContentValues();
 			values.put(MinutesToTagJoins.MINUTESID, entryId);
 			values.put(MinutesToTagJoins.TAGID, tagIds.get(i));
 			long newJoinId = mDb.insert(
