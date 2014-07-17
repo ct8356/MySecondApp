@@ -11,6 +11,7 @@ public final class DbContract {
 	public static final String SUM_MINUTES = "sum_minutes";
 	public static final String _ID = "_id";
 	public static final String TAG_NAMES = "tag_names";
+	public static final String PREFS = "com.ct8356.mysecondapp.currentproject";
 	 // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
     public DbContract() {}

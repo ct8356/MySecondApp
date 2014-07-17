@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ct8356.mysecondapp.AbstractManagerActivity.CustomAdapter;
 import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
@@ -13,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -39,21 +41,14 @@ import android.widget.TextView;
 import android.os.Build;
 import android.widget.AbsListView;
 
-public class TagManagerActivity extends ActionBarActivity {
+public class TagManagerActivity extends AbstractManagerActivity {
 	//Note, could make this extend abstractManagerActivity...
-	protected DbHelper mDbHelper;
-	private static final int CREATE_TAG = 0;
 	private static final int EDIT_TAG = Menu.FIRST;
 	private static final int DELETE_TAG = Menu.FIRST + 1;
 	protected List<String> mTagNames; //a key variable. it is called by getItem().
-	//private List<String> mCheckedTags; //Just a translation variable. Can be local.
-	protected List<Boolean> mChecked; //a key variable. Called by getView().
-    public CustomAdapter mCustomAdapter;
-    protected ListView mListView;
-
+	protected CustomAdapter mCustomAdapter;
+	
 	public List<String> getCheckedTags() { 
-		//now this is only called once at end, when needed.
-		//and, one less member variable.
 		List<String> checkedTags = new ArrayList<String>();
 		for (int i=0; i<mTagNames.size(); i+=1) {
 			if (mChecked.get(i)) {
@@ -62,19 +57,14 @@ public class TagManagerActivity extends ActionBarActivity {
 		}
 		return checkedTags;
 	}
-
-	public void goBackToStarter() {
-		Intent intent = new Intent();
-		List<String> checkedTags = getCheckedTags();
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) checkedTags); 
-		setResult(RESULT_OK, intent);
-		finish();
-	}
 	
-	public void goCreateTag() {
-		Intent intent = new Intent(this, CreateTagActivity.class);
-	    startActivityForResult(intent, CREATE_TAG);
+	public void goBackToStarter() {
+		SharedPreferences prefs = getSharedPreferences(DbContract.PREFS, 0);
+	    SharedPreferences.Editor editor = prefs.edit();
+	    editor.putString(DbContract.TAG_NAMES, mSelectedTags.get(0));
+	    editor.commit(); //ok, maybe if gonna use startActivityForResult, 
+	    //passing in intents is better.
+		super.goBackToStarter();
 	}
 	
 	public void goEditTag(Long rowId) {
@@ -83,32 +73,33 @@ public class TagManagerActivity extends ActionBarActivity {
 	    startActivityForResult(intent, CREATE_TAG);
 	}
 	
-	public void initialiseViews() {
-		mListView = new ListView(this);
-		//Ahah, remember, if want to get from XML, often need to inflate it!
-		mListView.setAdapter(mCustomAdapter);
-		mListView.setOnItemClickListener(new OnItemClickListener());
-		setContentView(mListView);	
-	}
-	
+	@Override
 	public void initialiseMemberVariables() {
 		mTagNames = new ArrayList<String>();
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
-		Bundle extras = getIntent().getExtras();
-		List<String> checkedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
+		updateMSelectedTags();
 		mChecked = new ArrayList<Boolean>();
 		for (int i=0; i<mTagNames.size(); i+=1) {
-			if (checkedTags.contains(mTagNames.get(i))) {
+			if (mSelectedTags.contains(mTagNames.get(i))) {
 				mChecked.add(true);
 			} else {
 				mChecked.add(false);
 			}
 		}
+	} //KEEP for now.
+	
+	@Override
+	public void initialiseViews() {
+		//LAYOUT
+		mLayout = (LinearLayout) getLayoutInflater().
+				  inflate(R.layout.abstract_manager, null);
+		setContentView(mLayout);
+		super.initialiseViews();
 	}
 	
-    @Override
+	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         int previousSize = mTagNames.size();
@@ -116,24 +107,13 @@ public class TagManagerActivity extends ActionBarActivity {
         if (mTagNames.size() > previousSize) {
         	mChecked.add(true);
         }
-    }
-    
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mDbHelper = new DbHelper(this);
-		mCustomAdapter = new CustomAdapter();
-		initialiseMemberVariables();
-		initialiseViews();
-		registerForContextMenu(mListView);
-	}
+    } //KEEP for now.
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.tag_manager, menu);
 		return true;
-	}
+	} //KEEP for now.
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -148,14 +128,14 @@ public class TagManagerActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
+	} //KEEP for now.
 	
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, EDIT_TAG, 0, R.string.menu_edit);
         menu.add(0, DELETE_TAG, 0, R.string.menu_delete);
-    }
+    } //KEEP for now.
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -181,39 +161,28 @@ public class TagManagerActivity extends ActionBarActivity {
         }
         mDbHelper.close();
         return super.onContextItemSelected(item);
-    }
+    } //NEED to keep for now...
+
+    @Override
+	protected void setAdapter() {
+		mCustomAdapter = new CustomAdapter();
+		mListView.setAdapter(mCustomAdapter);
+	}
     
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-    	boolean[] checked = savedInstanceState.getBooleanArray(DbContract.CHECKED);
-    	for (int i = 0; i < checked.length; i++) { 
-    		mChecked.set(i, checked[i]); 
-    	}
-    	//CBTL, this is done twice, here and earlier in onCreate...
-	}
-	
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);
-		boolean[] checked = new boolean[mChecked.size()];
-		for (int i = 0; i < mChecked.size(); i++) { 
-			checked[i] = mChecked.get(i); 
-		}
-		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
-	}
-	
 	public void updateMTagNames() {
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
 	}
 	
-	public void toggle(int position) {
-		//update "key" member variable
-		mChecked.set(position, !mChecked.get(position));
-		//Now update the view in the ListView.
-		int index = position - mListView.getFirstVisiblePosition();
-		View convertView = mListView.getChildAt(index); 
-		mListView.getAdapter().getView(position, convertView, mListView);
+	@Override
+	public void goCreateEntry() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void goEditEntry(Long rowId) {
+		// TODO Auto-generated method stub
 	}
 	
 	protected class CustomAdapter extends BaseAdapter {
@@ -249,9 +218,4 @@ public class TagManagerActivity extends ActionBarActivity {
 	    }
 	}
 	
-	protected class OnItemClickListener implements AdapterView.OnItemClickListener {
-		public void onItemClick(AdapterView listView, View v, int position, long id) {
-			toggle(position);	
-		}
-	}
 }

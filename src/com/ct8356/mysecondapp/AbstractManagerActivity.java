@@ -8,6 +8,7 @@ import java.util.Set;
 import com.ct8356.mysecondapp.DbContract.Minutes;
 import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
+import com.ct8356.mysecondapp.TimeEntryCreatorActivity.CustomAdapter;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -41,35 +42,65 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Toast;
 import android.os.Build;
 
-public abstract class AbstractManagerActivity extends AbstractActivity 
-implements AdapterView.OnItemSelectedListener {
-	private DbHelper mDbHelper;
-	protected SharedPreferences mPrefs;
+public abstract class AbstractManagerActivity extends AbstractActivity {
+	protected DbHelper mDbHelper;
 	protected static final int CREATE_ENTRY = 0;
 	protected static final int SELECT_TAGS = 1;
 	protected static final int EDIT_ENTRY = 2;
 	private static final int DELETE_ENTRY = 3;
+	protected static final int CREATE_TAG = 4;
 	private static final int DIALOG_ALERT = 10;
-	protected String PREF_NAME = "com.ct8356.mysecondapp.currentproject";
-	private List<List<String>> mEntries; //a key variable. it is called by getItem().
+	protected List<List<String>> mEntries; //a key variable. it is called by getItem().
 	//Note, every inner list, represents a row.
 	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
-	private List<Boolean> mChecked; //a key variable. Called by getView().
+	protected List<Boolean> mChecked; //a key variable. Called by getView().
     public CustomAdapter mCustomAdapter;
-    protected TagNamesAdapter mTagNamesAdapter;
-    private ListView mListView;
+    protected ListView mListView;
     protected Spinner mSpinner;
     protected String mTableName; //CBTL what does protected mean?
     protected String mCreatorActivity; //leave just in case decide to use it.
-    private LinearLayout mLayout;
-    protected List<String> mTagNames; //a key variable. it is called by getItem().
-    protected List<String> mSelectedTags; //NOTE! Use this, but with single tag in it,
-    //want to keep this in shared preferences!?
-	private List<String> mColumnNames;
+    protected LinearLayout mLayout;
+	protected List<String> mColumnNames;
+	protected List<Integer> mPositionsToDelete;
+	//HAHA! This global variable ended up saving you so much effort 
+	//(saved so much passing, and getting, and translating and translator methods)! 
+	//Just use global variables there is a chance it might help!
+	//Can make code so much neater and easier!
     //private Button mSelectedTagsText;
-    
+	
+	public void deleteSelectedEntries() {
+		for (int pos=0; pos<mEntries.size(); pos++) {
+			if (mPositionsToDelete.contains(pos)) {
+				deleteEntry(pos);
+			}
+		}
+	    updateMEntries();
+	    mCustomAdapter.notifyDataSetChanged();
+	}
+	
+	public void deleteEntry(int pos) {
+		Long rowId = getRowId(pos);
+		String joinColumnName = mTableName+"ID"; //HARDCODE
+		mDbHelper.openDatabase();
+	    mDbHelper.deleteEntryAndJoins(mTableName, MinutesToTagJoins.TABLE_NAME,
+	    		joinColumnName, rowId);
+	    mDbHelper.close();
+	    mChecked.remove(pos);
+	}
+	
+	public List<Integer> getCheckedPositions() {
+		List<Integer> checkedPositions = new ArrayList<Integer>();
+		for (int pos=0; pos<mEntries.size(); pos+=1) {
+			if (mChecked.get(pos)) {
+				checkedPositions.add(pos);
+			}
+		}
+		return checkedPositions;
+	}
+	
 	public List<String> getCheckedEntryIds() { 
 		List<String> checkedEntryIds = new ArrayList<String>();
 		for (int i=0; i<mEntries.size(); i+=1) {
@@ -84,10 +115,13 @@ implements AdapterView.OnItemSelectedListener {
 	
 	public void goBackToStarter() {
 		Intent intent = new Intent();
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags); 
 		setResult(RESULT_OK, intent);
 		finish();
+	} //Needed? Well, depends on if want to use startActivityForResult...
+	
+	public void goCreateTag() {
+		Intent intent = new Intent(this, CreateTagActivity.class);
+	    startActivityForResult(intent, CREATE_TAG);
 	}
 	
 	public abstract void goCreateEntry();
@@ -103,53 +137,21 @@ implements AdapterView.OnItemSelectedListener {
 	    dFragment.show(getSupportFragmentManager(), "selectTag");
 	}
 
-	public void initialiseViews() {
-		//LAYOUT
-		mLayout = (LinearLayout) getLayoutInflater().
-				  inflate(R.layout.abstract_manager, null);
-		setContentView(mLayout);
-		//mSelectedTagsText = (Button) findViewById(R.id.selected_tags);
-		//mSelectedTagsText.setText(""+mSelectedTags);
-		//SPINNER
-		mSpinner = (Spinner) findViewById(R.id.selected_tag);
-		mSpinner.setAdapter(mTagNamesAdapter);
-		mSpinner.setOnItemSelectedListener(this);
-		int pos = mTagNamesAdapter.getPosition(mSelectedTags.get(0));
-		mSpinner.setSelection(pos);
-		//LISTVIEW
-		mListView = new ListView(this);
-		mLayout.addView(mListView);
-		mCustomAdapter = new CustomAdapter();
-		mListView.setAdapter(mCustomAdapter);
-		mListView.setOnItemClickListener(new OnItemClickListener());
-	}
-	
 	@SuppressLint("NewApi") //CBTL
 	public void initialiseMemberVariables() {
-		//List<String> checkedEntryIds = extras.getStringArrayList(DbContract.CHECKED_IDS);
-		//Might need above if activity is killed during ActForResult, due to low memory.
-		//mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
-		//Better to do it in subclass! CBTL.
-		mTagNames = new ArrayList<String>();
-		mDbHelper.openDatabase();
-		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
-		mDbHelper.close();
-		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
-				mTagNames);
-		mPrefs = getSharedPreferences(PREF_NAME, 0);
-		mSelectedTags = new ArrayList<String>();
-		String selectedTagPref = mPrefs.getString(DbContract.TAG_NAMES, "Pref_no_exist");
-
-		if (selectedTagPref != "Pref_no_exist") {
-			mSelectedTags.add(selectedTagPref);
-		} else {
-			mSelectedTags.add(mTagNamesAdapter.getItem(0)); //Get first item in list.
-		}
-		//mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
-		mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
+		//mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
 		//not used, but keep just in case.
 		updateMEntries();
 		updateMChecked();
+	}
+	
+	public void initialiseViews() {
+		//LISTVIEW
+		mListView = new ListView(this);
+		mLayout.addView(mListView);
+		setAdapter();
+		mListView.setOnItemClickListener(new OnItemClickListener());
+		registerForContextMenu(mListView);
 	}
 	
     @Override
@@ -160,8 +162,6 @@ implements AdapterView.OnItemSelectedListener {
         	//Do nothing
         	break;
         case RESULT_OK:
-        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-          	//mSelectedTagsText.setText(""+mSelectedTags);
             updateMEntries();
 	        switch (requestCode) {
 	        case CREATE_ENTRY:          
@@ -185,7 +185,6 @@ implements AdapterView.OnItemSelectedListener {
 		mDbHelper = new DbHelper(this);
 		initialiseMemberVariables();
 		initialiseViews();
-		registerForContextMenu(mListView);
 	}
 
 	@Override
@@ -198,25 +197,23 @@ implements AdapterView.OnItemSelectedListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.action_settings:
-			return true;
 		case R.id.action_done:
 			goBackToStarter();
 			return true;
 		case R.id.new_entry:
 			goCreateEntry();
 			return true;
+		case R.id.delete_selected_entries:
+			//Create that dialog
+			mPositionsToDelete = getCheckedPositions();
+			if (mPositionsToDelete.size() > 0) {
+				showDeleteDialog();
+			} else {
+				Toast.makeText(this, "No entries selected.", Toast.LENGTH_LONG).show();
+			}
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-	
-	@Override
-	protected Dialog onCreateDialog(int id) {
-	  switch (id) {
-	    case DIALOG_ALERT:
-	    CustomDialogFragment builder = new CustomDialogFragment(); 
-	  }
-	  return super.onCreateDialog(id);
 	}
 	
     @Override
@@ -229,82 +226,67 @@ implements AdapterView.OnItemSelectedListener {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        List<String> entry = mEntries.get(info.position);
-        mDbHelper.openDatabase();
-        Long rowId = Long.valueOf(entry.get(0)); //0 gets _id.
+        Long rowId = getRowId(info.position);
     	switch(item.getItemId()) {
         case EDIT_ENTRY:
             goEditEntry(rowId);
             return true;
         case DELETE_ENTRY:
-			String joinColumnName = mTableName+"ID"; //HARDCODE
-            mDbHelper.deleteEntryAndJoins(mTableName, MinutesToTagJoins.TABLE_NAME,
-            		joinColumnName, rowId);
-            updateMEntries();
-            mChecked.remove(info.position);
-            mCustomAdapter.notifyDataSetChanged();
+        	mPositionsToDelete = Arrays.asList(info.position);
+        	showDeleteDialog();
             return true;
         }
-        mDbHelper.close();
+        
         return super.onContextItemSelected(item);
     }
     
-    public void onDataPass(String selectedTag) {
-    	mSelectedTags = new ArrayList<String>();
-    	mSelectedTags.add(selectedTag);
-		//mSelectedTagsText.setText(""+mSelectedTags);
+    private Long getRowId(int pos) {
+        List<String> entry = mEntries.get(pos);
+        Long rowId = Long.valueOf(entry.get(0)); //0 gets _id.
+        return rowId;
+	}
+
+	public void onDataPass() {
+    	//Method used for Dialog box.
 		updateMEntries();
+		updateMChecked();
 		mCustomAdapter.notifyDataSetChanged();
     }
     
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
-		//mSelectedTagsText.setText(""+mSelectedTags);
     	boolean[] checked = savedInstanceState.getBooleanArray(DbContract.CHECKED);
     	for (int i = 0; i < checked.length; i++) { 
     		mChecked.set(i, checked[i]); 
     	}
     	//CBTL, this is done twice, here and in onCreate...
-	}
+	} //Nec?
 	
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
-		savedInstanceState.putStringArrayList(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags);
 		boolean[] checked = new boolean[mChecked.size()];
 		for (int i = 0; i < mChecked.size(); i++) { checked[i] = mChecked.get(i); }
 		savedInstanceState.putBooleanArray(DbContract.CHECKED, checked);
+	} //Nec? Now that not possible to rotate screen? Might want it incase destroyed for space.
+
+	protected void setAdapter() {
+		mCustomAdapter = new CustomAdapter();
+		mListView.setAdapter(mCustomAdapter);
 	}
 	
-	public void onStop() {
-		super.onStop();
-		//This is where supposed to do shared pref stuff.
-		//SHARED PREF
-		mPrefs = getSharedPreferences(PREF_NAME, 0); //0 is reqd mode
-		SharedPreferences.Editor editor = mPrefs.edit();
-		editor.putString(DbContract.TAG_NAMES, mSelectedTags.get(0));
-		// Commit the edits!
-		editor.commit();
+	public void showDeleteDialog() {
+		//Create that dialog
+	    DialogFragment dFragment = new DeleteDF();
+	    //Bundle bundle = new Bundle();
+	    //bundle.putStringArrayList("positions", (ArrayList<String>) positions);
+	    //dFragment.setArguments(bundle);
+	    dFragment.show(getSupportFragmentManager(), "deleteDF");  
+	    //note, this is the way you did it before....
 	}
 	
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        // An item was selected. You can retrieve the selected item using
-        String selectedTag = parent.getItemAtPosition(pos).toString();
-    	mSelectedTags = new ArrayList<String>();
-    	mSelectedTags.add(selectedTag);
-		//mSelectedTagsText.setText(""+mSelectedTags);
-		updateMEntries();
-		updateMChecked();
-		mCustomAdapter.notifyDataSetChanged();
-    }
-
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Do nothing.
-    }
-
 	public void updateMChecked() {
 		List<String> checkedEntryIds = new ArrayList<String>();
+		//not nec, but keep in case decide to use it.
 		mChecked = new ArrayList<Boolean>();
 		for (int i=0; i<mEntries.size(); i+=1) {
 			//mEntries.size returns number of rows.
@@ -318,18 +300,8 @@ implements AdapterView.OnItemSelectedListener {
 	
 	public void updateMEntries() {
 		mDbHelper.openDatabase();
-		switch (mSelectedTags.size()) {
-		case 0:
-			mEntries = mDbHelper.getAllEntries(mTableName);
-			//mEntries is then used by the listView in getView.
-			break;
-		default:
-			List<String> timeEntryIds = mDbHelper.getRelatedEntryIds(mSelectedTags);
-			mColumnNames = mDbHelper.getAllColumnNames(mTableName);
-			mEntries = mDbHelper.getEntries(mTableName, mColumnNames, 
-					"_id", timeEntryIds); //HARDCODE
-			break;
-		}
+		mEntries = mDbHelper.getAllEntries(mTableName);
+		//mEntries is then used by the listView in getView.
 		mDbHelper.close();
 	}
 	
@@ -342,7 +314,7 @@ implements AdapterView.OnItemSelectedListener {
 		mListView.getAdapter().getView(position, convertView, mListView);
 	}
 	
-	private class CustomAdapter extends BaseAdapter {
+	protected class CustomAdapter extends BaseAdapter {
 	    public int getCount() {
 			return mEntries.size();
 	    }
@@ -384,7 +356,7 @@ implements AdapterView.OnItemSelectedListener {
 	    }
 	}
 	
-	private class TagNamesAdapter extends ArrayAdapter<String> {
+	protected class TagNamesAdapter extends ArrayAdapter<String> {
 	    public TagNamesAdapter(Context context, int resource, List<String> list) {
 			super(context, resource, list);
 		}

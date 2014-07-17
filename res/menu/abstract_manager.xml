@@ -14,9 +14,7 @@
         app:showAsAction="never"/>
     
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:id="@+id/delete_selected_entries"
+        android:title="@string/delete_selected_entries"
         app:showAsAction="never"/>
-
 </menu>

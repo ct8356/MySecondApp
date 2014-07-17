@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Tags;
-import com.ct8356.mysecondapp.TagManagerActivity.OnItemClickListener;
-
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -30,12 +28,9 @@ public class OneTagManagerActivity extends Min1TagManagerActivity {
 	//set theme to DIALOG for APIlevel8.
 	@Override
 	public void initialiseViews() {
-		mListView = new ListView(this);
-		//Ahah, remember, if want to get from XML, often need to inflate it!
-		mListView.setAdapter(mCustomAdapter);
+		super.initialiseViews();
 		mListView.setOnItemClickListener(new OnItemClickListener());
-		setContentView(mListView);	
-	} //Exactly same. Is it necessary?
+	}
 
 	public void updateChecked(int position) {
 		//FALSEiFY THE OLD CHECK

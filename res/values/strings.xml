@@ -6,9 +6,10 @@
     <!-- OPTIONS MENU / ACTION BAR -->
     <string name="action_settings">Settings</string>
     <string name="new_entry">New entry</string>
+    <string name="new_tag">New tag</string>
     <string name="action_done">Done</string>
     <string name="view_time_entries">View time entries</string>
-
+    <string name="delete_selected_entries">Delete selected entries</string>
     <!-- BUTTONS -->
     <string name="button_save_tag">Save tag</string>
     <string name="button_save_entry">Save entry</string>

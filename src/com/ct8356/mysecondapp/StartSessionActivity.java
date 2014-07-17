@@ -28,15 +28,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Build;
 
-public class StartSessionActivity extends ActionBarActivity {
+public class StartSessionActivity extends AbstractActivity {
 	private Chronometer mChrono;
-	private DbHelper mDbHelper;
 	private Button start;
 	private Button pause;
 	private boolean stopped = false;
 	private long startTime;
 	private long mElapsedTime;
-	private List<String> mSelectedTags;
 	//private TextView mSelectedTagsText;
 	private static final int SELECT_MIN1_TAGS = 0;
 	private static final int SELECT_TAGS = 1;
@@ -52,6 +50,10 @@ public class StartSessionActivity extends ActionBarActivity {
 	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		//I think this activity must be used similarly to onCreate or onStart.
+		//Shame, because leads to duplicate code. But that is way it is...
+		//Could make it call onCreate or onStart, but then they called 2wice.
+		//Silly android. (That is if onSomething sequence is as described in your notes).
         super.onActivityResult(requestCode, resultCode, intent);
         switch (resultCode) {
         case RESULT_CANCELED:
@@ -64,9 +66,8 @@ public class StartSessionActivity extends ActionBarActivity {
 //	            finish();
 //	        	break;
 	    	case SELECT_MIN1_TAGS:
-	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);  
-	            saveState();
+	            updateMSelectedTags();
+	            saveState(); 
 	            //goManageTimeEntries();
 	            //setResult(RESULT_OK, intent);
 	            //finish();
@@ -89,14 +90,12 @@ public class StartSessionActivity extends ActionBarActivity {
 		StartSessionLayout layout = new StartSessionLayout(this);
 		setContentView(layout);
 		mDbHelper = new DbHelper(this);
-		mSelectedTags = new ArrayList<String>();
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-        	//mSelectedTagsString = extras.getString("tag");
-        	mSelectedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
-        	//mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-        }
-		//mChrono.start();
+//		mSelectedTags = new ArrayList<String>();
+//        Bundle extras = getIntent().getExtras();
+//        if (extras != null) {
+//        	mSelectedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
+//        }
+//		mChrono.start();
 	}
 
 	@Override
@@ -144,7 +143,7 @@ public class StartSessionActivity extends ActionBarActivity {
         mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, mMins, 
         		MinutesToTagJoins.TABLE_NAME, mSelectedTags);
         mDbHelper.close();
-     }
+    }
 
 	public class StartSessionLayout extends ScrollView {	
 		public StartSessionLayout(Context context) {

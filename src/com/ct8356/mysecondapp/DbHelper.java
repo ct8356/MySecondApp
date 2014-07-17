@@ -119,7 +119,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	    		null, null, null, null
 	            ); //Needs IN().
     	return cursor;
-	} 
+	}
 	
 	public List<String> getAllColumnNames(String tableName) {
 		Cursor cursor = getAllEntriesCursor(tableName);

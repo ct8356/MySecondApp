@@ -1,16 +1,67 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.ct8356.mysecondapp.TimeEntryManagerActivity$PlaceholderFragment" >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-
-</RelativeLayout>
+    tools:context="com.ct8356.mysecondapp.AbstractManagerActivity$PlaceholderFragment" >
+  	
+  	<LinearLayout
+   		android:layout_width="match_parent"
+		android:layout_height="wrap_content">	
+   		<TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Project   "
+	        android:textStyle="bold"
+	        android:textSize="20sp" />
+ 		<!-- <Button
+ 	 		android:id="@+id/selected_tags"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+			android:onClick="goSelectTags"/> -->
+		<Spinner
+		    android:id="@+id/selected_tag"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"/>
+	</LinearLayout>
+ 	
+	    <!--  HARDCODE! -->
+	    <LinearLayout
+            android:layout_width="match_parent"
+   			android:layout_height="wrap_content">
+   			
+   			<TextView
+		        android:layout_width="45dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="0"
+		        android:text=""/>
+           	
+           	<TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="Id"
+		        android:textStyle="bold" />
+           	
+           	<TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="Minutes" 
+		        android:textStyle="bold"/>
+           	
+           	<TextView
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:text="Date" 
+		        android:textStyle="bold"/>
+           	
+	    </LinearLayout>
+	    
+</LinearLayout>

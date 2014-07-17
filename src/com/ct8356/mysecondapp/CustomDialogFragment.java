@@ -46,7 +46,7 @@ public class CustomDialogFragment extends DialogFragment {
 		public void onClick(DialogInterface arg0, int which) {
 			String selectedTag = mAllTags.get(which);
 			AbstractManagerActivity activity = (AbstractManagerActivity) getActivity();
-			activity.onDataPass(selectedTag);
+			activity.onDataPass();
 		}
 	}
 	

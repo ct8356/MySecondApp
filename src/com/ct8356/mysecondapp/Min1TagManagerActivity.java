@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,15 +21,12 @@ public class Min1TagManagerActivity extends TagManagerActivity {
 	@Override
 	public void goBackToStarter() {
 		//Bit of duplicate code here...
-		List<String> checkedTags = getCheckedTags();
-		if (checkedTags.size() == 0){
+		mSelectedTags = getCheckedTags();
+		if (mSelectedTags.size() == 0){
 			//If no tags selected, do nothing.
+			//Maybe a Toast alert?
 			return;
-		}
-		Intent intent = new Intent();
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) checkedTags); 
-		setResult(RESULT_OK, intent);
-		finish();
+		}     
+		super.goBackToStarter();
 	}
 }
