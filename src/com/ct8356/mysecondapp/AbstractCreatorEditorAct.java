@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+import com.ct8356.mysecondapp.DbContract.MTJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
+import com.ct8356.mysecondapp.TimeEntryCreatorActivity.CustomAdapter;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -21,16 +22,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.os.Build;
 
-public abstract class AbstractCreatorActivity extends ActionBarActivity {
-	protected DbHelper mDbHelper;
+public abstract class AbstractCreatorEditorAct extends AbstractActivity {
     protected Long mRowId;
-    protected List<String> mSelectedTags;
     protected List<String> mColumnNames;
 	protected List<List<String>> mTable;
 	protected String mTableName;
@@ -40,25 +41,13 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	protected int mFixedViewCount;
 	protected LinearLayout mLayout;
 	protected ListView mListView;
-	protected TextView mSelectedTagsText;
-	private static final int SELECT_MIN1_TAGS = 0;
+	protected static final int SELECT_MIN1_TAGS = 0;
 	private static final int SELECT_TAGS = 1;
+	protected CustomAdapter mCustomAdapter;
 	
 	public void goBackToStarter() {
-		Intent intent;
-		if (mSelectedTags.size() == 0) {
-			intent = new Intent(this, Min1TagManagerActivity.class);
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags);
-			startActivityForResult(intent, SELECT_MIN1_TAGS);
-		} else {
-			saveState();
-			intent = new Intent();
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags); 
-			setResult(RESULT_OK, intent);
-			finish();
-		}
+		setResult(RESULT_OK);
+		finish();
 	}
 	
 	public void goSelectTags(View view) {
@@ -67,6 +56,17 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 				(ArrayList<String>) mSelectedTags); 
 		startActivityForResult(intent, SELECT_TAGS);
 	}
+	
+	public void initialiseMemberVariables() {
+		updateMSelectedTags();
+		mDbHelper.openDatabase();
+		Cursor cursor = mDbHelper.getAllEntriesCursor(mTableName);
+		//mColumnNames = Arrays.asList(cursor.getColumnNames());
+		mColumnCount = cursor.getColumnCount();
+		mDbHelper.close();
+    }
+
+	public abstract void initialiseViews();
 	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -86,7 +86,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	            break;
 	    	case SELECT_TAGS:
 	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	            mSelectedTagsText.setText("Selected tags: "+mSelectedTags); 
+	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags); 
 	            //null point exception.
 	            break;
 	    	}
@@ -121,6 +121,12 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	}
     
     @Override
+    protected void onPause() {
+        super.onPause();
+        saveState();
+    }
+	
+    @Override
     protected void onResume() {
         super.onResume();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
@@ -129,7 +135,7 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
     	mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
-    	mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
+    	//mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
     	//CBTL, this is done twice, here and in onCreate...
 	}
 	
@@ -138,41 +144,12 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
 		savedInstanceState.putStringArrayList(DbContract.TAG_NAMES, 
 				(ArrayList<String>) mSelectedTags);
 	}
-    
-    public void initialiseMemberVariables() {
-		mTableName = getIntent().getStringExtra(DbContract.TABLE_NAME);
-		mDbHelper = new DbHelper(this);
-		mSelectedTags = getIntent().getStringArrayListExtra(DbContract.TAG_NAMES);
-		mDbHelper.openDatabase();
-		Cursor cursor = mDbHelper.getAllEntriesCursor(mTableName);
-		//mColumnNames = Arrays.asList(cursor.getColumnNames());
-		mColumnCount = cursor.getColumnCount();
-		mDbHelper.close();
-		mRequestCode = getIntent().getIntExtra(DbContract.REQUEST_CODE, 
-				AbstractManagerActivity.CREATE_ENTRY); 
-		//FILL MTABLE
-		//fillMTable();
-		// CBTL means, if no request code, its a create_request.
-		if (mRequestCode == AbstractManagerActivity.EDIT_ENTRY) {
-			//If it was an edit request...
-			mRowId = getIntent().getLongExtra(DbContract._ID, 0); //NullPointerException.
-			mDbHelper.openDatabase();
-			mSelectedTags = mDbHelper.getRelatedTags(Arrays.asList(mRowId.toString()));
-			mDbHelper.close();
-			//return zero, then cursor will be empty.
-		}
-
-    }
-    
-    public abstract void fillMTable();
-
-	public abstract void initialiseViews();
 	
-    private void saveState() {
+    protected void saveState() {
     	List<String> entry = new ArrayList<String>();
-        for (int i = 1; i < mColumnCount; i += 1) {
+        for (int iCol = 1; iCol < mColumnCount; iCol += 1) {
         	 //start with i=1, to skip the id column.
-        	 LinearLayout formLine = (LinearLayout) mListView.getChildAt(i);
+        	 LinearLayout formLine = (LinearLayout) mListView.getChildAt(iCol);
         	 TextView text = (TextView) formLine.getChildAt(1);
    	         entry.add(text.getText().toString());
         }
@@ -180,12 +157,46 @@ public abstract class AbstractCreatorActivity extends ActionBarActivity {
         mDbHelper.openDatabase();
         if (mRowId == null) {
 			mRowId = mDbHelper.insertEntryAndJoins(mTableName, minutes, 
-					MinutesToTagJoins.TABLE_NAME, mSelectedTags);//HARDCODE
+					MTJoins.TABLE_NAME, mSelectedTags);//HARDCODE
         } else {
             mDbHelper.updateEntryAndJoins(mTableName, entry, 
-            		MinutesToTagJoins.TABLE_NAME, mSelectedTags, mRowId);//HARDCODE
+            		MTJoins.TABLE_NAME, mSelectedTags, mRowId);//HARDCODE
         }
 		mDbHelper.close();
     }
-
+    
+    protected abstract void setAdapter();
+    
+	public void updateMRowId() {
+		mRowId = getIntent().getLongExtra(DbContract._ID, 0); //NullPointerException.
+	}
+    
+    protected class CustomAdapter extends BaseAdapter {
+	    public int getCount() {
+			return mColumnNames.size(); //id, entry, date.
+	    }
+	
+	    public String getItem(int position) {
+			return "not_needed";	
+	    }
+	
+	    public long getItemId(int position) {
+	    	//Not needed just yet.
+	        return 0;
+	    }
+	    
+	    @Override
+	    public View getView(int pos, View convertView, ViewGroup parent) {
+	    	LinearLayout formLine = (LinearLayout) convertView;
+	        if (formLine == null) {
+	        	 //Do all initialising here.
+	             formLine = (LinearLayout) getLayoutInflater().
+	            		  inflate(R.layout.form_line, parent, false);
+	        }
+	    	TextView label = (TextView) formLine.getChildAt(0);
+	        label.setText(mColumnNames.get(pos));
+	        return formLine;
+	    } //Perhaps could use ArrayAdapter, filled with LinearLayouts?
+	}
+    
 }

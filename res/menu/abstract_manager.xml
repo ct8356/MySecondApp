@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ct8356.mysecondapp.AbstractManagerActivity" >
 
-    <!--  <item
+    <item
         android:id="@+id/action_done"
         android:title="@string/action_done"
-        app:showAsAction="ifRoom|withText"/> -->
+        app:showAsAction="ifRoom|withText"/>
     
     <item
         android:id="@+id/new_entry"

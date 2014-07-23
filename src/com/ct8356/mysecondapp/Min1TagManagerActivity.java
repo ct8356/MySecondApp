@@ -27,6 +27,7 @@ public class Min1TagManagerActivity extends TagManagerActivity {
 			//Maybe a Toast alert?
 			return;
 		}     
+		saveSelectedTags();
 		super.goBackToStarter();
 	}
 }

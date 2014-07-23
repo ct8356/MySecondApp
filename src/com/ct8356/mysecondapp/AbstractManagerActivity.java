@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
-import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+import com.ct8356.mysecondapp.DbContract.MTJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 import com.ct8356.mysecondapp.TimeEntryCreatorActivity.CustomAdapter;
 
@@ -46,7 +46,6 @@ import android.widget.Toast;
 import android.os.Build;
 
 public abstract class AbstractManagerActivity extends AbstractActivity {
-	protected DbHelper mDbHelper;
 	protected static final int CREATE_ENTRY = 0;
 	protected static final int SELECT_TAGS = 1;
 	protected static final int EDIT_ENTRY = 2;
@@ -70,9 +69,12 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 	//Just use global variables there is a chance it might help!
 	//Can make code so much neater and easier!
     //private Button mSelectedTagsText;
+    protected List<String> mTagNames; //a key variable. it is called by getItem().
+    //want to keep this in shared preferences!?
 	
 	public void deleteSelectedEntries() {
-		for (int pos=0; pos<mEntries.size(); pos++) {
+		for (int pos = mEntries.size()-1; pos >= 0; pos--) {
+			//reversed so that deletes from end, and does not confuse itself.
 			if (mPositionsToDelete.contains(pos)) {
 				deleteEntry(pos);
 			}
@@ -85,7 +87,7 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 		Long rowId = getRowId(pos);
 		String joinColumnName = mTableName+"ID"; //HARDCODE
 		mDbHelper.openDatabase();
-	    mDbHelper.deleteEntryAndJoins(mTableName, MinutesToTagJoins.TABLE_NAME,
+	    mDbHelper.deleteEntryAndJoins(mTableName, MTJoins.TABLE_NAME,
 	    		joinColumnName, rowId);
 	    mDbHelper.close();
 	    mChecked.remove(pos);
@@ -93,7 +95,7 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 	
 	public List<Integer> getCheckedPositions() {
 		List<Integer> checkedPositions = new ArrayList<Integer>();
-		for (int pos=0; pos<mEntries.size(); pos+=1) {
+		for (int pos=0; pos<mEntries.size(); pos++) {
 			if (mChecked.get(pos)) {
 				checkedPositions.add(pos);
 			}
@@ -120,7 +122,7 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 	} //Needed? Well, depends on if want to use startActivityForResult...
 	
 	public void goCreateTag() {
-		Intent intent = new Intent(this, CreateTagActivity.class);
+		Intent intent = new Intent(this, TagCreatorAct.class);
 	    startActivityForResult(intent, CREATE_TAG);
 	}
 	
@@ -141,6 +143,10 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 	public void initialiseMemberVariables() {
 		//mCreatorActivity = getIntent().getStringExtra(DbContract.CREATOR_ACTIVITY);
 		//not used, but keep just in case.
+		updateMTagNames();
+		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
+				mTagNames);
+		updateMSelectedTags();
 		updateMEntries();
 		updateMChecked();
 	}
@@ -172,6 +178,14 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 				break;
 	        case SELECT_TAGS:
 	        	updateMChecked();
+	        	break;
+	        case CREATE_TAG:
+	        	//mTagNamesAdapter.notifyDataSetChanged(); 
+	        	//Not sure this works for arrayAdapter...  
+	        	updateMTagNames();
+	    		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
+	    				mTagNames);
+	    		mSpinner.setAdapter(mTagNamesAdapter);
 	        	break;
 	        }
 	     	mCustomAdapter.notifyDataSetChanged();
@@ -302,6 +316,12 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 		mDbHelper.openDatabase();
 		mEntries = mDbHelper.getAllEntries(mTableName);
 		//mEntries is then used by the listView in getView.
+		mDbHelper.close();
+	}
+	
+	public void updateMTagNames() {
+		mDbHelper.openDatabase();
+		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
 	}
 	

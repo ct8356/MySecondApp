@@ -14,14 +14,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
-import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+import com.ct8356.mysecondapp.DbContract.MTJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
 public class DbHelper extends SQLiteOpenHelper {
 	//Since SQLiteOpenHelper is useful (I like its getWritableDatabase method),
 	//may as well use it.
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
     public static final String DATABASE_NAME = "Minutes.db";
     public SQLiteDatabase mDb;
     
@@ -61,11 +61,11 @@ public class DbHelper extends SQLiteOpenHelper {
 		String[] tagIdsSA = new String[tagIds.size()]; 
 		tagIds.toArray(tagIdsSA);
 		String tagIdsString = join(tagIds, ",");
-		String selectionString = MinutesToTagJoins.TAGID + " IN("+tagIdsString+")"; 
+		String selectionString = MTJoins.TAGSID + " IN("+tagIdsString+")"; 
 		Cursor cursor = mDb.query(
 	    		true, 
-	    		MinutesToTagJoins.TABLE_NAME, 
-	    		new String[] {MinutesToTagJoins.MINUTESID}, 
+	    		MTJoins.TABLE_NAME, 
+	    		new String[] {MTJoins.MINUTESID}, 
 	    		selectionString,
 	    		null,
 	    		null, null, null, null
@@ -75,11 +75,11 @@ public class DbHelper extends SQLiteOpenHelper {
 	
 	public Cursor getJoinsCursorWithTimeEntryIds(List<String> timeEntryIds) { //KEEP
 		String timeEntryIdsString = join(timeEntryIds, ",");
-		String selectionString = MinutesToTagJoins.MINUTESID + " IN("+timeEntryIdsString+")"; 
+		String selectionString = MTJoins.MINUTESID + " IN("+timeEntryIdsString+")"; 
 		Cursor cursor = mDb.query(
 	    		true, 
-	    		MinutesToTagJoins.TABLE_NAME, 
-	    		new String[] {MinutesToTagJoins.TAGID}, 
+	    		MTJoins.TABLE_NAME, 
+	    		new String[] {MTJoins.TAGSID}, 
 	    		selectionString,
 	    		null,
 	    		null, null, null, null
@@ -168,7 +168,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		List<String> tagIds = new ArrayList<String>(); 
 		//ahah, need ArrayList, because List is abstract!
     	while (cursor.moveToNext()){
-    		tagIds.add(cursor.getString(cursor.getColumnIndexOrThrow(MinutesToTagJoins.TAGID)));
+    		tagIds.add(cursor.getString(cursor.getColumnIndexOrThrow(MTJoins.TAGSID)));
     	}
     	return tagIds;
 	}	
@@ -178,7 +178,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		List<String> timeEntryIds = new ArrayList<String>(); 
     	while (cursor.moveToNext()){
     		timeEntryIds.add(cursor.getString(cursor.
-    				getColumnIndexOrThrow(MinutesToTagJoins.MINUTESID)));
+    				getColumnIndexOrThrow(MTJoins.MINUTESID)));
     	}
     	return timeEntryIds;
 	}
@@ -197,8 +197,8 @@ public class DbHelper extends SQLiteOpenHelper {
 		//HARDCODE
 		for (int i = 0; i < tags.size(); i++ ) {
 			values = new ContentValues();
-			values.put(MinutesToTagJoins.MINUTESID, newTimeEntryId);
-			values.put(MinutesToTagJoins.TAGID, tagIds.get(i));
+			values.put(MTJoins.MINUTESID, newTimeEntryId);
+			values.put(MTJoins.TAGSID, tagIds.get(i));
 			long newJoinId = mDb.insert(
 					joinTableName,
 					null, //nullColumnHack, null for now.
@@ -250,15 +250,15 @@ public class DbHelper extends SQLiteOpenHelper {
 //				null);;
     	updateEntry(entryTableName, entry, entryId);
 		//NOW DELETE THE JOINS
-		String joinColumnName = MinutesToTagJoins.MINUTESID; //HARDCODE
+		String joinColumnName = MTJoins.MINUTESID; //HARDCODE
 		mDb.delete(joinTableName, joinColumnName+" = "+entryId, null);
 		//NOW ADD THE JOINS
 		List<String> tagIds = getEntryColumn(Tags.TABLE_NAME, Tags._ID, Tags.TAG, tags);
 		//HARDCODE
 		for (int i = 0; i < tags.size(); i++ ) {
 			ContentValues values = new ContentValues();
-			values.put(MinutesToTagJoins.MINUTESID, entryId);
-			values.put(MinutesToTagJoins.TAGID, tagIds.get(i));
+			values.put(MTJoins.MINUTESID, entryId);
+			values.put(MTJoins.TAGSID, tagIds.get(i));
 			long newJoinId = mDb.insert(
 					joinTableName,
 					null, //nullColumnHack, null for now.
@@ -383,12 +383,14 @@ public class DbHelper extends SQLiteOpenHelper {
     	//Probably is a much nicer "create" method in Java somewhere.
     	db.execSQL(SQL_CREATE_TAGS);
     	String SQL_CREATE_MINUTES_TAG_JOINS =
-    		    "CREATE TABLE " + MinutesToTagJoins.TABLE_NAME + " (" +
-    		    MinutesToTagJoins._ID + " INTEGER PRIMARY KEY," +
-    		    MinutesToTagJoins.MINUTESID + " TEXT, " +
-    		    MinutesToTagJoins.TAGID + " TEXT, " +
-    		    "FOREIGN KEY (minutesId) REFERENCES Minutes(_id), " +
-    		    "FOREIGN KEY (tagId) REFERENCES Tags(_id)" + ")"; 
+    		    "CREATE TABLE " + MTJoins.TABLE_NAME + " (" +
+    		    MTJoins._ID + " INTEGER PRIMARY KEY," +
+    		    MTJoins.MINUTESID + " TEXT, " +
+    		    MTJoins.TAGSID + " TEXT, " +
+    		    "FOREIGN KEY (" + MTJoins.MINUTESID +
+    		    ") REFERENCES " + Minutes.TABLE_NAME + "(_id), " +
+    		    "FOREIGN KEY (" + MTJoins.TAGSID +
+    		    ") REFERENCES " + Tags.TABLE_NAME + "(_id)" + ")"; 
     	//The original horrible messy string above was proposed on developer.android.com.
     	//Probably is a much nicer "create" method in Java somewhere.
     	db.execSQL(SQL_CREATE_MINUTES_TAG_JOINS);
@@ -403,7 +405,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_MINUTES);
       	String SQL_DELETE_TAGS = "DROP TABLE IF EXISTS " + Tags.TABLE_NAME;
         db.execSQL(SQL_DELETE_TAGS);
-    	String SQL_DELETE_JOIN = "DROP TABLE IF EXISTS " + MinutesToTagJoins.TABLE_NAME;
+    	String SQL_DELETE_JOIN = "DROP TABLE IF EXISTS " + MTJoins.TABLE_NAME;
         db.execSQL(SQL_DELETE_JOIN);
         onCreate(db);
     }
@@ -419,9 +421,9 @@ public class DbHelper extends SQLiteOpenHelper {
 		values.put(Tags.TAG, "tag2"); 
 		mDb.insert(Tags.TABLE_NAME, null, values);
 		insertEntryAndJoins(Minutes.TABLE_NAME, "10", 
-				MinutesToTagJoins.TABLE_NAME, Arrays.asList("tag1"));
+				MTJoins.TABLE_NAME, Arrays.asList("tag1"));
 		insertEntryAndJoins(Minutes.TABLE_NAME, "20", 
-				MinutesToTagJoins.TABLE_NAME, Arrays.asList("tag2"));
+				MTJoins.TABLE_NAME, Arrays.asList("tag2"));
 	}
 	
 	public String getDateString() {

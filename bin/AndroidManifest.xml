@@ -14,20 +14,20 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.ct8356.mysecondapp.TimeAccumulatorActivity"
+            android:name="com.ct8356.mysecondapp.HomeAct"
             android:label="@string/title_activity_time_accumulator"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.StartSessionActivity"
             android:label="@string/title_activity_start_session"
-            android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity"
+            android:parentActivityName="com.ct8356.mysecondapp.HomeAct"
             android:screenOrientation="portrait" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
+                android:value="com.ct8356.mysecondapp.HomeAct" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.ct8356.mysecondapp.CreateTagActivity"
+            android:name="com.ct8356.mysecondapp.TagCreatorAct"
             android:label="@string/title_activity_creata"
             android:screenOrientation="portrait" >
         </activity>
@@ -48,13 +48,13 @@
         <activity
             android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
             android:label="@string/title_activity_time_entry_manager"
-            android:parentActivityName="com.ct8356.mysecondapp.TimeAccumulatorActivity"
+            android:parentActivityName="com.ct8356.mysecondapp.HomeAct"
             android:screenOrientation="portrait" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ct8356.mysecondapp.TimeAccumulatorActivity" />
+                android:value="com.ct8356.mysecondapp.HomeAct" />
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.AbstractManagerActivity"
@@ -62,7 +62,7 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.ct8356.mysecondapp.AbstractCreatorActivity"
+            android:name="com.ct8356.mysecondapp.AbstractCreatorEditorAct"
             android:label="@string/title_activity_abstract_creator"
             android:screenOrientation="portrait" >
         </activity>
@@ -88,7 +88,13 @@
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TimeEntryEditorAct"
-            android:label="@string/title_activity_time_entry_editor" >
+            android:label="@string/title_activity_time_entry_editor"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.TagEditorAct"
+            android:label="@string/title_activity_tag_editor"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

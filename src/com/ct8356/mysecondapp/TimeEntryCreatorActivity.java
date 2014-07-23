@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ct8356.mysecondapp.AbstractManagerActivity.OnItemClickListener;
 import com.ct8356.mysecondapp.DbContract.Minutes;
+import com.ct8356.mysecondapp.DbContract.Tags;
 
 import android.widget.AdapterView;
 import android.support.v7.app.ActionBarActivity;
@@ -27,8 +28,33 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 import android.os.Build;
 
-public class TimeEntryCreatorActivity extends AbstractCreatorActivity implements AdapterView.OnItemClickListener {
-	protected CustomAdapter mCustomAdapter;
+public class TimeEntryCreatorActivity extends AbstractCreatorEditorAct  {
+
+	@Override
+	public void goBackToStarter() {
+		Intent intent;
+		updateMSelectedTags(); //Maybe not best place to call this...
+		//TODO
+		if (mSelectedTags.size() == 0) {
+			intent = new Intent(this, Min1TagManagerActivity.class);
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags);
+			startActivityForResult(intent, SELECT_MIN1_TAGS);
+		} else {
+			saveState();
+			intent = new Intent();
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags); 
+			setResult(RESULT_OK, intent);
+			finish();
+		}
+	}
+	
+    @Override 
+    public void initialiseMemberVariables() {
+    	 mTableName = Minutes.TABLE_NAME;
+    	 super.initialiseMemberVariables();
+    }
 	
 	@Override
 	public void initialiseViews() {
@@ -46,7 +72,6 @@ public class TimeEntryCreatorActivity extends AbstractCreatorActivity implements
 		mListView = new ListView(this);
 		mLayout.addView(mListView);
 		setAdapter();
-		mListView.setOnItemClickListener(this);
     }
 	
 	protected void setAdapter() {
@@ -54,31 +79,11 @@ public class TimeEntryCreatorActivity extends AbstractCreatorActivity implements
 		mListView.setAdapter(mCustomAdapter);
 	}
 	
-	protected class CustomAdapter extends BaseAdapter {
-	    public int getCount() {
-			return 3; //id, entry, date.
-	    }
-	
-	    public String getItem(int position) {
-			return "not_needed";	
-	    }
-	
-	    public long getItemId(int position) {
-	    	//Not needed just yet.
-	        return 0;
-	    }
-	    
-	    @Override
+	protected class CustomAdapter extends AbstractCreatorEditorAct.CustomAdapter {
+	    @Override  
 	    public View getView(int pos, View convertView, ViewGroup parent) {
-	    	LinearLayout formLine = (LinearLayout) convertView;
-	        if (formLine == null) {
-	        	 //Do all initialising here.
-	             formLine = (LinearLayout) getLayoutInflater().
-	            		  inflate(R.layout.form_line, parent, false);
-	        }
-	        TextView label = (TextView) formLine.getChildAt(0); 
-	        label.setText(mColumnNames.get(pos));
-			//HARDCODE
+	    	ViewGroup formLine = (ViewGroup) super.getView(pos, convertView, parent);
+	    	//HARDCODE
  			EditText text = (EditText) formLine.getChildAt(1);
  			switch (pos) {
  			case 0:
@@ -96,25 +101,20 @@ public class TimeEntryCreatorActivity extends AbstractCreatorActivity implements
 	        return formLine;
 	    } //Perhaps could use ArrayAdapter, filled with LinearLayouts?
 	}
-
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
-	}
 	
-	public void fillMTable() {
-    	List<List<String>> twoDList = new ArrayList<List<String>>();
-    	int iRow; int col;
-		for (iRow=0; iRow<3; iRow++) {
-		  	List<String> row = new ArrayList<String>();
-			for (col=0; col<2; col++) {
-				if (col == 0) row.add(mColumnNames.get(iRow)); 
-				if (col == 1) row.add("");
-			}
-			twoDList.add(row);
-		}
-		mTable = twoDList;
-    }
+//	public void fillMTable() {
+//    	List<List<String>> twoDList = new ArrayList<List<String>>();
+//    	int iRow; int col;
+//		for (iRow=0; iRow<3; iRow++) {
+//		  	List<String> row = new ArrayList<String>();
+//			for (col=0; col<2; col++) {
+//				if (col == 0) row.add(mColumnNames.get(iRow)); 
+//				if (col == 1) row.add("");
+//			}
+//			twoDList.add(row);
+//		}
+//		mTable = twoDList;
+//    }
 	//OR maybe, best just to fill it with empties, then have set text function later?
 	
 }

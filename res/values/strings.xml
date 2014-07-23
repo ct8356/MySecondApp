@@ -19,13 +19,18 @@
     <string name="select_tags">Select tags</string>
     <string name="start_session">Time a session</string>
     <string name="manage_time_entries">Manage sessions</string>
-
+    <string name="manage_tags">Manage projects</string>
+    
     <!-- CONTEXT MENUS -->
     <string name="hello_world">Hello world!</string>
     <string name="menu_edit">Edit entry</string>
     <string name="menu_delete">Delete entry</string>
-
+    
+	<!-- HINTS -->
+	<string name="enter_tag_name">Enter project name</string>
+	
     <!-- TEXTVIEWS -->
+    <string name="tag_name">Project</string>
     <string name="text_enter_tag">Enter a tag name:</string>
     <string name="text_enter_entry">Enter an entry:</string>
     <string name="text_session_length">Session length:</string>
@@ -36,18 +41,18 @@
     <string name="edit_message">Enter a message</string>
 
     <!-- TITLES -->
-    <string name="title_activity_time_accumulator">Time tracker home</string>
+    <string name="title_activity_time_accumulator">Time Tracker App</string>
     <string name="title_activity_choose_tag">ChooseTagActivity</string>
     <string name="title_activity_start_session">Time your session</string>
-    <string name="title_activity_creata">Create/edit tag</string>
-    <string name="title_activity_tag_manager">Select tags</string>
-    <string name="title_activity_time_entry_manager">Manage sessions</string>
+    <string name="title_activity_creata">Create new project </string>
+    <string name="title_activity_tag_manager">View projects</string>
+    <string name="title_activity_time_entry_manager">View sessions</string>
     <string name="title_activity_abstract_manager">AbstractManagerActivity</string>
     <string name="title_activity_abstract_creator">AbstractCreator</string>
-    <string name="title_activity_time_entry_creator">Create/edit sessions</string>
+    <string name="title_activity_time_entry_creator">Create new session</string>
     <string name="title_activity_min1_tag_manager">Add at least 1 tag</string>
     <string name="title_activity_abstract">AbstractActivity</string>
-    <string name="title_activity_one_tag_manager">OneTagManagerActivity</string>
-    <string name="title_activity_time_entry_editor">TimeEntryEditorAct</string>
-
+    <string name="title_activity_one_tag_manager">Select appropriate project</string>
+    <string name="title_activity_time_entry_editor">Edit existing session</string>
+	<string name="title_activity_tag_editor">Edit existing project</string>
 </resources>

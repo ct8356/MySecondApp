@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
-import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+import com.ct8356.mysecondapp.DbContract.MTJoins;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -32,7 +32,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.os.Build;
 
-public class TimeAccumulatorActivity extends ActionBarActivity {
+public class HomeAct extends ActionBarActivity {
+	private static final int GENERAL=0;
 	private static final int ADD_TAG=1;
 	private static final int START_SESSION=2;
 	private static final int MANAGE_ENTRIES=3;
@@ -57,7 +58,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 //	}
 	
 	public void goStartSession(View view) {
-		Intent intent = new Intent(TimeAccumulatorActivity.this, 
+		Intent intent = new Intent(HomeAct.this, 
 				StartSessionActivity.class);
 		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
 				(ArrayList<String>) mSelectedTags);
@@ -65,7 +66,7 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	}
 	
 	public void goManageTimeEntries(View view) {
-		Intent intent = new Intent(TimeAccumulatorActivity.this, 
+		Intent intent = new Intent(HomeAct.this, 
 				TimeEntryManagerActivity.class);
 		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
 		intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
@@ -75,13 +76,18 @@ public class TimeAccumulatorActivity extends ActionBarActivity {
 	    startActivityForResult(intent, MANAGE_ENTRIES);
 	}
 	
+	public void goTagManager(View view) {
+		Intent intent = new Intent(HomeAct.this, TagManagerActivity.class);
+		startActivityForResult(intent, GENERAL);
+	}
+	
 	private void initialiseMemberVariables() {
 		mDbHelper = new DbHelper(this);
 		mSelectedTags = new ArrayList<String>();
 	}
 	
 	public void initialiseViews() {									
-		setContentView(R.layout.time_accumulator);
+		setContentView(R.layout.home);
 		//mSelectedTagsText = (TextView) findViewById(R.id.selected_tags);
 		//mSumMinutesText = (TextView) findViewById(R.id.sum_time_entries);
 		//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);

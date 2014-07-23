@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ct8356.mysecondapp.AbstractManagerActivity.CustomAdapter;
-import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+import com.ct8356.mysecondapp.DbContract.MTJoins;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
 import android.support.v7.app.ActionBarActivity;
@@ -43,8 +43,8 @@ import android.widget.AbsListView;
 
 public class TagManagerActivity extends AbstractManagerActivity {
 	//Note, could make this extend abstractManagerActivity...
-	private static final int EDIT_TAG = Menu.FIRST;
-	private static final int DELETE_TAG = Menu.FIRST + 1;
+	//private static final int EDIT_TAG = Menu.FIRST;
+	//private static final int DELETE_TAG = Menu.FIRST + 1;
 	protected List<String> mTagNames; //a key variable. it is called by getItem().
 	protected CustomAdapter mCustomAdapter;
 	
@@ -58,36 +58,34 @@ public class TagManagerActivity extends AbstractManagerActivity {
 		return checkedTags;
 	}
 	
-	public void goBackToStarter() {
-		SharedPreferences prefs = getSharedPreferences(DbContract.PREFS, 0);
-	    SharedPreferences.Editor editor = prefs.edit();
-	    editor.putString(DbContract.TAG_NAMES, mSelectedTags.get(0));
-	    editor.commit(); //ok, maybe if gonna use startActivityForResult, 
-	    //passing in intents is better.
-		super.goBackToStarter();
+	public void goCreateEntry() {
+		Intent intent = new Intent(this, TagCreatorAct.class);
+	    startActivityForResult(intent, CREATE_ENTRY);
 	}
 	
-	public void goEditTag(Long rowId) {
-		Intent intent = new Intent(this, CreateTagActivity.class);
-		intent.putExtra(Tags._ID, rowId); 
-	    startActivityForResult(intent, CREATE_TAG);
+	public void goEditEntry(Long rowId) {
+		Intent intent = new Intent(this, TagEditorAct.class);
+		intent.putExtra(DbContract._ID, rowId); 
+	    startActivityForResult(intent, EDIT_ENTRY);
 	}
 	
 	@Override
 	public void initialiseMemberVariables() {
-		mTagNames = new ArrayList<String>();
-		mDbHelper.openDatabase();
-		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
-		mDbHelper.close();
-		updateMSelectedTags();
-		mChecked = new ArrayList<Boolean>();
-		for (int i=0; i<mTagNames.size(); i+=1) {
-			if (mSelectedTags.contains(mTagNames.get(i))) {
-				mChecked.add(true);
-			} else {
-				mChecked.add(false);
-			}
-		}
+		mTableName = Tags.TABLE_NAME;
+//		mTagNames = new ArrayList<String>();
+//		mDbHelper.openDatabase();
+//		mTagNames = mDbHelper.getAllEntriesColumn(mTableName, Tags.TAG);
+//		mDbHelper.close();
+//		updateMSelectedTags();
+//		mChecked = new ArrayList<Boolean>();
+//		for (int i=0; i<mTagNames.size(); i+=1) {
+//			if (mSelectedTags.contains(mTagNames.get(i))) {
+//				mChecked.add(true);
+//			} else {
+//				mChecked.add(false);
+//			}
+//		}
+		super.initialiseMemberVariables();
 	} //KEEP for now.
 	
 	@Override
@@ -111,57 +109,43 @@ public class TagManagerActivity extends AbstractManagerActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
 		getMenuInflater().inflate(R.menu.tag_manager, menu);
 		return true;
 	} //KEEP for now.
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.action_settings:
-			return true;
-		case R.id.action_done:
-			goBackToStarter();
-			return true;
-		case R.id.new_entry:
-			goCreateTag();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	} //KEEP for now.
 	
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, EDIT_TAG, 0, R.string.menu_edit);
-        menu.add(0, DELETE_TAG, 0, R.string.menu_delete);
-    } //KEEP for now.
+//    @Override
+//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+//        menu.add(0, EDIT_TAG, 0, R.string.menu_edit);
+//        menu.add(0, DELETE_TAG, 0, R.string.menu_delete);
+//    } //KEEP for now.
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        List<String> tag = Arrays.asList(mTagNames.get(info.position));
-        //converts string to List. Ok since don't need to add() to this list.
-        mDbHelper.openDatabase();
-        Long rowId = Long.valueOf(mDbHelper.getEntryColumn(Tags.TABLE_NAME, Tags._ID, 
-        		Tags.TAG, tag).
-        		get(0));
-    	switch(item.getItemId()) {
-        case EDIT_TAG:
-            goEditTag(rowId);
-            return true;
-        case DELETE_TAG:
-			String joinColumnName = "TAGID"; //HARDCODE
-            mDbHelper.deleteEntryAndJoins(Tags.TABLE_NAME, MinutesToTagJoins.TABLE_NAME, 
-            		joinColumnName, rowId);
-            updateMTagNames(); //not enough. Must notifyListViewOfChange? Yes.
-            mCustomAdapter.notifyDataSetChanged();
-            mChecked.remove(info.position);
-            return true;
-        }
-        mDbHelper.close();
-        return super.onContextItemSelected(item);
-    } //NEED to keep for now...
+//    @Override
+//    public boolean onContextItemSelected(MenuItem item) {
+//        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+//        List<String> tag = Arrays.asList(mTagNames.get(info.position));
+//        //converts string to List. Ok since don't need to add() to this list.
+//        mDbHelper.openDatabase();
+//        Long rowId = Long.valueOf(mDbHelper.getEntryColumn(Tags.TABLE_NAME, Tags._ID, 
+//        		Tags.TAG, tag).
+//        		get(0));
+//    	switch(item.getItemId()) {
+//        case EDIT_TAG:
+//            goEditEntry(rowId);
+//            return true;
+//        case DELETE_TAG:
+//			String joinColumnName = "TAGID"; //HARDCODE
+//            mDbHelper.deleteEntryAndJoins(Tags.TABLE_NAME, MinutesToTagJoins.TABLE_NAME, 
+//            		joinColumnName, rowId);
+//            updateMTagNames(); //not enough. Must notifyListViewOfChange? Yes.
+//            mCustomAdapter.notifyDataSetChanged();
+//            mChecked.remove(info.position);
+//            return true;
+//        }
+//        mDbHelper.close();
+//        return super.onContextItemSelected(item);
+//    } //NEED to keep for now...
 
     @Override
 	protected void setAdapter() {
@@ -173,16 +157,6 @@ public class TagManagerActivity extends AbstractManagerActivity {
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
-	}
-	
-	@Override
-	public void goCreateEntry() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void goEditEntry(Long rowId) {
-		// TODO Auto-generated method stub
 	}
 	
 	protected class CustomAdapter extends BaseAdapter {

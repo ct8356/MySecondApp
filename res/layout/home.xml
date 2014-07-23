@@ -26,6 +26,12 @@
 	        android:layout_height="wrap_content"
 	        android:text="@string/manage_time_entries" 
 	        android:onClick="goManageTimeEntries"/>
+	   	
+	   	<Button
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/manage_tags" 
+	        android:onClick="goTagManager"/>
 	    
 	</LinearLayout>
 </ScrollView>

@@ -3,20 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ct8356.mysecondapp.TagManagerActivity" >
     
-	<item
+	<!--  <item
         android:id="@+id/action_done"
         android:title="@string/action_done"
-        app:showAsAction="ifRoom|withText"/>
-    
-    <item
-        android:id="@+id/new_entry"
-        android:title="@string/new_entry"
-        app:showAsAction="never"/>
-    
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        app:showAsAction="ifRoom|withText"/> -->
 
 </menu>

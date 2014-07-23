@@ -28,6 +28,7 @@ public class AbstractActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mDbHelper = new DbHelper(this);
 	}
 
 	@Override
@@ -58,5 +59,12 @@ public class AbstractActivity extends ActionBarActivity {
 		} else {
 			mSelectedTags.add(mTagNamesAdapter.getItem(0)); //Get first item in list.
 		}
+	}
+	
+	public void saveSelectedTags() {
+		SharedPreferences prefs = getSharedPreferences(DbContract.PREFS, 0);
+	    SharedPreferences.Editor editor = prefs.edit();
+	    editor.putString(DbContract.TAG_NAMES, mSelectedTags.get(0));
+	    editor.commit(); //ok, maybe if gonna use startActivityForResult, 
 	}
 }

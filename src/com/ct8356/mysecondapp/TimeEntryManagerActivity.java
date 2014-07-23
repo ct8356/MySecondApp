@@ -25,38 +25,20 @@ import android.os.Build;
 
 public class TimeEntryManagerActivity extends AbstractManagerActivity 
 implements AdapterView.OnItemSelectedListener {
-    protected List<String> mTagNames; //a key variable. it is called by getItem().
-    //want to keep this in shared preferences!?
     
 	public void goCreateEntry() {
 		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
-		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
-		intent.putExtra(DbContract.REQUEST_CODE, CREATE_ENTRY);
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags);
 	    startActivityForResult(intent, CREATE_ENTRY);
 	}
 	
 	public void goEditEntry(Long rowId) {
 		Intent intent = new Intent(this, TimeEntryEditorAct.class);
-		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME);
-		intent.putExtra(DbContract.REQUEST_CODE, EDIT_ENTRY);
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags);
 		intent.putExtra(DbContract._ID, rowId); 
 	    startActivityForResult(intent, EDIT_ENTRY);
 	}
 	
 	@Override
 	public void initialiseMemberVariables() {
-		//for the project fragment
-		mTagNames = new ArrayList<String>();
-		mDbHelper.openDatabase();
-		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
-		mDbHelper.close();
-		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
-				mTagNames);
-		updateMSelectedTags();
 		//Activity Specific
 		mTableName = Minutes.TABLE_NAME;
 		super.initialiseMemberVariables();
@@ -68,7 +50,8 @@ implements AdapterView.OnItemSelectedListener {
 				  inflate(R.layout.time_entry_manager, null);
 		setContentView(mLayout);
 		//SPINNER
-		mSpinner = (Spinner) findViewById(R.id.selected_tag);
+		mSpinner = (Spinner) findViewById(R.id.selected_tag); //this instantiation is needed,
+		//in super class... ???
 		mSpinner.setAdapter(mTagNamesAdapter);
 		mSpinner.setOnItemSelectedListener(this);
 		int pos = mTagNamesAdapter.getPosition(mSelectedTags.get(0));

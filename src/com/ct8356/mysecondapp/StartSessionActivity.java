@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ct8356.mysecondapp.DbContract.Minutes;
-import com.ct8356.mysecondapp.DbContract.MinutesToTagJoins;
+import com.ct8356.mysecondapp.DbContract.MTJoins;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -71,6 +71,7 @@ public class StartSessionActivity extends AbstractActivity {
 	            //goManageTimeEntries();
 	            //setResult(RESULT_OK, intent);
 	            //finish();
+	            
 	            //SHOW TOAST!!!
 	            String text = "Saved "+mMins+" minutes to project '"+mSelectedTags.get(0)+"'";
 	            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
@@ -141,7 +142,7 @@ public class StartSessionActivity extends AbstractActivity {
         mDbHelper.openDatabase();
     	mMins = String.valueOf((mElapsedTime/1000)/60); //CBTL Turn it to minutes
         mDbHelper.insertEntryAndJoins(Minutes.TABLE_NAME, mMins, 
-        		MinutesToTagJoins.TABLE_NAME, mSelectedTags);
+        		MTJoins.TABLE_NAME, mSelectedTags);
         mDbHelper.close();
     }
 

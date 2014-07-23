@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.os.Build;
 
-public class TimeEntryEditorAct extends TimeEntryCreatorActivity {
+public class TagEditorAct extends TagCreatorAct {
 	
 	@Override
 	public void initialiseMemberVariables() {
@@ -33,7 +33,7 @@ public class TimeEntryEditorAct extends TimeEntryCreatorActivity {
 		mListView.setAdapter(mCustomAdapter);
 	}
 	
-	protected class CustomAdapter extends TimeEntryCreatorActivity.CustomAdapter {
+	protected class CustomAdapter extends TagCreatorAct.CustomAdapter {
 	    @Override
 	    public View getView(int pos, View convertView, ViewGroup parent) {
 	    	View formLine = super.getView(pos, convertView, parent);
@@ -46,6 +46,6 @@ public class TimeEntryEditorAct extends TimeEntryCreatorActivity {
 	    	text.setText(entry.get(0).get(pos));
 	    	return formLine;
 	    } //Perhaps could use ArrayAdapter, filled with LinearLayouts?
-	}
+	} //almost same as TimeEntry editor. Duplicate?
 
 }
