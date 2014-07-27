@@ -32,7 +32,8 @@ public class StartSessionActivity extends AbstractActivity {
 	private Chronometer mChrono;
 	private Button start;
 	private Button pause;
-	private boolean stopped = false;
+	private boolean fresh = true;
+	private boolean stopped = true;
 	private long startTime;
 	private long mElapsedTime;
 	//private TextView mSelectedTagsText;
@@ -71,15 +72,11 @@ public class StartSessionActivity extends AbstractActivity {
 	            //goManageTimeEntries();
 	            //setResult(RESULT_OK, intent);
 	            //finish();
-	            
 	            //SHOW TOAST!!!
 	            String text = "Saved "+mMins+" minutes to project '"+mSelectedTags.get(0)+"'";
 	            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+	            reset();
 	            break;
-//	    	case SELECT_TAGS:
-//	            mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-//	            //mSelectedTagsText.setText("Selected tags: "+mSelectedTags);
-//	            break;
 	    	}
 	        break;
         }
@@ -88,15 +85,9 @@ public class StartSessionActivity extends AbstractActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		StartSessionLayout layout = new StartSessionLayout(this);
-		setContentView(layout);
+		setContentView(R.layout.start_session);
 		mDbHelper = new DbHelper(this);
-//		mSelectedTags = new ArrayList<String>();
-//        Bundle extras = getIntent().getExtras();
-//        if (extras != null) {
-//        	mSelectedTags = extras.getStringArrayList(DbContract.TAG_NAMES);
-//        }
-//		mChrono.start();
+		mChrono = (Chronometer) findViewById(R.id.chrono);
 	}
 
 	@Override
@@ -145,94 +136,38 @@ public class StartSessionActivity extends AbstractActivity {
         		MTJoins.TABLE_NAME, mSelectedTags);
         mDbHelper.close();
     }
-
-	public class StartSessionLayout extends ScrollView {	
-		public StartSessionLayout(Context context) {
-			super(context);
-			//CREATE THE VIEWS
-			//mSelectedTagsText = new TextView(context);
-			//Button selectTags = new Button(context);
-			mChrono = new Chronometer(context);
-			start = new Button(context);
-			pause = new Button(context);
-			Button reset = new Button(context);
-			Button save = new Button(context);
-			LinearLayout layout = new LinearLayout(context);
-			layout.setOrientation(1);
-			//SET THE TEXT AND ACTIONS;
-			//mSelectedTagsText.setText("Selected tags: "+ mSelectedTags);
-			//selectTags.setText("Select tags");
-			//selectTags.setOnClickListener(new SelectTagsListener());
-			mChrono.setTextSize(100);
-	        start.setText("Start");
-	        start.setOnClickListener(new StartListener());
-	        pause.setText("Pause");
-	        pause.setOnClickListener(new StopListener());
-	        pause.setVisibility(View.GONE);
-	        reset.setText("Reset");
-	        reset.setOnClickListener(new ResetListener());
-	        save.setText("Stop session and save");
-	        save.setOnClickListener(new SaveListener());
-			//ADD VIEWS
-	        //layout.addView(mSelectedTagsText);
-	        //layout.addView(selectTags);
-			layout.addView(mChrono);
-			layout.addView(start);
-			layout.addView(pause);
-			layout.addView(reset);
-			layout.addView(save);
-			this.addView(layout);
-		}
-	}
 			
-	public class StartListener implements View.OnClickListener {
-		public void onClick(View view) {
-			start.setVisibility(View.GONE);
-			pause.setVisibility(View.VISIBLE);
-			if (stopped) {
-				mChrono.setBase(SystemClock.elapsedRealtime() - mElapsedTime);
-				mChrono.start(); 
-				stopped = false;
-			} else {
+	public void onStartClick(View view) {
+		if (stopped) {
+			if (fresh) {
 				mChrono.setBase(SystemClock.elapsedRealtime());
 				mChrono.start(); 
+				fresh = false;
+			} else {
+				mChrono.setBase(SystemClock.elapsedRealtime() - mElapsedTime);
+				mChrono.start(); 
 			}
-		}
-	}
-	
-	public class StopListener implements View.OnClickListener {
-		public void onClick(View view) {
+			stopped = false;
+		} else {
 			mChrono.stop();
-			pause.setVisibility(View.GONE);
-			start.setVisibility(View.VISIBLE);
-			start.setText("Resume");
 			mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
 			stopped = true;
 		}
 	}
-	
-	public class ResetListener implements View.OnClickListener {
-		public void onClick(View view) {
-			mChrono.setBase(SystemClock.elapsedRealtime());
-			mChrono.stop();
-			pause.setVisibility(View.GONE);
-			start.setVisibility(View.VISIBLE);
-			start.setText("Start");
-			//elapsedRealtime is time from device boot up
-			stopped = false;
-		}
+		
+	public void onResetClick(View view) {
+		reset();
 	}
 	
-	public class SaveListener implements View.OnClickListener {
-		public void onClick(View view) {
-			mChrono.stop();
-			mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
-			Intent intent;
+	public void onSaveClick(View view) {
+		mChrono.stop();
+		mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
+		Intent intent;
 //			if (mSelectedTags.size() == 0) {
-				intent = new Intent(StartSessionActivity.this, OneTagManagerActivity.class);
-				intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-						(ArrayList<String>) mSelectedTags);
-				startActivityForResult(intent, SELECT_MIN1_TAGS);
+			intent = new Intent(StartSessionActivity.this, OneTagManagerActivity.class);
+			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+					(ArrayList<String>) mSelectedTags);
+			startActivityForResult(intent, SELECT_MIN1_TAGS);
 //			} else {
 //				saveState();
 //				intent = new Intent();
@@ -241,7 +176,14 @@ public class StartSessionActivity extends AbstractActivity {
 //				setResult(RESULT_OK, intent);
 //				finish();
 //			}
-		}
+	}
+	
+	public void reset() {
+		mChrono.setBase(SystemClock.elapsedRealtime());
+		mChrono.stop();
+		//elapsedRealtime is time from device boot up
+		stopped = true;
+		fresh = true;
 	}
 	
 //	public class SelectTagsListener implements View.OnClickListener {

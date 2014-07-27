@@ -20,7 +20,7 @@
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.StartSessionActivity"
-            android:label="@string/title_activity_start_session"
+            android:label="@string/start_session"
             android:parentActivityName="com.ct8356.mysecondapp.HomeAct"
             android:screenOrientation="portrait" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TagManagerActivity"
-            android:label="@string/title_activity_tag_manager"
+            android:label="@string/tag_manager"
             android:screenOrientation="portrait" >
             <meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
@@ -47,7 +47,7 @@
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
-            android:label="@string/title_activity_time_entry_manager"
+            android:label="@string/time_entry_manager"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -10,16 +10,15 @@
     <string name="action_done">Done</string>
     <string name="view_time_entries">View time entries</string>
     <string name="delete_selected_entries">Delete selected entries</string>
+    
     <!-- BUTTONS -->
     <string name="button_save_tag">Save tag</string>
     <string name="button_save_entry">Save entry</string>
-    <string name="button_pause_resume">Pause/Resume</string>
+    <string name="start_stop">Start/Stop</string>
+    <string name="reset">Reset</string>
     <string name="button_stop_and_save">Stop session and save</string>
     <string name="deselect_tags">Deselect tags</string>
     <string name="select_tags">Select tags</string>
-    <string name="start_session">Time a session</string>
-    <string name="manage_time_entries">Manage sessions</string>
-    <string name="manage_tags">Manage projects</string>
     
     <!-- CONTEXT MENUS -->
     <string name="hello_world">Hello world!</string>
@@ -43,15 +42,12 @@
     <!-- TITLES -->
     <string name="title_activity_time_accumulator">Time Tracker App</string>
     <string name="title_activity_choose_tag">ChooseTagActivity</string>
-    <string name="title_activity_start_session">Time your session</string>
+    <string name="start_session">Time your session</string>
     <string name="title_activity_creata">Create new project </string>
-    <string name="title_activity_tag_manager">View projects</string>
-    <string name="title_activity_time_entry_manager">View sessions</string>
-    <string name="title_activity_abstract_manager">AbstractManagerActivity</string>
-    <string name="title_activity_abstract_creator">AbstractCreator</string>
+    <string name="tag_manager">Manage projects</string>
+    <string name="time_entry_manager">Manage sessions</string>
     <string name="title_activity_time_entry_creator">Create new session</string>
     <string name="title_activity_min1_tag_manager">Add at least 1 tag</string>
-    <string name="title_activity_abstract">AbstractActivity</string>
     <string name="title_activity_one_tag_manager">Select appropriate project</string>
     <string name="title_activity_time_entry_editor">Edit existing session</string>
 	<string name="title_activity_tag_editor">Edit existing project</string>
