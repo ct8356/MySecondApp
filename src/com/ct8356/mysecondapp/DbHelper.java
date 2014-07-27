@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	//Since SQLiteOpenHelper is useful (I like its getWritableDatabase method),
 	//may as well use it.
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
     public static final String DATABASE_NAME = "Minutes.db";
     public SQLiteDatabase mDb;
     
@@ -265,12 +265,24 @@ public class DbHelper extends SQLiteOpenHelper {
 					values);
 		}
     	return entryId;
-    }
+    } // I don't think this is even needed!
 
     public void deleteEntryAndJoins(String entryTableName, String joinTableName, 
     		String joinColumnName, long entryId) {
-			mDb.delete(entryTableName, DbContract._ID+" = "+entryId, null);
-			mDb.delete(joinTableName, joinColumnName+" = "+entryId, null);
+			mDb.delete(entryTableName, DbContract._ID +" = "+ entryId, null);
+		    //Extra bit for TimeTracker app only... delete the sub-entries.
+			if (entryTableName == Tags.TABLE_NAME) {
+				List<String> sessionIds = getEntryColumn(joinTableName, MTJoins.MINUTESID,
+						MTJoins.TAGSID, Arrays.asList(String.valueOf(entryId)));
+				for (int i = sessionIds.size()-1; i >= 0; i--) {
+					mDb.delete(Minutes.TABLE_NAME, 
+							DbContract._ID +"="+ sessionIds.get(i),
+							null);
+				} 
+			} //CBTL to check. It seems to delete the sub-entries. cool.
+		    //back to normal...
+			mDb.delete(joinTableName, joinColumnName +" = "+ entryId, null);
+
     }
     
     public List<String> getRelatedEntryIds(List<String> tags) {
@@ -310,7 +322,7 @@ public class DbHelper extends SQLiteOpenHelper {
     	return tags;
     }
     
-    public int sumMinutes(List<String> tags){
+    public int sumMinutes(List<String> tags) {
     	List<String> yesWanted = getRelatedEntryIds(tags);
     	List<String> timeEntries = getEntryColumn(Minutes.TABLE_NAME, Minutes.MINUTES,
     			Minutes._ID, yesWanted);

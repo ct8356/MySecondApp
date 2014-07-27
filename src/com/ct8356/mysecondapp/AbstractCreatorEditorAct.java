@@ -159,8 +159,7 @@ public abstract class AbstractCreatorEditorAct extends AbstractActivity {
 			mRowId = mDbHelper.insertEntryAndJoins(mTableName, minutes, 
 					MTJoins.TABLE_NAME, mSelectedTags);//HARDCODE
         } else {
-            mDbHelper.updateEntryAndJoins(mTableName, entry, 
-            		MTJoins.TABLE_NAME, mSelectedTags, mRowId);//HARDCODE
+            mDbHelper.updateEntry(mTableName, entry, mRowId);//HARDCODE
         }
 		mDbHelper.close();
     }

@@ -146,50 +146,11 @@ public class TagManagerActivity extends AbstractManagerActivity {
 //        mDbHelper.close();
 //        return super.onContextItemSelected(item);
 //    } //NEED to keep for now...
-
-    @Override
-	protected void setAdapter() {
-		mCustomAdapter = new CustomAdapter();
-		mListView.setAdapter(mCustomAdapter);
-	}
     
 	public void updateMTagNames() {
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
 	}
-	
-	protected class CustomAdapter extends BaseAdapter {
-	    public int getCount() {
-			mDbHelper.openDatabase();
-			Cursor cursor = mDbHelper.getAllEntriesCursor(Tags.TABLE_NAME);
-			int count = cursor.getCount();
-			mDbHelper.close();
-			return count;
-	    }
-	
-	    public String getItem(int position) {	
-	        return mTagNames.get(position);
-	    }
-	
-	    public long getItemId(int position) {
-	    	//Not needed just yet.
-	        return 0;
-	    }
-	    
-	    @Override
-	    public View getView(int pos, View convertView, ViewGroup parent) {
-	         LinearLayout view = (LinearLayout) convertView;
-	         if (view == null) {
-	              view = (LinearLayout) getLayoutInflater().
-	            		  inflate(R.layout.row_tag_manager, parent, false);
-	         }
-	         TextView tv = (TextView) view.findViewById(R.id.textView1);
-	         tv.setText(getItem(pos));
-	         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox1);
-	         checkBox.setChecked(mChecked.get(pos));    
-	         return view;
-	    }
-	}
-	
+
 }

@@ -146,6 +146,7 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 		updateMTagNames();
 		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
 				mTagNames);
+		mCustomAdapter = new CustomAdapter();
 		updateMSelectedTags();
 		updateMEntries();
 		updateMChecked();

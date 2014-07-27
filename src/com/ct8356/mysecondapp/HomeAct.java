@@ -32,16 +32,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.os.Build;
 
-public class HomeAct extends ActionBarActivity {
+public class HomeAct extends AbstractActivity {
 	private static final int GENERAL=0;
-	private static final int ADD_TAG=1;
-	private static final int START_SESSION=2;
-	private static final int MANAGE_ENTRIES=3;
-	private DbHelper mDbHelper;
-	public List<String> mSelectedTags;
-	public TextView mSelectedTagsText;
-	public TextView mSumMinutesText;
-	private int mSumMinutes;
+	//public TextView mSumMinutesText;
+	//private int mSumMinutes;
 	
 //	public void deselectTags(View view) {
 //		mSelectedTags.clear();
@@ -58,22 +52,13 @@ public class HomeAct extends ActionBarActivity {
 //	}
 	
 	public void goStartSession(View view) {
-		Intent intent = new Intent(HomeAct.this, 
-				StartSessionActivity.class);
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags);
-	    startActivityForResult(intent, START_SESSION);
+		Intent intent = new Intent(HomeAct.this, StartSessionActivity.class);
+	    startActivityForResult(intent, GENERAL);
 	}
 	
 	public void goManageTimeEntries(View view) {
-		Intent intent = new Intent(HomeAct.this, 
-				TimeEntryManagerActivity.class);
-		intent.putExtra(DbContract.TABLE_NAME, Minutes.TABLE_NAME); //Better way than Db.T?
-		intent.putExtra(DbContract.CREATOR_ACTIVITY, Minutes.TABLE_NAME); 
-		//not needed anymore, but keep in case use it later.
-		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-				(ArrayList<String>) mSelectedTags); 
-	    startActivityForResult(intent, MANAGE_ENTRIES);
+		Intent intent = new Intent(HomeAct.this, TimeEntryManagerActivity.class);
+	    startActivityForResult(intent, GENERAL);
 	}
 	
 	public void goTagManager(View view) {
@@ -93,27 +78,6 @@ public class HomeAct extends ActionBarActivity {
 		//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
 		//updateMSumMinutesAndText(); 
 	}
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        switch (resultCode) {
-        case RESULT_CANCELED:
-        	//Do nothing
-        	break;
-        case RESULT_OK:
-	        switch (requestCode) {
-	        case ADD_TAG:
-	        case START_SESSION:
-	        case MANAGE_ENTRIES:
-	        	mSelectedTags = intent.getStringArrayListExtra(DbContract.TAG_NAMES);
-	        	//mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-	        	//updateMSumMinutesAndText();
-	        	break;
-	        }
-	        break;
-        }
-    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -136,25 +100,6 @@ public class HomeAct extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-	
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-	    //super.onRestoreInstanceState(savedInstanceState);
-		//They recommend I should call above, but then its a double restore...
-		//works fine without it.
-	    //mSelectedTags = savedInstanceState.getStringArrayList(DbContract.TAG_NAMES);
-	    //mSumMinutes = savedInstanceState.getInt(DbContract.SUM_MINUTES);
-	    //mSelectedTagsText.setText("Selected tags: " + mSelectedTags);
-    	//updateMSumMinutesAndText();
-	} //onRestoreInstanceSt will be called anyway, so may as well use it.
-	//To avoid double restore, do little as possible in onCreate...?
-	
-	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-	    savedInstanceState.putStringArrayList(DbContract.TAG_NAMES, (ArrayList<String>) mSelectedTags);
-	    savedInstanceState.putInt(DbContract.SUM_MINUTES, mSumMinutes);
-	    super.onSaveInstanceState(savedInstanceState);
 	}
 	
 //	public void updateMSumMinutesAndText() {
