@@ -35,19 +35,12 @@ public class TimeEntryCreatorActivity extends AbstractCreatorEditorAct  {
 		Intent intent;
 		updateMSelectedTags(); //Maybe not best place to call this...
 		//TODO
-		if (mSelectedTags.size() == 0) {
-			intent = new Intent(this, Min1TagManagerActivity.class);
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags);
-			startActivityForResult(intent, SELECT_MIN1_TAGS);
-		} else {
-			saveState();
-			intent = new Intent();
-			intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
-					(ArrayList<String>) mSelectedTags); 
-			setResult(RESULT_OK, intent);
-			finish();
-		}
+		saveState();
+		intent = new Intent();
+		intent.putStringArrayListExtra(DbContract.TAG_NAMES, 
+				(ArrayList<String>) mSelectedTags); 
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 	
     @Override 

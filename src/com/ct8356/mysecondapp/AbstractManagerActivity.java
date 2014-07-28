@@ -51,7 +51,6 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 	protected static final int EDIT_ENTRY = 2;
 	private static final int DELETE_ENTRY = 3;
 	protected static final int CREATE_TAG = 4;
-	private static final int DIALOG_ALERT = 10;
 	protected List<List<String>> mEntries; //a key variable. it is called by getItem().
 	//Note, every inner list, represents a row.
 	//private List<String> mCheckedEntryNames; //Just a translation variable. Can be local.
@@ -357,7 +356,8 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 	        	 //Do all initialising here.
 	             view = (LinearLayout) getLayoutInflater().
 	            		  inflate(R.layout.row_abstract_manager, parent, false);
-	 	         for (int i = 0; i < getItem(pos).size(); i += 1) {
+	 	         for (int iCol = 1; iCol < getItem(pos).size(); iCol++) {
+	 	        	 //1 so now it misses out Id. CBTL.
 			         TextView textView = new TextView(AbstractManagerActivity.this);
 			         view.addView(textView);
 			         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -365,10 +365,11 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 			         textView.setLayoutParams(params);
 		         }
 	         }
-	         for (int i = 0; i < getItem(pos).size(); i += 1) {
-	        	 TextView textView = (TextView) view.getChildAt(i+1); 
-	        	 //+1 because of checkbox //HARDCODE
-		         textView.setText("  "+getItem(pos).get(i)); //get the ith column.
+	         for (int iCol = 1; iCol < getItem(pos).size(); iCol++) {
+	        	 //1, misses out Id column. CBTL.
+	        	 TextView textView = (TextView) view.getChildAt(iCol+1-1); 
+	        	 //+1 because of checkbox //HARDCODE //-1 cause miss out Id column.
+		         textView.setText("  "+getItem(pos).get(iCol)); //get the ith column.
 	         } //expensive to do this every time getView is called?
 	         // No more than inflating i think... CBTL. 
 	         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox1);

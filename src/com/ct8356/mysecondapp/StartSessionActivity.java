@@ -34,8 +34,7 @@ public class StartSessionActivity extends AbstractActivity {
 	private boolean fresh = true;
 	private boolean stopped = true;
 	private long mElapsedTime;
-	private static final int SELECT_MIN1_TAGS = 0;
-	private static final int MANAGE_TIME_ENTRIES = 2;
+	private static final int MANAGE_TIME_ENTRIES = 0;
 	protected String mMins;
 	
 	public void goManageTimeEntries() {
