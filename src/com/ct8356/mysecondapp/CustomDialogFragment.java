@@ -37,7 +37,7 @@ public class CustomDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     	builder.setItems(mAllTags.toArray(new String[0]), new MyListener());
         //builder.setMessage("fire missiles");
-        // Create the AlertDialog object and return it
+        //Create the AlertDialog object and return it.
         return builder.create();
     }
 	

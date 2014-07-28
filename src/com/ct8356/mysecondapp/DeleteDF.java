@@ -26,8 +26,6 @@ public class DeleteDF extends DialogFragment implements DialogInterface.OnClickL
 		//(I.e. it is alot like the constructor!)
 		//BUT, this way is better, because DialogFragment can be in own class! More reusable!
 		//It can do this, thanks to...
-        // Use the Builder class for convenient dialog construction
-	    //DbHelper dbHelper = new DbHelper(getActivity());
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Are you sure you wish to delete?");
         builder.setPositiveButton("OK", this);

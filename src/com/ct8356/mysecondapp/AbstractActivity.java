@@ -37,7 +37,11 @@ public class AbstractActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.abstract_act, menu);
         return true;
     }
-
+	
+	public void onDataPass() {
+		//do nothing
+	} //could put this in interface instead, but I don't think that is any better...
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
