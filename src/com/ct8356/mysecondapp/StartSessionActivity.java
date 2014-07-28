@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -70,8 +71,8 @@ public class StartSessionActivity extends AbstractActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.start_session);
-		mDbHelper = new DbHelper(this);
 		mChrono = (Chronometer) findViewById(R.id.chrono);
+	    //updateMElapsedTime();
 	}
 
 	@Override
@@ -93,14 +94,14 @@ public class StartSessionActivity extends AbstractActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		switch (id) {
-		case R.id.action_settings:
-			return true;
-		case R.id.view_time_entries:
-			goManageTimeEntries();
-			return true;
-		}
+//		int id = item.getItemId();
+//		switch (id) {
+//		case R.id.action_settings:
+//			return true;
+//		case R.id.view_time_entries:
+//			goManageTimeEntries();
+//			return true;
+//		}
 		return super.onOptionsItemSelected(item);
 	}
 	
@@ -152,6 +153,13 @@ public class StartSessionActivity extends AbstractActivity {
 		//Might want an if statement, incase tags already selected...
 	}
 	
+	public void onStop() {
+//		if (!stopped) {
+//			saveMElapsedTime();
+//		}
+		super.onStop();
+	}
+	
 	public void reset() {
 		mChrono.setBase(SystemClock.elapsedRealtime());
 		mChrono.stop();
@@ -168,6 +176,14 @@ public class StartSessionActivity extends AbstractActivity {
         mDbHelper.close();
     }
 	
+	public void saveMElapsedTime() {
+		SharedPreferences prefs = getSharedPreferences(DbContract.PREFS, 0);
+	    SharedPreferences.Editor editor = prefs.edit();
+		mElapsedTime = SystemClock.elapsedRealtime() - mChrono.getBase();
+	    editor.putLong(DbContract.ELAPSED_TIME, mElapsedTime);
+	    editor.commit();
+	}
+	
 	public void showSingleTagSelectorDF() {
 		//Create that dialog
 	    DialogFragment df = new SingleTagSelectorDF();
@@ -176,5 +192,11 @@ public class StartSessionActivity extends AbstractActivity {
 	    //dFragment.setArguments(bundle);
 	    df.show(getSupportFragmentManager(), "selectTag");  
 	    //note, this is the way you did it before....
+	}
+	
+	public void updateMElapsedTime() {
+		mPrefs = getSharedPreferences(DbContract.PREFS, 0);
+		Long elapsedTimePref = mPrefs.getLong(DbContract.ELAPSED_TIME, 0);
+		mChrono.setBase(SystemClock.elapsedRealtime() - elapsedTimePref);
 	}
 }

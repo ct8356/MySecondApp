@@ -58,7 +58,7 @@ public class HomeAct extends AbstractActivity {
 	
 	public void goManageTimeEntries(View view) {
 		Intent intent = new Intent(HomeAct.this, TimeEntryManagerActivity.class);
-	    startActivityForResult(intent, GENERAL);
+	    startActivity(intent);
 	}
 	
 	public void goTagManager(View view) {
@@ -102,12 +102,4 @@ public class HomeAct extends AbstractActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-//	public void updateMSumMinutesAndText() {
-//		mDbHelper.openDatabase();
-//		mSumMinutes = mDbHelper.sumMinutes(mSelectedTags);
-//		mDbHelper.close();
-//		mSumMinutesText.setText("Total minutes: " + mSumMinutes);
-//		return;
-//	}
-
 }

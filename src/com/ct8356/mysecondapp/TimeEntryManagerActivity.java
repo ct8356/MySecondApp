@@ -7,9 +7,6 @@ import com.ct8356.mysecondapp.AbstractManagerActivity.TagNamesAdapter;
 import com.ct8356.mysecondapp.DbContract.Minutes;
 import com.ct8356.mysecondapp.DbContract.Tags;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,10 +18,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.os.Build;
+import android.widget.TextView;
 
 public class TimeEntryManagerActivity extends AbstractManagerActivity 
-implements AdapterView.OnItemSelectedListener {
+implements AdapterView.OnItemSelectedListener {// CBTL could this interfere with up button?
+    int mTotalTime;
+    TextView mTotalTimeText;
     
 	public void goCreateEntry() {
 		Intent intent = new Intent(this, TimeEntryCreatorActivity.class);
@@ -50,32 +49,37 @@ implements AdapterView.OnItemSelectedListener {
 				  inflate(R.layout.time_entry_manager, null);
 		setContentView(mLayout);
 		//SPINNER
-		mSpinner = (Spinner) findViewById(R.id.selected_tag); //this instantiation is needed,
-		//in super class... ???
+		mSpinner = (Spinner) findViewById(R.id.selected_tag);
 		mSpinner.setAdapter(mTagNamesAdapter);
 		mSpinner.setOnItemSelectedListener(this);
 		int pos = mTagNamesAdapter.getPosition(mSelectedTags.get(0));
 		mSpinner.setSelection(pos);
+		//TOTAL TIME
+		mTotalTimeText = (TextView) findViewById(R.id.total_time);
+		updateMSumMinutesAndText();
 		super.initialiseViews();
 	}
+    
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        updateMSumMinutesAndText();
+    }
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
 		getMenuInflater().inflate(R.menu.time_entry_manager, menu);
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
 		case R.id.new_tag:
 			goCreateTag();
 			return true;
 		}
-		return true;
-		//return super.onOptionsItemSelected(item); 
+		return super.onOptionsItemSelected(item); 
 		//Don't want this! Makes for double calls!
 	}
 	
@@ -105,6 +109,7 @@ implements AdapterView.OnItemSelectedListener {
     	mSelectedTags = new ArrayList<String>();
     	mSelectedTags.add(selectedTag);
 		//mSelectedTagsText.setText(""+mSelectedTags);
+    	updateMSumMinutesAndText();
 		updateMEntries();
 		updateMChecked();
 		mCustomAdapter.notifyDataSetChanged();
@@ -125,4 +130,12 @@ implements AdapterView.OnItemSelectedListener {
 		}
 	}
 
+    @Override
+	public void updateMSumMinutesAndText() {
+		mDbHelper.openDatabase();
+		mTotalTime = mDbHelper.sumMinutes(mSelectedTags);
+		mDbHelper.close();
+		mTotalTimeText.setText(mTotalTime + " minutes");
+		return;
+	}
 }

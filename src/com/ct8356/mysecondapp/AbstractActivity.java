@@ -69,6 +69,6 @@ public class AbstractActivity extends ActionBarActivity {
 		SharedPreferences prefs = getSharedPreferences(DbContract.PREFS, 0);
 	    SharedPreferences.Editor editor = prefs.edit();
 	    editor.putString(DbContract.TAG_NAMES, mSelectedTags.get(0));
-	    editor.commit(); //ok, maybe if gonna use startActivityForResult, 
+	    editor.commit();
 	}
 }

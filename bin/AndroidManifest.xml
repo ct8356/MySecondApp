@@ -34,7 +34,7 @@
         </activity>
         <activity
             android:name="com.ct8356.mysecondapp.TagCreatorAct"
-            android:label="@string/title_activity_creata"
+            android:label="@string/tag_creator"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -46,26 +46,8 @@
 	            android:value="com.ct8356.mysecondapp.HomeAct" />
         </activity>
         <activity
-            android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
-            android:label="@string/time_entry_manager"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ct8356.mysecondapp.HomeAct" />
-        </activity>
-        <activity
             android:name="com.ct8356.mysecondapp.TimeEntryCreatorActivity"
             android:label="@string/title_activity_time_entry_creator"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="com.ct8356.mysecondapp.Min1TagManagerActivity"
-            android:label="@string/title_activity_min1_tag_manager"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="com.ct8356.mysecondapp.OneTagManagerActivity"
-            android:label="@string/title_activity_one_tag_manager"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -77,6 +59,15 @@
             android:name="com.ct8356.mysecondapp.TagEditorAct"
             android:label="@string/title_activity_tag_editor"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.ct8356.mysecondapp.TimeEntryManagerActivity"
+            android:label="@string/time_entry_manager"
+            android:parentActivityName="com.ct8356.mysecondapp.HomeAct"
+            android:screenOrientation="portrait" >
+            <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value="com.ct8356.mysecondapp.HomeAct" />
         </activity>
     </application>
 

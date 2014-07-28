@@ -3,15 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ct8356.mysecondapp.StartSessionActivity" >
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
-
-    <item
+    <!-- <item
         android:id="@+id/view_time_entries"
         android:orderInCategory="101"
         android:title="@string/view_time_entries"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/> -->
 </menu>

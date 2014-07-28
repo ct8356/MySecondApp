@@ -78,6 +78,7 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 				deleteEntry(pos);
 			}
 		}
+		updateMSumMinutesAndText();
 	    updateMEntries();
 	    mCustomAdapter.notifyDataSetChanged();
 	}
@@ -163,34 +164,28 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        switch (resultCode) {
-        case RESULT_CANCELED:
-        	//Do nothing
+        updateMEntries();
+        switch (requestCode) {
+        case CREATE_ENTRY:    
+        	if (mEntries.size() > mChecked.size()) {
+        	    mChecked.add(true);
+        	}
+			break;
+        case EDIT_ENTRY:
+        	//Do nothing.
+			break;
+        case SELECT_TAGS:
+        	updateMChecked();
         	break;
-        case RESULT_OK:
-            updateMEntries();
-	        switch (requestCode) {
-	        case CREATE_ENTRY:          
-	            mChecked.add(true);
-				break;
-	        case EDIT_ENTRY:
-	        	//Do nothing.
-				break;
-	        case SELECT_TAGS:
-	        	updateMChecked();
-	        	break;
-	        case CREATE_TAG:
-	        	//mTagNamesAdapter.notifyDataSetChanged(); 
-	        	//Not sure this works for arrayAdapter...  
-	        	updateMTagNames();
-	    		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, 
-	    				mTagNames);
-	    		mSpinner.setAdapter(mTagNamesAdapter);
-	        	break;
-	        }
-	     	mCustomAdapter.notifyDataSetChanged();
-	        break;
+        case CREATE_TAG:
+        	//mTagNamesAdapter.notifyDataSetChanged(); 
+        	//Not sure this works for arrayAdapter...  
+        	updateMTagNames();
+    		mTagNamesAdapter = new TagNamesAdapter(this, R.layout.tag_name, mTagNames);
+    		mSpinner.setAdapter(mTagNamesAdapter);
+        	break;
         }
+     	mCustomAdapter.notifyDataSetChanged();
     }
     
 	@Override
@@ -323,6 +318,10 @@ public abstract class AbstractManagerActivity extends AbstractActivity {
 		mDbHelper.openDatabase();
 		mTagNames = mDbHelper.getAllEntriesColumn(Tags.TABLE_NAME, Tags.TAG);
 		mDbHelper.close();
+	}
+	
+	public void updateMSumMinutesAndText() {
+		//Do nothing here.
 	}
 	
 	public void toggle(int position) {

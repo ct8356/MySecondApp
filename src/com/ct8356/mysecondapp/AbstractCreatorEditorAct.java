@@ -147,7 +147,7 @@ public abstract class AbstractCreatorEditorAct extends AbstractActivity {
 	
     protected void saveState() {
     	List<String> entry = new ArrayList<String>();
-        for (int iCol = 1; iCol < mColumnCount; iCol += 1) {
+        for (int iCol = 1; iCol < mColumnCount; iCol ++) {
         	 //start with i=1, to skip the id column.
         	 LinearLayout formLine = (LinearLayout) mListView.getChildAt(iCol);
         	 TextView text = (TextView) formLine.getChildAt(1);
